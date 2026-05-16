@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FL Motion Builder">
+<meta name="theme-color" content="#050914">
+<meta name="description" content="Florida Legal Motion Builder — Guided post-conviction relief tools for Rule 3.850, 3.800, Seal/Expunge, and Early Termination. Part of the Second Chance ecosystem.">
+<title>FL Motion Builder | Second Chance Legal Tools</title>
+<link rel="manifest" href="motion-manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   SECOND CHANCE LEGAL TOOLS — MOTION BUILDER
+   Design: Dark Legal / Institutional Maximalism
+   Curated by Devyn Mack · v2026.1
+═══════════════════════════════════════════════ */
+
+:root {
+  --ink:     #050914;
+  --ink-mid: #0B1220;
+  --ink-card:#0F1A2E;
+  --ink-lift:#162035;
+  --gold:    #F9B24C;
+  --gold-dim: rgba(249,178,76,0.12);
+  --gold-glow: 0 0 28px rgba(249,178,76,0.25);
+  --teal:    #2DD4BF;
+  --teal-dim: rgba(45,212,191,0.1);
+  --red:     #F87171;
+  --red-dim:  rgba(248,113,113,0.1);
+  --sky:     #60A5FA;
+  --green:   #4ADE80;
+  --white:   #F9FAFB;
+  --muted:   #6B7280;
+  --border:  rgba(255,255,255,0.07);
+  --radius:  14px;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
+html { scroll-behavior:smooth }
+body {
+  font-family: var(--font-body);
+  background: var(--ink);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ANIMATED BACKGROUND */
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(249,178,76,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(45,212,191,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, #0B1220 0%, #050914 100%);
+}
+body::after {
+  content:'';
+  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.4;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0v60M0 30h60' stroke='%23F9B24C' stroke-width='0.3' opacity='0.15'/%3E%3C/svg%3E");
+}
+
+.app { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:0 14px 60px; }
+
+/* ── HEADER ── */
+.site-header {
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-seal {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--gold), #e8960a);
+  border-radius: 10px;
+  display: flex; align-items:center; justify-content:center;
+  font-size: 22px;
+  box-shadow: var(--gold-glow);
+  flex-shrink: 0;
+}
+
+.brand-text h1 {
+  font-family: var(--font-display);
+  font-size: clamp(17px, 4vw, 22px);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.1;
+}
+.brand-text .sub {
+  font-size: 10px;
+  color: var(--teal);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.header-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  padding: 5px 10px;
+  border-radius: 20px;
+  text-align: right;
+  line-height: 1.5;
+}
+.header-badge span { color: var(--gold); }
+
+/* ── NOTICE BANNER ── */
+.notice-banner {
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.notice-banner .icon { font-size: 16px; flex-shrink:0; margin-top:1px; }
+.notice-banner p { font-size: 12px; color: rgba(248,113,113,0.9); line-height: 1.6; }
+
+/* ── SECTION TITLE ── */
+.section-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--gold);
+  margin-bottom: 14px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::after {
+  content:'';
+  flex:1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(249,178,76,0.3), transparent);
+}
+
+/* ── MOTION SELECTOR GRID ── */
+.motion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.motion-tile {
+  background: var(--ink-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+}
+
+.motion-tile::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0;
+  height: 3px;
+  background: var(--tile-color, var(--gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.motion-tile:hover, .motion-tile.selected {
+  border-color: var(--tile-color, var(--gold));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.motion-tile:hover::before, .motion-tile.selected::before {
+  transform: scaleX(1);
+}
+
+.motion-tile.selected {
+  background: linear-gradient(135deg, var(--ink-card), var(--ink-lift));
+}
+
+.tile-icon { font-size: 24px; margin-bottom: 8px; }
+.tile-code {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--tile-color, var(--gold));
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.tile-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+.tile-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.tile-check {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--tile-color, var(--gold));
+  display: flex; align-items:center; justify-content:center;
+  font-size: 11px;
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.motion-tile.selected .tile-check { opacity: 1; }
+
+/* ── START BUTTON ── */
+.start-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--gold), #e8960a);
+  color: var(--ink);
+  border: none;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--gold-glow);
+  margin-bottom: 24px;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.start-btn:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(249,178,76,0.4); }
+.start-btn:active { transform: translateY(0); }
+.start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ── WIZARD ── */
+.wizard {
+  display: none;
+  background: var(--ink-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 24px;
+  animation: slideUp 0.3s ease;
+}
+.wizard.open { display: block; }
+
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.wizard-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.wizard-motion-label {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.wizard-statute {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin-top: 3px;
+}
+
+/* PROGRESS BAR */
+.wizard-progress {
+  padding: 14px 20px;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border);
+}
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.progress-step-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.progress-pct {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gold);
+  font-weight: 700;
+}
+.progress-track {
+  height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), #ffd166);
+  border-radius: 4px;
+  transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* STEP DOTS */
+.step-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.step-dot {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+  min-width: 6px;
+}
+.step-dot.done { background: var(--gold); flex: 1; }
+.step-dot.active { background: var(--gold); opacity: 0.6; width: 18px; }
+
+/* STEP CONTENT */
+.wizard-body { padding: 20px; }
+
+.step-heading {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.step-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+.step-legal-tip {
+  background: var(--gold-dim);
+  border: 1px solid rgba(249,178,76,0.2);
+  border-left: 3px solid var(--gold);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 11px;
+  color: rgba(249,178,76,0.9);
+  line-height: 1.6;
+}
+.step-legal-tip strong {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  color: var(--gold);
+}
+
+/* FORM FIELDS */
+.field-group {
+  margin-bottom: 14px;
+}
+.field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+.field-label .required { color: var(--red); margin-left: 3px; }
+.field-label .law-cite {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--gold);
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.field-input,
+.field-select,
+.field-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 9px;
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 11px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+.field-input:focus,
+.field-select:focus,
+.field-textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(249,178,76,0.12);
+}
+.field-input::placeholder,
+.field-textarea::placeholder { color: rgba(255,255,255,0.25); }
+.field-textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+.field-select option { background: #0B1220; }
+
+/* CHECKBOX GROUP */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.checkbox-item:hover { border-color: rgba(249,178,76,0.3); background: var(--gold-dim); }
+.checkbox-item input[type=checkbox] { margin-top: 2px; flex-shrink:0; accent-color: var(--gold); width:16px; height:16px; }
+.checkbox-item label { font-size: 13px; color: var(--white); cursor:pointer; line-height:1.5; }
+.checkbox-item label small { display:block; font-size:11px; color:var(--muted); margin-top:2px; }
+
+/* RADIO GROUP */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.radio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 2px solid rgba(255,255,255,0.07);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.radio-item:hover { border-color: rgba(249,178,76,0.3); }
+.radio-item.selected { border-color: var(--gold); background: var(--gold-dim); }
+.radio-item input { accent-color: var(--gold); flex-shrink:0; margin-top:2px; width:16px; height:16px; }
+.radio-item label { font-size: 13px; color: var(--white); cursor:pointer; }
+.radio-item label small { display:block; font-size:11px; color:var(--muted); margin-top:2px; }
+
+/* FIELD ROW */
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media(max-width:480px){ .field-row { grid-template-columns:1fr; } }
+
+/* WIZARD CONTROLS */
+.wizard-controls {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.btn-back {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 30px;
+  padding: 10px 18px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-back:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+.btn-back:disabled { opacity:0.3; cursor:not-allowed; }
+.btn-next {
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 24px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--gold-glow);
+}
+.btn-next:hover { transform:translateY(-1px); box-shadow: 0 0 30px rgba(249,178,76,0.4); }
+
+/* ── DOCUMENT PREVIEW ── */
+.preview-section {
+  display: none;
+  margin-bottom: 24px;
+  animation: slideUp 0.3s ease;
+}
+.preview-section.open { display: block; }
+
+.preview-card {
+  background: var(--ink-card);
+  border: 1px solid rgba(249,178,76,0.25);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.preview-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.preview-actions { display:flex; gap:8px; }
+
+.btn-copy, .btn-download, .btn-print {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all 0.2s;
+  font-weight: 700;
+}
+.btn-copy    { color:var(--teal); background:var(--teal-dim); border-color:rgba(45,212,191,0.3); }
+.btn-download{ color:var(--gold); background:var(--gold-dim); border-color:rgba(249,178,76,0.3); }
+.btn-print   { color:var(--muted); background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); }
+.btn-copy:hover    { background:rgba(45,212,191,0.2); }
+.btn-download:hover{ background:rgba(249,178,76,0.2); }
+.btn-print:hover   { color:var(--white); }
+
+.preview-doc {
+  padding: 28px 24px;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 13px;
+  line-height: 1.9;
+  color: rgba(255,255,255,0.88);
+  max-height: 500px;
+  overflow-y: auto;
+  background: rgba(255,255,255,0.015);
+}
+
+.preview-doc .doc-title {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  color: var(--white);
+}
+.preview-doc .doc-subtitle {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+}
+.preview-doc .doc-section { margin-bottom: 20px; }
+.preview-doc .doc-section-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(249,178,76,0.2);
+}
+.preview-doc p { margin-bottom: 10px; }
+.preview-doc .field-blank {
+  display: inline-block;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  min-width: 120px;
+  color: var(--gold);
+  font-style: italic;
+}
+.preview-doc .placeholder {
+  color: var(--red);
+  font-style: italic;
+}
+
+/* ── DRAFTS ── */
+.drafts-section { margin-bottom: 24px; }
+.draft-card {
+  background: var(--ink-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.draft-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  transition: border-color 0.2s;
+}
+.draft-item:hover { border-color: rgba(249,178,76,0.25); }
+.draft-item:last-child { margin-bottom: 0; }
+
+.draft-info { flex: 1; min-width: 0; }
+.draft-motion-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 3px;
+}
+.draft-date {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+.draft-tag {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.draft-actions { display:flex; gap:6px; }
+.btn-draft-load {
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid rgba(249,178,76,0.3);
+  background: var(--gold-dim);
+  color: var(--gold);
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.btn-draft-delete {
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid rgba(248,113,113,0.2);
+  background: var(--red-dim);
+  color: var(--red);
+  transition: all 0.2s;
+}
+.btn-draft-load:hover   { background: rgba(249,178,76,0.2); }
+.btn-draft-delete:hover { background: rgba(248,113,113,0.2); }
+
+.no-drafts {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ── LEGAL LIBRARY ── */
+.library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.lib-card {
+  background: var(--ink-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: all 0.2s;
+}
+.lib-card:hover { border-color: rgba(249,178,76,0.25); transform:translateY(-2px); }
+.lib-icon { font-size: 22px; margin-bottom: 8px; }
+.lib-title { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+.lib-statute { font-family: var(--font-mono); font-size: 9px; color: var(--gold); margin-bottom: 8px; }
+.lib-desc { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.lib-tip {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--gold-dim);
+  border-radius: 6px;
+  font-size: 11px;
+  color: rgba(249,178,76,0.85);
+  line-height: 1.5;
+}
+
+/* ── TABS ── */
+#tabnav {
+  display: flex;
+  background: var(--ink-mid);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+#tabnav::-webkit-scrollbar { display:none; }
+.tn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 9px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  gap: 4px;
+  flex-shrink: 0;
+  min-width: 60px;
+  transition: color 0.2s;
+}
+.tn .ico { font-size: 16px; }
+.tn.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+.tn:hover { color: var(--white); }
+
+/* TAB PANELS */
+.tab-panel { display:none; }
+.tab-panel.active { display:block; padding-top:20px; animation:slideUp 0.25s ease; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink-mid);
+  border: 1px solid var(--gold);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 9px 18px;
+  border-radius: 30px;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: var(--gold-glow);
+}
+#toast.on { opacity: 1; }
+
+/* ── COMPLETION SCREEN ── */
+.completion {
+  display:none;
+  text-align:center;
+  padding: 40px 20px;
+  animation: slideUp 0.3s ease;
+}
+.completion.show { display:block; }
+.completion-icon { font-size: 48px; margin-bottom:16px; }
+.completion h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.completion p { font-size:13px; color:var(--muted); line-height:1.7; max-width:400px; margin:0 auto 20px; }
+.btn-view-doc {
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--gold-glow);
+  margin-right: 10px;
+}
+.btn-start-new {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 12px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-start-new:hover { color:var(--white); }
+
+/* ── PRINT STYLES ── */
+@media print {
+  body { background: white !important; color: black !important; }
+  #tabnav, .wizard-controls, .preview-actions, .motion-grid,
+  .start-btn, .notice-banner, .site-header, #toast { display:none !important; }
+  .preview-doc {
+    max-height: none !important;
+    color: black !important;
+    font-size: 12pt !important;
+    line-height: 2 !important;
+  }
+  .preview-card { border: none !important; }
+  body::before, body::after { display:none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition:none !important; animation:none !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="tabnav">
+  <button class="tn active" data-tab="builder" onclick="switchTab('builder')"><span class="ico">⚖️</span>Builder</button>
+  <button class="tn" data-tab="drafts"  onclick="switchTab('drafts')"> <span class="ico">📁</span>Drafts</button>
+  <button class="tn" data-tab="preview" onclick="switchTab('preview')"><span class="ico">📄</span>Preview</button>
+  <button class="tn" data-tab="library" onclick="switchTab('library')"><span class="ico">📚</span>Library</button>
+  <button class="tn" data-tab="rights"  onclick="switchTab('rights')"> <span class="ico">📜</span>Rights</button>
+</div>
+
+<div class="app">
+
+<!-- ═══ TAB: BUILDER ═══ -->
+<div class="tab-panel active" id="tab-builder">
+
+  <div class="site-header">
+    <div class="brand">
+      <div class="brand-seal">⚖️</div>
+      <div class="brand-text">
+        <h1>FL Motion Builder</h1>
+        <div class="sub">Second Chance Legal Tools · v2026.1</div>
+      </div>
+    </div>
+    <div class="header-badge">
+      <div>Curated by <span>Devyn Mack</span></div>
+      <div>Roger Pitts / Second Chance</div>
+    </div>
+  </div>
+
+  <div class="notice-banner">
+    <div class="icon">⚠️</div>
+    <p><strong>Not legal advice.</strong> This tool helps you organize your information and understand Florida motion procedures. Always consult a licensed Florida attorney when possible. Florida Legal Services: <strong>1-800-747-0502</strong>. Florida Justice Center: <strong>954-758-7555</strong>.</p>
+  </div>
+
+  <div class="section-title">Select Your Motion Type</div>
+
+  <div class="motion-grid">
+    <div class="motion-tile" data-motion="3850" style="--tile-color:#F87171" onclick="selectMotion('3850',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">⚖️</div>
+      <div class="tile-code">Rule 3.850</div>
+      <div class="tile-title">Postconviction Relief</div>
+      <div class="tile-desc">Challenge convictions due to ineffective counsel, newly discovered evidence, or constitutional violations.</div>
+    </div>
+    <div class="motion-tile" data-motion="3800" style="--tile-color:#60A5FA" onclick="selectMotion('3800',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">📋</div>
+      <div class="tile-code">Rule 3.800</div>
+      <div class="tile-title">Illegal Sentence Correction</div>
+      <div class="tile-desc">Correct an illegal sentence that exceeds the maximum, is below the minimum, or was improperly structured.</div>
+    </div>
+    <div class="motion-tile" data-motion="expunge" style="--tile-color:#4ADE80" onclick="selectMotion('expunge',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">🔒</div>
+      <div class="tile-code">F.S. 943.0585 / 943.059</div>
+      <div class="tile-title">Seal / Expunge Record</div>
+      <div class="tile-desc">Remove or seal criminal records from public access. Strict eligibility — one chance per lifetime.</div>
+    </div>
+    <div class="motion-tile" data-motion="terminate" style="--tile-color:#F9B24C" onclick="selectMotion('terminate',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">🗓</div>
+      <div class="tile-code">F.S. 948.04</div>
+      <div class="tile-title">Early Termination</div>
+      <div class="tile-desc">Petition for early termination of probation after completing 50% of the term and all special conditions.</div>
+    </div>
+    <div class="motion-tile" data-motion="restitution" style="--tile-color:#A78BFA" onclick="selectMotion('restitution',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">💰</div>
+      <div class="tile-code">F.S. 775.089</div>
+      <div class="tile-title">Restitution Modification</div>
+      <div class="tile-desc">Reduce restitution payments when inability to pay is documented. Bearden v. Georgia protection.</div>
+    </div>
+    <div class="motion-tile" data-motion="mitigation" style="--tile-color:#2DD4BF" onclick="selectMotion('mitigation',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">📦</div>
+      <div class="tile-code">F.R.Crim.P. 3.800(c)</div>
+      <div class="tile-title">Mitigation Packet</div>
+      <div class="tile-desc">Build a comprehensive mitigation package for sentencing hearings, parole hearings, or clemency applications.</div>
+    </div>
+  </div>
+
+  <button class="start-btn" id="start-btn" disabled onclick="startWizard()">
+    <span>⚡</span>
+    <span id="start-btn-text">Select a Motion Type Above</span>
+  </button>
+
+  <!-- WIZARD -->
+  <div class="wizard" id="wizard">
+    <div class="wizard-header">
+      <div>
+        <div class="wizard-motion-label" id="wizard-title">Motion Builder</div>
+        <div class="wizard-statute" id="wizard-statute"></div>
+      </div>
+      <button onclick="closeWizard()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;">✕</button>
+    </div>
+
+    <div class="wizard-progress">
+      <div class="progress-header">
+        <span class="progress-step-label" id="step-label">Step 1 of 5</span>
+        <span class="progress-pct" id="step-pct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="step-dots" id="step-dots"></div>
+    </div>
+
+    <div class="wizard-body" id="wizard-body"></div>
+
+    <div class="wizard-controls">
+      <button class="btn-back" id="btn-back" onclick="prevStep()" disabled>← Back</button>
+      <button class="btn-next" id="btn-next" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+
+  <!-- COMPLETION -->
+  <div class="completion" id="completion">
+    <div class="completion-icon">✅</div>
+    <h2>Draft Complete</h2>
+    <p>Your motion draft has been saved to this device. Review the generated document in the Preview tab, then copy or print it.</p>
+    <button class="btn-view-doc" onclick="switchTab('preview')">📄 View Document</button>
+    <button class="btn-start-new" onclick="resetBuilder()">Start Another Motion</button>
+  </div>
+
+</div><!-- /tab-builder -->
+
+<!-- ═══ TAB: DRAFTS ═══ -->
+<div class="tab-panel" id="tab-drafts">
+  <div class="section-title">Saved Drafts</div>
+  <div class="draft-card">
+    <p style="font-size:11px;color:var(--muted);margin-bottom:14px">Drafts are stored only on this device. No account required. No data transmitted.</p>
+    <div id="draft-list"></div>
+  </div>
+</div>
+
+<!-- ═══ TAB: PREVIEW ═══ -->
+<div class="tab-panel" id="tab-preview">
+  <div class="section-title">Document Preview</div>
+  <div id="preview-wrap">
+    <div style="text-align:center;padding:40px 20px;color:var(--muted)">
+      <div style="font-size:36px;margin-bottom:12px">📄</div>
+      <p style="font-size:13px">Complete a motion in the Builder tab to see your document here.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: LIBRARY ═══ -->
+<div class="tab-panel" id="tab-library">
+  <div class="section-title">Florida Legal Reference Library</div>
+  <div class="library-grid">
+    <div class="lib-card">
+      <div class="lib-icon">⚖️</div>
+      <div class="lib-title">Rule 3.850 — Postconviction Relief</div>
+      <div class="lib-statute">Fla. R. Crim. P. 3.850</div>
+      <div class="lib-desc">Challenge convictions based on: ineffective assistance of counsel, newly discovered evidence, unconstitutional plea, or illegal sentence. Must be filed within 2 years of conviction becoming final.</div>
+      <div class="lib-tip">⏱ The 2-year clock starts when direct appeal is exhausted. Newly discovered evidence may extend the deadline.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">📋</div>
+      <div class="lib-title">Rule 3.800 — Illegal Sentence</div>
+      <div class="lib-statute">Fla. R. Crim. P. 3.800(a)</div>
+      <div class="lib-desc">Correct an illegal sentence at any time — no deadline. Sentence must exceed statutory maximum, fall below mandatory minimum, or violate constitutional protections.</div>
+      <div class="lib-tip">🔑 No deadline. Can be filed even decades after sentencing if the sentence is truly illegal.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">🔒</div>
+      <div class="lib-title">Seal / Expunge — Florida</div>
+      <div class="lib-statute">F.S. § 943.0585 / § 943.059</div>
+      <div class="lib-desc">Expungement: destroys records (for charges not resulting in conviction). Sealing: hides from public but record still exists. One opportunity per lifetime. FDLE application required.</div>
+      <div class="lib-tip">✓ After sealing, you may legally deny the arrest on most job applications.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">🗓</div>
+      <div class="lib-title">Early Termination of Probation</div>
+      <div class="lib-statute">Fla. Stat. § 948.04</div>
+      <div class="lib-desc">After completing 50% of probation AND all special conditions, file a petition for early termination. Not a favor — a statutory right. P.O. "no objection" letter dramatically helps approval.</div>
+      <div class="lib-tip">📋 Build an Evidence Box first: payment receipts, employment records, community service, certificates.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">💰</div>
+      <div class="lib-title">Restitution Modification</div>
+      <div class="lib-statute">Fla. Stat. § 775.089</div>
+      <div class="lib-desc">Courts must consider financial resources and dependent obligations. Bearden v. Georgia (1983): you cannot be jailed solely for inability to pay. Document bona fide efforts.</div>
+      <div class="lib-tip">📄 Attach Appendix B budget worksheet as Exhibit B to any modification motion.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">🗳</div>
+      <div class="lib-title">Voting Rights — Amendment 4</div>
+      <div class="lib-statute">Art. VI, § 4, Fla. Const.</div>
+      <div class="lib-desc">Automatic restoration upon completion of ALL terms including LFOs. Not murder or felony sex offenses. Get Safe Harbor Advisory Opinion BEFORE registering. $1 owed = still ineligible.</div>
+      <div class="lib-tip">📞 FRRC: 407-901-3749 — helps clear LFOs blocking voting rights.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">🏛</div>
+      <div class="lib-title">Restoration of Civil Rights</div>
+      <div class="lib-statute">Florida Rules of Executive Clemency</div>
+      <div class="lib-desc">5–7 year wait after end of supervision. Full RCR restores jury service, public office eligibility, professional licensing. Build Clemency Binder now — it's what the Governor reads.</div>
+      <div class="lib-tip">📞 FCOR: 850-488-2952 | FL Justice Center: 954-758-7555</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">💼</div>
+      <div class="lib-title">Employment — No Auto-Denial</div>
+      <div class="lib-statute">Fla. Stat. § 112.011</div>
+      <div class="lib-desc">Most Florida employers and licensing boards CANNOT automatically reject you solely for a felony. The offense must be directly related to the position. Use this to challenge blanket denials.</div>
+      <div class="lib-tip">📝 Request written denial reason. If they cite only the conviction — that's challengeable.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: RIGHTS ═══ -->
+<div class="tab-panel" id="tab-rights">
+  <div class="section-title">Florida Felon Bill of Rights</div>
+  <div style="background:var(--gold-dim);border:1px solid rgba(249,178,76,0.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:rgba(249,178,76,0.9);line-height:1.7">
+    <strong style="display:block;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;margin-bottom:6px">SECOND CHANCE SPEAKS</strong>
+    The system relies on the returning citizen not knowing these rights exist. This page is the antidote. These are not rights you must earn — they exist in the statutes RIGHT NOW. Print it. Read it. Know it.
+    <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:8px">— Roger Pitts / Second Chance · Curated by Devyn Mack</div>
+  </div>
+  <div id="rights-list"></div>
+</div>
+
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// SECOND CHANCE LEGAL MOTION BUILDER
+// Curated by Devyn Mack · v2026.1
+// Based on Roger Pitts / Second Chance Manual
+// ═══════════════════════════════════════════════
+
+// ── STATE ──
+let currentMotion = null;
+let currentStep   = 0;
+let answers       = {};
+let lastDraftId   = null;
+
+const S = {
+  get:(k,d=null)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch{return d;}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+};
+
+// ── MOTION FLOWS ──────────────────────────────
+const FLOWS = {
+  "3850": {
+    title: "Motion for Postconviction Relief",
+    statute: "Fla. R. Crim. P. 3.850",
+    tag: "Rule 3.850",
+    color: "#F87171",
+    steps: [
+      {
+        id:"case-info",
+        title:"Case Information",
+        sub:"Provide the basic case details exactly as they appear on your court documents.",
+        tip:{label:"PRO TIP — Fla. R. Crim. P. 3.850(c)", text:"Your case number must match the exact format on your judgment. Even a small error can result in the clerk returning the motion unfiled."},
+        fields:[
+          {id:"county",      label:"County of Conviction",     type:"text",   required:true,  placeholder:"e.g., Broward", cite:""},
+          {id:"case-num",    label:"Case Number",               type:"text",   required:true,  placeholder:"e.g., 2019-CF-012345"},
+          {id:"judge",       label:"Presiding Judge",           type:"text",   required:false, placeholder:"e.g., Hon. [Last Name]"},
+          {id:"prosecutor",  label:"State Attorney (optional)", type:"text",   required:false, placeholder:""},
+          {id:"def-name",    label:"Your Full Legal Name",      type:"text",   required:true,  placeholder:"As it appears on the judgment"},
+          {id:"def-dob",     label:"Date of Birth",             type:"date",   required:true},
+        ]
+      },
+      {
+        id:"conviction",
+        title:"Conviction & Sentence Details",
+        sub:"Enter the offense, conviction date, and sentence as recorded by the court.",
+        tip:{label:"WHY THIS MATTERS — F.S. § 775.082", text:"The 2-year filing deadline under Rule 3.850 begins when your conviction becomes 'final' — typically when your direct appeal is decided or the deadline to appeal expires. If you're unsure, list your sentencing date and note your appeal status."},
+        fields:[
+          {id:"offense",       label:"Primary Offense Convicted Of",type:"text",  required:true, placeholder:"e.g., Robbery with a Firearm"},
+          {id:"offense-statute",label:"Florida Statute",            type:"text",  required:false,placeholder:"e.g., F.S. § 812.13(2)(a)"},
+          {id:"conviction-date",label:"Date of Conviction / Plea",  type:"date",  required:true},
+          {id:"sentence-date",  label:"Date of Sentencing",         type:"date",  required:true},
+          {id:"sentence-terms", label:"Sentence Imposed",           type:"text",  required:true, placeholder:"e.g., 15 years DOC + 5 years probation"},
+          {id:"currently-incarcerated", label:"Currently incarcerated?", type:"select", options:["Yes — in DOC custody","No — on probation / supervision","No — sentence completed"], required:true},
+        ]
+      },
+      {
+        id:"grounds",
+        title:"Grounds for Relief",
+        sub:"Select all grounds that apply to your case. You may raise multiple grounds.",
+        tip:{label:"LEGAL STANDARD — Strickland v. Washington (1984)", text:"For ineffective assistance of counsel, you must show: (1) counsel's performance was deficient, and (2) there is a reasonable probability the result would have been different. Both prongs must be met."},
+        fields:[
+          {id:"grounds-iac",   label:"Ineffective Assistance of Counsel",  type:"checkbox", detail:"Attorney's performance fell below an objective standard of reasonableness AND prejudiced the outcome"},
+          {id:"grounds-new",   label:"Newly Discovered Evidence",          type:"checkbox", detail:"Evidence not available at trial that would probably produce an acquittal"},
+          {id:"grounds-plea",  label:"Involuntary or Uninformed Plea",     type:"checkbox", detail:"Plea was not knowing, voluntary, and intelligent — e.g., not advised of rights or consequences"},
+          {id:"grounds-sentence",label:"Illegal or Unconstitutional Sentence",type:"checkbox",detail:"Sentence exceeds statutory maximum or violates constitutional protections"},
+          {id:"grounds-brady", label:"Brady Violation",                    type:"checkbox", detail:"Prosecution withheld material evidence that was favorable to the defense"},
+          {id:"grounds-other", label:"Other Constitutional Violation",     type:"checkbox", detail:"Specify in the next section"},
+        ]
+      },
+      {
+        id:"facts",
+        title:"Statement of Facts",
+        sub:"In your own words, describe the specific facts supporting your grounds for relief. Be as detailed and specific as possible.",
+        tip:{label:"WRITING GUIDANCE — Fla. R. Crim. P. 3.850(d)", text:"Each ground must be supported by specific facts, not just legal conclusions. State WHO did what, WHEN it happened, HOW it affected your case, and WHAT the result should have been. Courts look for specificity."},
+        fields:[
+          {id:"facts-main",    label:"Statement of Facts",    type:"textarea", required:true,  placeholder:"Describe in detail the facts supporting each ground for relief you selected above.\n\nExample: 'On [date], my trial counsel failed to investigate and present the alibi witness [name], who would have testified that I was at [location] when the alleged offense occurred. Trial counsel was informed of this witness on [date] but took no action. This failure prejudiced me because...'"},
+          {id:"relief-sought", label:"Relief Requested",      type:"select", options:["Evidentiary Hearing","Vacation of Conviction","New Trial","Resentencing","Correction of Sentence","Other"], required:true},
+          {id:"prior-motions", label:"Have you filed a prior Rule 3.850 motion?", type:"select", options:["No — this is my first","Yes — previous motion was denied","Yes — previous motion was withdrawn"], required:true},
+        ]
+      },
+      {
+        id:"contact",
+        title:"Contact & Signature Information",
+        sub:"This information appears on the motion certificate of service and signature block.",
+        tip:{label:"PRO SE NOTE", text:"As a pro se filer, you must sign the motion under penalty of perjury. Sign exactly as your name appears on the judgment. The certificate of service certifies you sent a copy to the State Attorney's office."},
+        fields:[
+          {id:"filer-name",    label:"Your Full Name (as it appears on judgment)", type:"text", required:true},
+          {id:"dc-number",     label:"DC Number (if in DOC custody)",              type:"text", required:false, placeholder:"e.g., A12345"},
+          {id:"filer-address", label:"Mailing Address",                            type:"text", required:true, placeholder:"Current address or institution address"},
+          {id:"filer-city",    label:"City, State, ZIP",                           type:"text", required:true, placeholder:"e.g., Fort Lauderdale, FL 33301"},
+          {id:"state-atty-addr",label:"State Attorney's Office Address (for service)",type:"text",required:true, placeholder:"e.g., 201 SE 6th St, Fort Lauderdale, FL 33301"},
+          {id:"date-signed",   label:"Date",                                       type:"date", required:true},
+        ]
+      }
+    ]
+  },
+
+  "3800": {
+    title: "Motion to Correct Illegal Sentence",
+    statute: "Fla. R. Crim. P. 3.800(a)",
+    tag: "Rule 3.800",
+    color: "#60A5FA",
+    steps: [
+      {
+        id:"case-info",
+        title:"Case Information",
+        sub:"Enter your case details as they appear on your judgment and sentence.",
+        tip:{label:"KEY ADVANTAGE — No Deadline", text:"Unlike Rule 3.850, a 3.800(a) motion to correct an illegal sentence has NO time limit. It can be filed at any time — even decades after sentencing — as long as the sentence is truly illegal on its face."},
+        fields:[
+          {id:"county",    label:"County of Conviction", type:"text", required:true, placeholder:"e.g., Miami-Dade"},
+          {id:"case-num",  label:"Case Number",          type:"text", required:true},
+          {id:"def-name",  label:"Full Legal Name",      type:"text", required:true},
+          {id:"dc-number", label:"DC Number (if applicable)", type:"text", required:false},
+          {id:"judge",     label:"Sentencing Judge",     type:"text", required:false},
+        ]
+      },
+      {
+        id:"sentence-details",
+        title:"Sentence Details",
+        sub:"Describe the sentence imposed and why it is illegal.",
+        tip:{label:"WHAT MAKES A SENTENCE 'ILLEGAL' — Fla. R. Crim. P. 3.800(a)", text:"A sentence is illegal if it: (1) exceeds the statutory maximum, (2) falls below the mandatory minimum, (3) was imposed without required findings, or (4) violates constitutional protections like double jeopardy. Mere legal errors in sentencing procedure are NOT 3.800 issues — they require a 3.850."},
+        fields:[
+          {id:"offense",           label:"Offense Convicted Of",          type:"text",   required:true},
+          {id:"offense-statute",   label:"Florida Statute",               type:"text",   required:true, placeholder:"e.g., F.S. § 893.13"},
+          {id:"sentence-imposed",  label:"Sentence Imposed",              type:"text",   required:true, placeholder:"e.g., 20 years Florida DOC"},
+          {id:"max-sentence",      label:"Statutory Maximum for Offense", type:"text",   required:true, placeholder:"e.g., 15 years (3rd degree felony)"},
+          {id:"illegal-basis",     label:"Basis of Illegality",          type:"select",  options:["Exceeds statutory maximum","Below mandatory minimum","Double jeopardy violation","Scoresheet calculation error","Habitual Offender designation improper","Other illegal basis"], required:true},
+          {id:"illegal-explain",   label:"Explain Why the Sentence Is Illegal", type:"textarea", required:true, placeholder:"Be specific: cite the statute that caps the sentence, show the calculation error, or identify the constitutional violation..."},
+        ]
+      },
+      {
+        id:"relief",
+        title:"Relief Requested",
+        sub:"State exactly what sentence correction you are asking the court to make.",
+        tip:{label:"BE SPECIFIC", text:"Courts are more likely to grant relief when you tell them exactly what the correct sentence should be. Don't just say 'reduce my sentence' — say 'resentence to the statutory maximum of 15 years' or 'strike the habitual offender designation and resentence within the guidelines.'"},
+        fields:[
+          {id:"relief-requested", label:"Specific Relief Requested", type:"textarea", required:true, placeholder:"e.g., 'Petitioner respectfully requests the Court correct the illegal sentence by reducing it from 20 years to 15 years, the statutory maximum for a second-degree felony under F.S. § 775.082(3)(b)...'"},
+          {id:"filer-address",   label:"Your Mailing Address",      type:"text",     required:true},
+          {id:"filer-city",      label:"City, State, ZIP",          type:"text",     required:true},
+          {id:"date-signed",     label:"Date",                      type:"date",     required:true},
+        ]
+      }
+    ]
+  },
+
+  "expunge": {
+    title: "Petition to Seal / Expunge Record",
+    statute: "F.S. § 943.0585 / § 943.059",
+    tag: "Seal / Expunge",
+    color: "#4ADE80",
+    steps: [
+      {
+        id:"eligibility",
+        title:"Eligibility Check",
+        sub:"Florida has strict eligibility requirements. Answer these questions to assess your eligibility.",
+        tip:{label:"ONE CHANCE — READ THIS FIRST", text:"Florida allows only ONE sealing or expunction per lifetime. If you have ever had a record sealed or expunged before — in Florida or any other state — you are NOT eligible. Choose carefully."},
+        fields:[
+          {id:"elig-prior-seal",     label:"Have you previously had a record sealed or expunged (any state)?", type:"select", options:["No — never","Yes — this may disqualify me"], required:true},
+          {id:"elig-convicted",      label:"Were you adjudicated guilty (convicted) of the charge to be sealed/expunged?", type:"select", options:["No — adjudication was withheld","Yes — I was convicted"], required:true},
+          {id:"elig-charge-type",    label:"Type of charge to be sealed/expunged", type:"select", options:["Arrest only — charges never filed","Charges filed — case dismissed","Charges filed — nolle prosse","No information filed — charges dropped","Withhold of adjudication (probation completed)","Other"], required:true},
+          {id:"elig-disqualifying",  label:"Does the charge involve any of the following?", type:"select", options:["None of the below — I may be eligible","Murder or manslaughter","Sexual offense or assault","Child abuse or exploitation","Robbery","Terrorism","Other disqualifying offense per F.S. § 943.0584"], required:true},
+        ]
+      },
+      {
+        id:"record-info",
+        title:"Record to Be Sealed / Expunged",
+        sub:"Provide details about the specific record you want to seal or expunge.",
+        tip:{label:"SEALING vs. EXPUNGEMENT", text:"EXPUNGEMENT physically destroys records — available if charges were not filed or were dismissed. SEALING hides records from public view but they still exist — available for withheld adjudications after probation completion. Both require a Certificate of Eligibility from FDLE first."},
+        fields:[
+          {id:"relief-type",    label:"Are you seeking sealing or expungement?", type:"select", options:["Sealing (F.S. § 943.059) — conviction withheld","Expungement (F.S. § 943.0585) — no conviction"], required:true},
+          {id:"arrest-date",    label:"Date of Arrest",           type:"date", required:true},
+          {id:"arrest-charge",  label:"Charge(s) to be Sealed/Expunged", type:"text", required:true, placeholder:"e.g., Possession of Cannabis"},
+          {id:"arresting-agency",label:"Arresting Agency",        type:"text", required:true, placeholder:"e.g., Broward County Sheriff's Office"},
+          {id:"arrest-county",  label:"County of Arrest",         type:"text", required:true},
+          {id:"obt-number",     label:"OBT Number (if known)",    type:"text", required:false, placeholder:"From your criminal history report"},
+        ]
+      },
+      {
+        id:"fdle-step",
+        title:"FDLE Certificate of Eligibility",
+        sub:"Before filing with the court, you must first obtain a Certificate of Eligibility from FDLE.",
+        tip:{label:"REQUIRED FIRST STEP — FDLE Application", text:"You CANNOT file a petition to seal or expunge without first obtaining a Certificate of Eligibility from the Florida Department of Law Enforcement (FDLE). Apply at fdle.florida.gov. Fee: $75. Processing time: 6–12 weeks. Do not skip this step."},
+        fields:[
+          {id:"fdle-cert-obtained", label:"Have you obtained your FDLE Certificate of Eligibility?", type:"select", options:["Yes — I have the certificate","No — I need to apply first","Applied — waiting for certificate"], required:true},
+          {id:"fdle-cert-date",     label:"Certificate Issue Date (if obtained)",  type:"date",  required:false},
+          {id:"fdle-cert-number",   label:"Certificate Number (if obtained)",      type:"text",  required:false},
+          {id:"atty-general-copy",  label:"Will you serve the Attorney General?",  type:"select", options:["Yes — required by statute","No — I need to review this requirement"], required:true},
+        ]
+      },
+      {
+        id:"petitioner-info",
+        title:"Petitioner Information",
+        sub:"Your personal information for the petition.",
+        fields:[
+          {id:"pet-name",     label:"Full Legal Name",       type:"text", required:true},
+          {id:"pet-dob",      label:"Date of Birth",         type:"date", required:true},
+          {id:"pet-address",  label:"Current Address",       type:"text", required:true},
+          {id:"pet-city",     label:"City, State, ZIP",      type:"text", required:true},
+          {id:"pet-phone",    label:"Phone Number",          type:"text", required:false},
+          {id:"date-signed",  label:"Date of Petition",      type:"date", required:true},
+        ]
+      }
+    ]
+  },
+
+  "terminate": {
+    title: "Petition for Early Termination of Probation",
+    statute: "Fla. Stat. § 948.04",
+    tag: "Early Termination",
+    color: "#F9B24C",
+    steps: [
+      {
+        id:"probation-info",
+        title:"Probation Information",
+        sub:"Enter your current probation details. You must have completed at least 50% of the term.",
+        tip:{label:"YOUR RIGHT — Fla. Stat. § 948.04", text:"This is not a favor — it is a statutory entitlement. After completing 50% of your probation term AND all special conditions, you have the legal right to petition for early termination. The court must consider the petition."},
+        fields:[
+          {id:"county",          label:"County of Supervision",      type:"text", required:true},
+          {id:"case-num",        label:"Case Number",                type:"text", required:true},
+          {id:"def-name",        label:"Full Legal Name",            type:"text", required:true},
+          {id:"offense",         label:"Conviction Offense",         type:"text", required:true},
+          {id:"prob-start",      label:"Probation Start Date",       type:"date", required:true},
+          {id:"prob-end",        label:"Scheduled End Date",         type:"date", required:true},
+          {id:"prob-type",       label:"Type of Supervision",        type:"select", options:["Standard Probation","Community Control","Drug Offender Probation","Sex Offender Probation","Administrative Probation"], required:true},
+          {id:"po-name",         label:"Probation Officer Name",     type:"text", required:false},
+          {id:"po-office",       label:"P.O. Office Address",        type:"text", required:false},
+        ]
+      },
+      {
+        id:"compliance",
+        title:"Compliance Record",
+        sub:"Document your compliance. This is the core of your petition.",
+        tip:{label:"THE EVIDENCE BOX — Second Chance Manual", text:"The manual is clear: organized documentation wins. List every area of compliance. The judge responds to the evidence box, not just the argument. Have payment receipts, employment records, and community service logs ready to attach as exhibits."},
+        fields:[
+          {id:"fees-paid",       label:"Are all supervision fees current?",     type:"select", options:["Yes — all fees paid and current","Substantially paid — minor balance remains","Payment plan established per F.S. § 28.246"], required:true},
+          {id:"restitution-status",label:"Restitution status",                 type:"select", options:["Paid in full","Payment plan — current","No restitution ordered"], required:true},
+          {id:"drug-tests",      label:"Drug test compliance",                  type:"select", options:["All tests passed — no violations","Not required under my conditions","One or more violations (explain in facts)"], required:true},
+          {id:"employed",        label:"Employment status",                     type:"select", options:["Employed — full time","Employed — part time","Self-employed","Disability / unable to work","Actively seeking (documented 30-hr log)"], required:true},
+          {id:"community-service",label:"Community service hours (if ordered)", type:"text",  required:false, placeholder:"e.g., 100 of 100 hours completed"},
+          {id:"violations",      label:"Any violations of probation on record?", type:"select", options:["No violations","One minor technical violation (explain)","Multiple violations (explain)"], required:true},
+        ]
+      },
+      {
+        id:"po-recommendation",
+        title:"Probation Officer Position",
+        sub:"The P.O.'s position significantly affects outcomes. Document it accurately.",
+        tip:{label:"THE NO-OBJECTION STRATEGY — Second Chance Manual Phase 3", text:"A P.O. 'No Objection' letter dramatically increases the chance the court grants termination. Approach your P.O. professionally with your compliance documentation before filing. If they support it, get it in writing. If they object, you can still file — but note their objection and address it directly."},
+        fields:[
+          {id:"po-position",     label:"P.O.'s position on early termination",  type:"select", options:["P.O. recommends / no objection","P.O. neutral / has not indicated","P.O. objects","Unknown — not yet discussed"], required:true},
+          {id:"po-letter",       label:"Do you have a written P.O. letter?",    type:"select", options:["Yes — attaching as exhibit","No — verbal support only","No — P.O. did not provide one"], required:false},
+        ]
+      },
+      {
+        id:"statement",
+        title:"Statement of Facts & Relief",
+        sub:"State the specific facts supporting your petition and the relief you are requesting.",
+        tip:{label:"WHAT TO INCLUDE", text:"Highlight: percentage of term completed, all conditions met, employment/housing stability, community involvement, family responsibilities, rehabilitation programs completed, and any other factors showing you no longer require supervision."},
+        fields:[
+          {id:"facts",           label:"Statement Supporting Petition",   type:"textarea", required:true, placeholder:"Petitioner has completed ___% of the probationary term, has paid all fees, maintained employment at [employer], has had no violations, and has demonstrated [rehabilitation evidence]...\n\nPetitioner respectfully submits that continued supervision is no longer necessary for the protection of the public or the rehabilitation of the Petitioner..."},
+          {id:"alternative",     label:"If full termination is not granted, request:",type:"select", options:["Administrative Probation (F.S. § 948.012) — no reporting, no fees","Reduction of remaining term","No alternative requested"], required:false},
+          {id:"filer-address",   label:"Your Address",                    type:"text", required:true},
+          {id:"filer-city",      label:"City, State, ZIP",                type:"text", required:true},
+          {id:"date-signed",     label:"Date",                            type:"date", required:true},
+        ]
+      }
+    ]
+  },
+
+  "restitution": {
+    title: "Motion to Modify Restitution",
+    statute: "Fla. Stat. § 775.089",
+    tag: "Restitution Mod.",
+    color: "#A78BFA",
+    steps: [
+      {
+        id:"case-info",
+        title:"Case & Restitution Information",
+        sub:"Enter the details of the restitution order you are seeking to modify.",
+        tip:{label:"BEARDEN v. GEORGIA (1983)", text:"The U.S. Supreme Court held that courts cannot revoke probation or imprison someone solely because they cannot afford to pay. You must show: (1) inability to pay, and (2) bona fide efforts to pay. Document both thoroughly."},
+        fields:[
+          {id:"county",        label:"County",                         type:"text",   required:true},
+          {id:"case-num",      label:"Case Number",                    type:"text",   required:true},
+          {id:"def-name",      label:"Full Legal Name",                type:"text",   required:true},
+          {id:"rest-amount",   label:"Total Restitution Ordered ($)",  type:"text",   required:true, placeholder:"e.g., $15,500.00"},
+          {id:"rest-paid",     label:"Amount Paid to Date ($)",        type:"text",   required:true, placeholder:"e.g., $2,200.00"},
+          {id:"rest-monthly",  label:"Current Monthly Payment Ordered",type:"text",   required:true, placeholder:"e.g., $250/month"},
+          {id:"rest-victim",   label:"Victim Name (if known)",         type:"text",   required:false},
+        ]
+      },
+      {
+        id:"financial",
+        title:"Financial Hardship Documentation",
+        sub:"Document your income and expenses. This is the core of your motion.",
+        tip:{label:"APPENDIX B — Second Chance Manual", text:"The manual calls this your 'Hardship Worksheet.' Courts must consider financial resources and dependent obligations under § 775.089. Complete this section truthfully — understating income is perjury, overstating expenses weakens credibility."},
+        fields:[
+          {id:"monthly-income",  label:"Gross Monthly Income ($)",        type:"text", required:true, placeholder:"All sources combined"},
+          {id:"income-source",   label:"Source of Income",                type:"text", required:true, placeholder:"e.g., Employment at [employer], $X/month"},
+          {id:"monthly-rent",    label:"Monthly Rent / Housing ($)",      type:"text", required:true},
+          {id:"monthly-food",    label:"Monthly Food / Utilities ($)",     type:"text", required:true},
+          {id:"monthly-transport",label:"Transportation ($)",             type:"text", required:true},
+          {id:"monthly-other",   label:"Other Essential Expenses ($)",    type:"text", required:false, placeholder:"Medical, childcare, court fees, etc."},
+          {id:"dependents",      label:"Number of Dependents",            type:"text", required:false, placeholder:"e.g., 2 children"},
+          {id:"modification-request",label:"Requested Modified Payment ($)",type:"text",required:true, placeholder:"e.g., $50/month"},
+        ]
+      },
+      {
+        id:"bona-fide",
+        title:"Bona Fide Efforts to Pay",
+        sub:"Document every effort you have made to pay. This is required by Bearden v. Georgia.",
+        tip:{label:"CRITICAL — Document Every Effort", text:"Courts look for evidence you tried to pay even when you couldn't pay the full amount. Every dollar paid, every partial payment, every time you called to make payment arrangements — document it all. No effort documented = no protection under Bearden."},
+        fields:[
+          {id:"efforts",       label:"Describe your bona fide efforts to pay",   type:"textarea", required:true, placeholder:"e.g., Made consistent $50 monthly payments from [date] to [date] until job loss. Applied for payment plan reduction on [date]. Contacted clerk's office on [dates] to discuss payment options..."},
+          {id:"changed-circum",label:"What changed circumstances make payment impossible?", type:"textarea", required:true, placeholder:"e.g., Lost employment on [date] due to [reason]. Currently earning $X/month which is insufficient to meet basic living expenses AND current restitution obligation of $X/month..."},
+          {id:"filer-address", label:"Your Address",    type:"text", required:true},
+          {id:"filer-city",    label:"City, State, ZIP",type:"text", required:true},
+          {id:"date-signed",   label:"Date",            type:"date", required:true},
+        ]
+      }
+    ]
+  },
+
+  "mitigation": {
+    title: "Mitigation / Clemency Packet",
+    statute: "Fla. R. Crim. P. 3.800(c) / Exec. Clemency Rules",
+    tag: "Mitigation",
+    color: "#2DD4BF",
+    steps: [
+      {
+        id:"purpose",
+        title:"Purpose of This Packet",
+        sub:"Select the proceeding this packet is being prepared for.",
+        tip:{label:"THE CLEMENCY BINDER STRATEGY — Second Chance Manual Phase 4", text:"The manual is clear: start building this binder on Day 1, regardless of your timeline. What you document today is what the Governor reads in 5–7 years. Every employer letter, certificate, community service record, and support letter goes in here."},
+        fields:[
+          {id:"purpose",      label:"This packet is for",           type:"select", options:["Sentencing Hearing (initial or resentencing)","Parole Hearing (FCOR)","Executive Clemency / RCR Application","Probation Violation Hearing (mitigation only)","Early Termination Support","Other"], required:true},
+          {id:"subject-name", label:"Full Legal Name",              type:"text",   required:true},
+          {id:"dc-number",    label:"DC Number (if applicable)",    type:"text",   required:false},
+          {id:"case-num",     label:"Case Number",                  type:"text",   required:false},
+          {id:"proceeding-date",label:"Date of Proceeding (if known)",type:"date", required:false},
+        ]
+      },
+      {
+        id:"background",
+        title:"Personal Background",
+        sub:"Humanize the person beyond the offense. Judges and boards respond to the full picture.",
+        tip:{label:"WHAT WORKS", text:"Mitigation works when it paints a complete human portrait: childhood circumstances, education, work history, family responsibilities, mental health or substance abuse history, and the specific factors that led to the offense. Be honest — courts respect honesty and can spot spin."},
+        fields:[
+          {id:"background",     label:"Personal Background Summary",   type:"textarea", required:true, placeholder:"Age, hometown, family background, education history, work history, military service, any relevant childhood circumstances..."},
+          {id:"family-role",    label:"Current Family Responsibilities",type:"textarea", required:false, placeholder:"e.g., Parent to [number] minor children, primary caregiver for [family member]..."},
+          {id:"mental-health",  label:"Mental Health / Substance History (if applicable)",type:"textarea",required:false, placeholder:"Diagnosed conditions, treatment sought, progress made..."},
+        ]
+      },
+      {
+        id:"rehabilitation",
+        title:"Rehabilitation Evidence",
+        sub:"Document every program, certificate, achievement, and step forward.",
+        tip:{label:"EVIDENCE BOX — Second Chance Manual", text:"This is your compliance portrait. Every certificate is a data point. Every employer letter is evidence. The man who arrives with an organized binder of rehabilitation speaks before he says a word."},
+        fields:[
+          {id:"education",     label:"Education Completed (in custody or out)",type:"textarea",required:false, placeholder:"e.g., GED earned [year], vocational certifications in [field], college credits through [program]..."},
+          {id:"programs",      label:"Programs / Treatment Completed",         type:"textarea",required:false, placeholder:"e.g., Anger management, substance abuse treatment, faith-based program, job readiness..."},
+          {id:"employment",    label:"Employment History (post-offense/release)",type:"textarea",required:false, placeholder:"Employers, dates, positions..."},
+          {id:"community",     label:"Community Service / Volunteer Work",    type:"textarea",required:false, placeholder:"Organizations, hours, dates..."},
+          {id:"support-letters",label:"Letters of Support (list who will provide)", type:"textarea",required:false, placeholder:"e.g., Employer [name] at [company], Minister [name] at [church], Community leader [name]..."},
+          {id:"awards",        label:"Awards, Recognition, Achievements",     type:"textarea",required:false, placeholder:"Any recognition for positive conduct..."},
+        ]
+      },
+      {
+        id:"offense-acceptance",
+        title:"Acceptance of Responsibility",
+        sub:"Describe understanding of the harm caused and commitment to a different path.",
+        tip:{label:"AUTHENTICITY MATTERS", text:"Boards and judges have seen thousands of people claim remorse. What moves them is specific, authentic acknowledgment of harm to specific people — not generic apologies. Name the impact. Own the choice. Then pivot to the specific, concrete reasons recidivism is unlikely."},
+        fields:[
+          {id:"remorse",        label:"Statement of Responsibility and Remorse", type:"textarea", required:true, placeholder:"Acknowledge the specific harm caused. Be specific about what was understood, what changed, and what is different now..."},
+          {id:"plan",           label:"Reentry / Future Plan",                  type:"textarea", required:true, placeholder:"Housing plan, employment plan, support system, supervision compliance, specific goals for the next 1, 3, and 5 years..."},
+          {id:"filer-address",  label:"Address",     type:"text", required:true},
+          {id:"filer-city",     label:"City, State, ZIP", type:"text", required:true},
+          {id:"date-signed",    label:"Date",        type:"date", required:true},
+        ]
+      }
+    ]
+  }
+};
+
+// ── RIGHTS DATA ──
+const RIGHTS = [
+  {t:"No Automatic Employment Denial",     s:"Fla. Stat. § 112.011",         d:"Employers/licensing boards CANNOT automatically reject you solely for a felony. The offense must be directly related to the position."},
+  {t:"Right to a Payment Plan",            s:"Fla. Stat. § 28.246",          d:"The Clerk is REQUIRED to offer a payment plan. Minimums as low as $25/month. Non-payment alone cannot suspend your license without notice."},
+  {t:"Protection Against Imprisonment for Poverty", s:"§ 948.06(5) / Bearden v. Georgia",d:"Courts cannot revoke probation solely for inability to pay. Document bona fide efforts. Poverty is not willful non-payment."},
+  {t:"Right to Early Termination Petition",s:"Fla. Stat. § 948.04",          d:"At 50% of probation AND all special conditions, you have the statutory right to petition. Not a favor — an entitlement."},
+  {t:"Restitution Modification",           s:"Fla. Stat. § 775.089",         d:"Courts must consider financial resources and dependent obligations. Changed circumstances = grounds for Pro Se motion."},
+  {t:"Voting Rights Restoration",          s:"Art. VI, § 4 / Amendment 4",   d:"Upon completion of ALL terms including LFOs, voting rights automatically restored. Get Safe Harbor Opinion FIRST."},
+  {t:"Expungement / Record Sealing",       s:"§ 943.0585 / § 943.059",       d:"Sealed records need not be disclosed on most job applications. One opportunity per lifetime — choose carefully."},
+  {t:"Restoration of Civil Rights",        s:"Florida Rules of Executive Clemency",d:"5–7 years post-supervision: jury service, public office, professional licensing. Start the Clemency Binder now."},
+  {t:"Disqualification Exemption",         s:"Fla. Stat. § 435.07",          d:"For licensed professions, apply for a formal individual assessment. Your specific offense must be relevant to the specific role."},
+  {t:"Sentence Modification",              s:"Fla. R. Crim. P. 3.800",       d:"File to correct illegal sentences — no deadline. Removes curfews, travel restrictions if circumstances changed."},
+  {t:"Veterans: VA Healthcare Access",     s:"38 U.S.C. / VA Policy",        d:"Criminal records do NOT automatically disqualify veterans from VA healthcare, PTSD treatment, mental health benefits."},
+  {t:"SO: Mandatory Transition Plan",      s:"Fla. Stat. § 947.1405",        d:"Conditional release officers MUST provide a written transition plan. If you didn't receive one — contact an attorney."},
+];
+
+// ── TAB SWITCHING ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.querySelector('.tn[data-tab="'+tab+'"]').classList.add('active');
+  if(tab==='drafts') renderDrafts();
+  if(tab==='rights') renderRights();
+}
+
+// ── MOTION SELECTION ──
+function selectMotion(id, tile) {
+  document.querySelectorAll('.motion-tile').forEach(t=>t.classList.remove('selected'));
+  tile.classList.add('selected');
+  currentMotion = id;
+  const btn = document.getElementById('start-btn');
+  const flow = FLOWS[id];
+  btn.disabled = false;
+  document.getElementById('start-btn-text').textContent = 'Begin — ' + flow.title;
+}
+
+// ── START WIZARD ──
+function startWizard() {
+  if(!currentMotion) return;
+  answers = {};
+  currentStep = 0;
+  const flow = FLOWS[currentMotion];
+  document.getElementById('wizard-title').textContent = flow.title;
+  document.getElementById('wizard-statute').textContent = flow.statute;
+  document.getElementById('completion').classList.remove('show');
+  document.getElementById('wizard').classList.add('open');
+  document.getElementById('wizard').scrollIntoView({behavior:'smooth',block:'start'});
+  renderStep();
+}
+
+function closeWizard() {
+  document.getElementById('wizard').classList.remove('open');
+  document.getElementById('completion').classList.remove('show');
+}
+
+function resetBuilder() {
+  closeWizard();
+  document.querySelectorAll('.motion-tile').forEach(t=>t.classList.remove('selected'));
+  currentMotion = null;
+  document.getElementById('start-btn').disabled = true;
+  document.getElementById('start-btn-text').textContent = 'Select a Motion Type Above';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── RENDER STEP ──
+function renderStep() {
+  const flow = FLOWS[currentMotion];
+  const steps = flow.steps;
+  const step = steps[currentStep];
+  const total = steps.length;
+  const pct = Math.round(((currentStep) / total) * 100);
+
+  // Progress
+  document.getElementById('step-label').textContent = `Step ${currentStep+1} of ${total} — ${step.title}`;
+  document.getElementById('step-pct').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Dots
+  const dots = document.getElementById('step-dots');
+  dots.innerHTML = steps.map((_,i)=>`<div class="step-dot${i<currentStep?' done':i===currentStep?' active':''}"></div>`).join('');
+
+  // Back/next
+  document.getElementById('btn-back').disabled = currentStep === 0;
+  document.getElementById('btn-next').textContent = currentStep === total-1 ? '💾 Save Draft' : 'Next →';
+
+  // Body
+  const body = document.getElementById('wizard-body');
+  let html = `<div class="step-heading">${step.title}</div>`;
+  if(step.sub) html += `<p class="step-sub">${step.sub}</p>`;
+  if(step.tip) html += `<div class="step-legal-tip"><strong>${step.tip.label}</strong>${step.tip.text}</div>`;
+
+  step.fields.forEach(f => {
+    const saved = answers[f.id] || '';
+    html += `<div class="field-group">`;
+
+    if(f.type === 'checkbox') {
+      html += `<div class="checkbox-item">
+        <input type="checkbox" id="${f.id}" ${saved==='true'?'checked':''}>
+        <label for="${f.id}">${f.label}<small>${f.detail||''}</small></label>
+      </div>`;
+    } else if(f.type === 'select') {
+      html += `<label class="field-label">${f.label}${f.required?'<span class="required">*</span>':''}</label>`;
+      html += `<select id="${f.id}" class="field-select">`;
+      (f.options||[]).forEach(o => html += `<option value="${esc(o)}" ${saved===o?'selected':''}>${esc(o)}</option>`);
+      html += `</select>`;
+    } else if(f.type === 'textarea') {
+      html += `<label class="field-label">${f.label}${f.required?'<span class="required">*</span>':''}</label>`;
+      html += `<textarea id="${f.id}" class="field-textarea" placeholder="${esc(f.placeholder||'')}">${esc(saved)}</textarea>`;
+    } else {
+      html += `<label class="field-label">${f.label}${f.required?'<span class="required">*</span>':''}${f.cite?`<span class="law-cite">${f.cite}</span>`:''}</label>`;
+      html += `<input type="${f.type}" id="${f.id}" class="field-input" placeholder="${esc(f.placeholder||'')}" value="${esc(saved)}">`;
+    }
+    html += `</div>`;
+  });
+
+  body.innerHTML = html;
+}
+
+// ── SAVE STEP ANSWERS ──
+function saveStepAnswers() {
+  const flow = FLOWS[currentMotion];
+  const step = flow.steps[currentStep];
+  step.fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    if(!el) return;
+    if(f.type === 'checkbox') answers[f.id] = el.checked ? 'true' : 'false';
+    else answers[f.id] = el.value || '';
+  });
+}
+
+// ── NAVIGATION ──
+function nextStep() {
+  saveStepAnswers();
+  const flow = FLOWS[currentMotion];
+  if(currentStep === flow.steps.length - 1) {
+    saveDraft();
+    return;
+  }
+  currentStep++;
+  renderStep();
+  document.getElementById('wizard-body').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function prevStep() {
+  if(currentStep === 0) return;
+  saveStepAnswers();
+  currentStep--;
+  renderStep();
+}
+
+// ── SAVE DRAFT ──
+function saveDraft() {
+  const drafts = S.get('fl-motion-drafts', []);
+  const flow = FLOWS[currentMotion];
+  const id = Date.now();
+  lastDraftId = id;
+  drafts.unshift({
+    id,
+    motion: currentMotion,
+    title: flow.title,
+    statute: flow.statute,
+    tag: flow.tag,
+    color: flow.color,
+    answers: {...answers},
+    created: new Date().toISOString()
+  });
+  S.set('fl-motion-drafts', drafts);
+  document.getElementById('wizard').classList.remove('open');
+  document.getElementById('completion').classList.add('show');
+  document.getElementById('completion').scrollIntoView({behavior:'smooth',block:'start'});
+  renderPreview(drafts[0]);
+  toast('✅ Draft saved!');
+}
+
+// ── LOAD DRAFTS ──
+function renderDrafts() {
+  const drafts = S.get('fl-motion-drafts', []);
+  const list = document.getElementById('draft-list');
+  if(!drafts.length) {
+    list.innerHTML = `<div class="no-drafts"><div style="font-size:32px;margin-bottom:10px">📁</div><p>No drafts yet. Complete a motion in the Builder tab to save your first draft.</p></div>`;
+    return;
+  }
+  list.innerHTML = drafts.map((d,i) => `
+    <div class="draft-item">
+      <div class="draft-info">
+        <div class="draft-motion-name">${esc(d.title)}</div>
+        <div class="draft-date">${new Date(d.created).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}</div>
+        <span class="draft-tag" style="background:${d.color}22;color:${d.color};border:1px solid ${d.color}44;margin-top:5px;display:inline-block">${esc(d.tag||d.motion)}</span>
+      </div>
+      <div class="draft-actions">
+        <button class="btn-draft-load" onclick="loadDraft(${i})">📄 View</button>
+        <button class="btn-draft-delete" onclick="deleteDraft(${i})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function loadDraft(i) {
+  const drafts = S.get('fl-motion-drafts', []);
+  const d = drafts[i];
+  renderPreview(d);
+  switchTab('preview');
+}
+
+function deleteDraft(i) {
+  if(!confirm('Delete this draft? This cannot be undone.')) return;
+  const drafts = S.get('fl-motion-drafts', []);
+  drafts.splice(i, 1);
+  S.set('fl-motion-drafts', drafts);
+  renderDrafts();
+  toast('Draft deleted');
+}
+
+// ── DOCUMENT PREVIEW / GENERATOR ──
+function renderPreview(draft) {
+  const wrap = document.getElementById('preview-wrap');
+  if(!draft) return;
+  const a = draft.answers;
+  const flow = FLOWS[draft.motion];
+  let doc = '';
+
+  if(draft.motion === '3850') {
+    doc = gen3850(a, flow);
+  } else if(draft.motion === '3800') {
+    doc = gen3800(a, flow);
+  } else if(draft.motion === 'expunge') {
+    doc = genExpunge(a, flow);
+  } else if(draft.motion === 'terminate') {
+    doc = genTerminate(a, flow);
+  } else if(draft.motion === 'restitution') {
+    doc = genRestitution(a, flow);
+  } else if(draft.motion === 'mitigation') {
+    doc = genMitigation(a, flow);
+  }
+
+  wrap.innerHTML = `
+    <div class="preview-card">
+      <div class="preview-toolbar">
+        <div class="preview-title">📄 ${esc(draft.title)} — DRAFT</div>
+        <div class="preview-actions">
+          <button class="btn-copy" onclick="copyDoc()">📋 Copy</button>
+          <button class="btn-download" onclick="downloadDoc()">⬇ Download</button>
+          <button class="btn-print" onclick="window.print()">🖨 Print</button>
+        </div>
+      </div>
+      <div class="preview-doc" id="doc-content">${doc}</div>
+    </div>`;
+}
+
+function f(val, fallback='[FILL IN]') {
+  return val && val.trim() ? `<span style="color:var(--gold);font-style:italic">${esc(val)}</span>` : `<span class="placeholder">${fallback}</span>`;
+}
+
+function gen3850(a, flow) {
+  return `
+    <div class="doc-title">IN THE CIRCUIT COURT OF THE ${f(a['county']?a['county'].toUpperCase():'')} JUDICIAL CIRCUIT</div>
+    <div class="doc-title">IN AND FOR ${f(a['county']?a['county'].toUpperCase()+' COUNTY':'')} FLORIDA</div>
+    <div class="doc-subtitle">
+      STATE OF FLORIDA,<br>Plaintiff,<br>vs.<br>
+      <strong>${f(a['def-name'])}</strong>,<br>Defendant.<br>
+      CASE NO.: ${f(a['case-num'])}<br>
+      Division: Criminal
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Motion for Postconviction Relief</div>
+      <div class="doc-section-title" style="font-size:9px">Fla. R. Crim. P. 3.850</div>
+      <p>COMES NOW, the Defendant, ${f(a['def-name'])}, pro se, and files this Motion for Postconviction Relief pursuant to Florida Rule of Criminal Procedure 3.850, and in support thereof states:</p>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">I. Preliminary Statement</div>
+      <p>Defendant was convicted of ${f(a['offense'])} in violation of ${f(a['offense-statute'],'F.S. § [STATUTE]')}, in the Circuit Court of ${f(a['county'])} County, Florida, Case No. ${f(a['case-num'])}. Defendant was sentenced on ${f(a['sentence-date'])} to ${f(a['sentence-terms'])}.</p>
+      <p>Defendant is currently ${f(a['currently-incarcerated'],'[CUSTODY STATUS]')}.</p>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">II. Grounds for Relief</div>
+      ${a['grounds-iac']==='true'?'<p><strong>Ground One: Ineffective Assistance of Counsel</strong> — Trial counsel\'s performance fell below an objective standard of reasonableness and prejudiced the outcome of the proceedings. Strickland v. Washington, 466 U.S. 668 (1984).</p>':''}
+      ${a['grounds-new']==='true'?'<p><strong>Ground Two: Newly Discovered Evidence</strong> — Evidence not available at trial exists that would probably produce an acquittal on retrial.</p>':''}
+      ${a['grounds-plea']==='true'?'<p><strong>Ground Three: Involuntary Plea</strong> — Defendant\'s plea was not knowing, voluntary, and intelligent as required by Boykin v. Alabama, 395 U.S. 238 (1969).</p>':''}
+      ${a['grounds-sentence']==='true'?'<p><strong>Ground Four: Illegal Sentence</strong> — The sentence imposed is illegal and/or exceeds the statutory maximum.</p>':''}
+      ${a['grounds-brady']==='true'?'<p><strong>Ground Five: Brady Violation</strong> — The prosecution withheld material, favorable evidence in violation of Brady v. Maryland, 373 U.S. 83 (1963).</p>':''}
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">III. Statement of Facts</div>
+      <p>${a['facts-main'] ? esc(a['facts-main']) : '<span class="placeholder">[STATE SPECIFIC FACTS SUPPORTING EACH GROUND]</span>'}</p>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">IV. Relief Requested</div>
+      <p>WHEREFORE, Defendant respectfully requests this Court grant ${f(a['relief-sought'],'an evidentiary hearing')} and any further relief deemed just and proper.</p>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-title">Certificate of Service</div>
+      <p>I HEREBY CERTIFY that a true and correct copy of the foregoing has been furnished to the Office of the State Attorney, ${f(a['state-atty-addr'])}, on ${f(a['date-signed'])}.</p>
+      <br>
+      <p>Respectfully submitted,</p>
+      <br><br>
+      <p>______________________________<br>
+      ${f(a['filer-name'])}<br>
+      ${f(a['dc-number']?'DC# '+a['dc-number']:'')}<br>
+      ${f(a['filer-address'])}<br>
+      ${f(a['filer-city'])}</p>
+      <br>
+      <p><em>I declare under penalty of perjury that the foregoing is true and correct.</em></p>
+    </div>`;
+}
+
+function gen3800(a, flow) {
+  return `
+    <div class="doc-title">IN THE CIRCUIT COURT, ${f(a['county']?a['county'].toUpperCase():'')} COUNTY, FLORIDA</div>
+    <div class="doc-subtitle">
+      STATE OF FLORIDA vs. <strong>${f(a['def-name'])}</strong><br>
+      CASE NO.: ${f(a['case-num'])}
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">Motion to Correct Illegal Sentence</div>
+      <div class="doc-section-title" style="font-size:9px">Fla. R. Crim. P. 3.800(a) — No Filing Deadline</div>
+      <p>COMES NOW the Defendant, ${f(a['def-name'])}, pro se, and moves this Court to correct an illegal sentence pursuant to Florida Rule of Criminal Procedure 3.800(a), and states:</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">I. The Illegal Sentence</div>
+      <p>Defendant was convicted of ${f(a['offense'])} under ${f(a['offense-statute'])} and sentenced to ${f(a['sentence-imposed'])}. The statutory maximum for this offense is ${f(a['max-sentence'])}. The sentence imposed therefore constitutes an illegal sentence because it ${f(a['illegal-basis'])}.</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">II. Basis of Illegality</div>
+      <p>${a['illegal-explain'] ? esc(a['illegal-explain']) : '<span class="placeholder">[EXPLAIN LEGAL BASIS]</span>'}</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">III. Relief Requested</div>
+      <p>${a['relief-requested'] ? esc(a['relief-requested']) : '<span class="placeholder">[STATE SPECIFIC RELIEF]</span>'}</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">Certificate of Service</div>
+      <p>Respectfully submitted on ${f(a['date-signed'])}.</p><br><br>
+      <p>______________________________<br>${f(a['def-name'])}<br>${f(a['filer-address'])}<br>${f(a['filer-city'])}</p>
+    </div>`;
+}
+
+function genExpunge(a, flow) {
+  return `
+    <div class="doc-title">IN THE CIRCUIT COURT OF THE STATE OF FLORIDA</div>
+    <div class="doc-title">${f(a['arrest-county']?a['arrest-county'].toUpperCase():'')} COUNTY</div>
+    <div class="doc-subtitle">
+      Petitioner: <strong>${f(a['pet-name'])}</strong><br>
+      Date of Birth: ${f(a['pet-dob'])}<br>
+      Re: Arrest on ${f(a['arrest-date'])} — ${f(a['arrest-charge'])}
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">Petition to ${a['relief-type']&&a['relief-type'].includes('Expunge')?'Expunge':'Seal'} Criminal History Record</div>
+      <div class="doc-section-title" style="font-size:9px">${a['relief-type']&&a['relief-type'].includes('Expunge')?'F.S. § 943.0585':'F.S. § 943.059'}</div>
+      <p>PETITIONER, ${f(a['pet-name'])}, respectfully petitions this Court for an order to ${a['relief-type']&&a['relief-type'].includes('Expunge')?'expunge':'seal'} the criminal history record arising from the arrest described herein, and in support states:</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">I. Arrest Information</div>
+      <p>Arresting Agency: ${f(a['arresting-agency'])}<br>Date of Arrest: ${f(a['arrest-date'])}<br>Charge(s): ${f(a['arrest-charge'])}<br>County: ${f(a['arrest-county'])}<br>OBT Number: ${f(a['obt-number'],'N/A')}</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">II. Certificate of Eligibility</div>
+      <p>Petitioner has obtained a Certificate of Eligibility from the Florida Department of Law Enforcement (FDLE), Certificate No. ${f(a['fdle-cert-number'])}, issued on ${f(a['fdle-cert-date'])}.</p>
+      <p>Petitioner has not previously had any record sealed or expunged in this State or any other state.</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">III. Relief Requested</div>
+      <p>WHEREFORE, Petitioner respectfully requests this Court enter an Order directing the ${f(a['arresting-agency'])} and all criminal justice agencies to ${a['relief-type']&&a['relief-type'].includes('Expunge')?'expunge':'seal'} all records pertaining to the above-described arrest.</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">Verification</div>
+      <p>I declare under penalty of perjury that the foregoing is true and correct.</p><br>
+      <p>Executed on ${f(a['date-signed'])}.</p><br><br>
+      <p>______________________________<br>${f(a['pet-name'])}<br>${f(a['pet-address'])}<br>${f(a['pet-city'])}</p>
+    </div>`;
+}
+
+function genTerminate(a, flow) {
+  return `
+    <div class="doc-title">IN THE CIRCUIT COURT OF THE ${f(a['county']?a['county'].toUpperCase():'')} JUDICIAL CIRCUIT</div>
+    <div class="doc-title">IN AND FOR ${f(a['county']?a['county'].toUpperCase()+' COUNTY':'')} FLORIDA</div>
+    <div class="doc-subtitle">
+      STATE OF FLORIDA vs. <strong>${f(a['def-name'])}</strong><br>
+      CASE NO.: ${f(a['case-num'])}
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">Pro Se Petition for Early Termination of Probation</div>
+      <div class="doc-section-title" style="font-size:9px">Fla. Stat. § 948.04 — Statutory Entitlement</div>
+      <p>COMES NOW the Defendant, ${f(a['def-name'])}, pro se, and respectfully petitions this Court for early termination of probation pursuant to Fla. Stat. § 948.04, and in support states:</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">I. Probation Status</div>
+      <p>Defendant is currently serving ${f(a['prob-type'])} for ${f(a['offense'])}, Case No. ${f(a['case-num'])}, ${f(a['county'])} County, Florida. Probation commenced on ${f(a['prob-start'])} with a scheduled termination date of ${f(a['prob-end'])}.</p>
+      <p>Defendant has successfully completed more than fifty percent (50%) of the probationary term and has satisfied all Special Conditions of Probation as required by Fla. Stat. § 948.04.</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">II. Compliance Record</div>
+      <p><strong>Supervision Fees:</strong> ${f(a['fees-paid'])}</p>
+      <p><strong>Restitution:</strong> ${f(a['restitution-status'])}</p>
+      <p><strong>Drug Testing:</strong> ${f(a['drug-tests'])}</p>
+      <p><strong>Employment:</strong> ${f(a['employed'])}</p>
+      ${a['community-service']?`<p><strong>Community Service:</strong> ${esc(a['community-service'])}</p>`:''}
+      <p><strong>Violations of Record:</strong> ${f(a['violations'])}</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">III. Probation Officer's Position</div>
+      <p>Supervising Probation Officer ${f(a['po-name'])} has indicated: ${f(a['po-position'])}</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">IV. Statement in Support</div>
+      <p>${a['facts'] ? esc(a['facts']) : '<span class="placeholder">[STATEMENT OF FACTS]</span>'}</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">V. Relief Requested</div>
+      <p>WHEREFORE, Defendant respectfully requests this Court enter an Order granting early termination of probation pursuant to Fla. Stat. § 948.04.</p>
+      ${a['alternative']&&!a['alternative'].includes('No alternative')?`<p>In the alternative, Defendant requests ${esc(a['alternative'])}.</p>`:''}
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">Certificate of Service</div>
+      <p>I HEREBY CERTIFY that a true and correct copy has been furnished to the Office of the State Attorney and to Supervising Probation Officer ${f(a['po-name'],'[P.O. NAME]')}, ${f(a['po-office'],'[P.O. ADDRESS]')}.</p>
+      <p>Respectfully submitted on ${f(a['date-signed'])}.</p><br><br>
+      <p>______________________________<br>${f(a['def-name'])}<br>${f(a['filer-address'])}<br>${f(a['filer-city'])}</p>
+      <br><p><em>I declare under penalty of perjury that the foregoing is true and correct.</em></p>
+    </div>`;
+}
+
+function genRestitution(a, flow) {
+  const income = parseFloat(a['monthly-income'])||0;
+  const rent   = parseFloat(a['monthly-rent'])||0;
+  const food   = parseFloat(a['monthly-food'])||0;
+  const trans  = parseFloat(a['monthly-transport'])||0;
+  const other  = parseFloat(a['monthly-other'])||0;
+  const totalExp = rent+food+trans+other;
+  const disposable = income - totalExp;
+
+  return `
+    <div class="doc-title">IN THE CIRCUIT COURT, ${f(a['county']?a['county'].toUpperCase():'')} COUNTY, FLORIDA</div>
+    <div class="doc-subtitle">STATE OF FLORIDA vs. <strong>${f(a['def-name'])}</strong><br>CASE NO.: ${f(a['case-num'])}</div>
+    <div class="doc-section">
+      <div class="doc-section-title">Pro Se Motion to Modify Restitution</div>
+      <div class="doc-section-title" style="font-size:9px">Fla. Stat. § 775.089 / Bearden v. Georgia, 461 U.S. 660 (1983)</div>
+      <p>COMES NOW the Defendant, ${f(a['def-name'])}, pro se, and moves this Court to modify restitution pursuant to Fla. Stat. § 775.089, and states:</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">I. Restitution Order</div>
+      <p>Defendant was ordered to pay restitution of ${f(a['rest-amount'])} to ${f(a['rest-victim'],'the victim')} at ${f(a['rest-monthly'])} per month. Defendant has paid ${f(a['rest-paid'])} to date.</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">II. Financial Hardship — Monthly Budget</div>
+      <p>Gross Monthly Income: <strong>$${income.toFixed(2)}</strong> (${f(a['income-source'])})</p>
+      <p>Monthly Housing: $${rent.toFixed(2)} | Food/Utilities: $${food.toFixed(2)} | Transportation: $${trans.toFixed(2)} | Other Essential: $${other.toFixed(2)}</p>
+      <p>Total Essential Expenses: <strong>$${totalExp.toFixed(2)}</strong></p>
+      <p>Disposable Income After Essentials: <strong style="color:${disposable<0?'var(--red)':'var(--green)'}">$${disposable.toFixed(2)}</strong></p>
+      <p>Dependents: ${f(a['dependents'],'None listed')}</p>
+      <p>The current restitution obligation of ${f(a['rest-monthly'])} exceeds Defendant's ability to pay after meeting essential living expenses.</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">III. Bona Fide Efforts to Pay</div>
+      <p>${a['efforts'] ? esc(a['efforts']) : '<span class="placeholder">[BONA FIDE EFFORTS]</span>'}</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">IV. Changed Circumstances</div>
+      <p>${a['changed-circum'] ? esc(a['changed-circum']) : '<span class="placeholder">[CHANGED CIRCUMSTANCES]</span>'}</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">V. Relief Requested</div>
+      <p>WHEREFORE, Defendant respectfully requests this Court modify the restitution order to ${f(a['modification-request'])} per month, consistent with Defendant's demonstrated ability to pay under Fla. Stat. § 775.089 and Bearden v. Georgia, 461 U.S. 660 (1983).</p>
+    </div>
+    <div class="doc-section">
+      <p>Respectfully submitted on ${f(a['date-signed'])}.</p><br><br>
+      <p>______________________________<br>${f(a['def-name'])}<br>${f(a['filer-address'])}<br>${f(a['filer-city'])}</p>
+    </div>`;
+}
+
+function genMitigation(a, flow) {
+  return `
+    <div class="doc-title">MITIGATION PACKET</div>
+    <div class="doc-title">${f(a['subject-name'])}</div>
+    <div class="doc-subtitle">
+      Prepared for: ${f(a['purpose'])}<br>
+      ${a['case-num']?'Case No.: '+esc(a['case-num'])+'<br>':''} 
+      ${a['dc-number']?'DC#: '+esc(a['dc-number'])+'<br>':''}
+      ${a['proceeding-date']?'Proceeding Date: '+esc(a['proceeding-date'])+'<br>':''}
+      <em>Prepared pursuant to Fla. R. Crim. P. 3.800(c) and the Florida Rules of Executive Clemency</em>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">I. Personal Background</div>
+      <p>${a['background'] ? esc(a['background']) : '<span class="placeholder">[PERSONAL BACKGROUND]</span>'}</p>
+      ${a['family-role']?`<p><strong>Family Responsibilities:</strong> ${esc(a['family-role'])}</p>`:''}
+      ${a['mental-health']?`<p><strong>Mental Health / Substance History:</strong> ${esc(a['mental-health'])}</p>`:''}
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">II. Rehabilitation Evidence</div>
+      ${a['education']?`<p><strong>Education:</strong> ${esc(a['education'])}</p>`:''}
+      ${a['programs']?`<p><strong>Programs Completed:</strong> ${esc(a['programs'])}</p>`:''}
+      ${a['employment']?`<p><strong>Employment:</strong> ${esc(a['employment'])}</p>`:''}
+      ${a['community']?`<p><strong>Community Service:</strong> ${esc(a['community'])}</p>`:''}
+      ${a['support-letters']?`<p><strong>Letters of Support:</strong> ${esc(a['support-letters'])}</p>`:''}
+      ${a['awards']?`<p><strong>Recognition / Achievements:</strong> ${esc(a['awards'])}</p>`:''}
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">III. Acceptance of Responsibility</div>
+      <p>${a['remorse'] ? esc(a['remorse']) : '<span class="placeholder">[STATEMENT OF RESPONSIBILITY]</span>'}</p>
+    </div>
+    <div class="doc-section">
+      <div class="doc-section-title">IV. Reentry Plan</div>
+      <p>${a['plan'] ? esc(a['plan']) : '<span class="placeholder">[REENTRY / FUTURE PLAN]</span>'}</p>
+    </div>
+    <div class="doc-section">
+      <p>Respectfully submitted on ${f(a['date-signed'])}.</p><br><br>
+      <p>______________________________<br>${f(a['subject-name'])}<br>${f(a['filer-address'])}<br>${f(a['filer-city'])}</p>
+    </div>`;
+}
+
+// ── COPY / DOWNLOAD ──
+function copyDoc() {
+  const el = document.getElementById('doc-content');
+  const text = el ? el.innerText : '';
+  navigator.clipboard.writeText(text).then(()=>toast('📋 Copied to clipboard!')).catch(()=>toast('Select text manually and copy'));
+}
+
+function downloadDoc() {
+  const el = document.getElementById('doc-content');
+  if(!el) return;
+  const text = el.innerText;
+  const blob = new Blob([text], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'second-chance-motion-draft-' + new Date().toISOString().slice(0,10) + '.txt';
+  a.click();
+  toast('⬇ Downloaded!');
+}
+
+// ── RIGHTS ──
+function renderRights() {
+  const list = document.getElementById('rights-list');
+  list.innerHTML = RIGHTS.map(r=>`
+    <div class="lib-card" style="margin-bottom:10px">
+      <div class="lib-title">${esc(r.t)}</div>
+      <div class="lib-statute">${esc(r.s)}</div>
+      <div class="lib-desc">${esc(r.d)}</div>
+    </div>`).join('');
+}
+
+// ── TOAST ──
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('on'), 2800);
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── BOOT ──
+renderRights();
+renderDrafts();
+</script>
+</body>
+</html>
