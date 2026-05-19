@@ -494,58 +494,6 @@ body::after {
 
 /* FIELD ROW */
 .field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-@media(max-width:480px){ .field-row { grid-template-columns:1fr; } }
-
-@media (max-width: 640px) {
-  .wizard-header,
-  .wizard-progress,
-  .wizard-body,
-  .wizard-controls {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-
-  .wizard-motion-label {
-    font-size: 16px;
-  }
-
-  .wizard-body {
-    padding-top: 16px;
-    padding-bottom: 16px;
-  }
-
-  .flow-stack {
-    gap: 10px;
-  }
-
-  .flow-box {
-    padding: 12px 13px;
-    border-radius: 14px;
-  }
-
-  .flow-copy {
-    font-size: 10px;
-    line-height: 1.65;
-  }
-
-  .flow-arrow {
-    font-size: 18px;
-  }
-
-  .library-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .preview-toolbar {
-    padding: 12px 14px;
-  }
-
-  .preview-actions {
-    width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-}
 
 /* WIZARD CONTROLS */
 .wizard-controls {
@@ -939,6 +887,40 @@ body::after {
   cursor: pointer;
 }
 .btn-start-new:hover { color:var(--white); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  .field-row { grid-template-columns:1fr; }
+  .field-input, .field-select, .field-textarea { font-size:16px; }
+}
+
+@media (max-width: 640px) {
+  .wizard-header, .wizard-progress, .wizard-body, .wizard-controls {
+    padding-left: 14px; padding-right: 14px;
+  }
+  .wizard-motion-label { font-size: 16px; }
+  .wizard-body { padding-top: 16px; padding-bottom: 16px; }
+  .flow-stack { gap: 10px; }
+  .flow-box { padding: 12px 13px; border-radius: 14px; }
+  .flow-copy { font-size: 10px; line-height: 1.65; }
+  .flow-arrow { font-size: 18px; }
+  .library-grid { grid-template-columns: 1fr; }
+  .preview-toolbar { padding: 12px 14px; }
+  .preview-actions { width: 100%; justify-content: space-between; flex-wrap: wrap; }
+  .motion-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+}
+
+@media (max-width: 480px) {
+  .motion-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tile-desc { display: none; }
+  .tile-icon { font-size: 20px; margin-bottom: 4px; }
+  .tile-title { font-size: 12px; }
+  .preview-doc { padding: 16px 14px; font-size: 12px; }
+  .brand-text .sub { font-size: 8px; letter-spacing: 1px; }
+  .header-badge { font-size: 8px; padding: 4px 8px; }
+  .preview-actions { gap: 4px; }
+  .btn-copy, .btn-download, .btn-print { font-size: 9px; padding: 5px 8px; }
+}
 
 /* ── PRINT STYLES ── */
 @media print {
@@ -2604,7 +2586,10 @@ function launchMotion(id) {
 
 // ── START WIZARD ──
 function startWizard() {
-  if(!currentMotion) return;
+  if(!currentMotion || !FLOWS[currentMotion]) {
+    toast('⚠️ Please select a valid motion type first.');
+    return;
+  }
   answers = {};
   currentStep = 0;
   const flow = FLOWS[currentMotion];
@@ -2696,6 +2681,10 @@ function renderStep() {
     } else if(f.type === 'textarea') {
       html += `<label class="field-label">${f.label}${f.required?'<span class="required">*</span>':''}</label>`;
       html += `<textarea id="${f.id}" class="field-textarea" placeholder="${esc(f.placeholder||'')}">${esc(saved)}</textarea>`;
+    } else if(f.type === 'date' && !saved && (f.id.includes('date-signed') || f.id === 'date-signed')) {
+      const today = new Date().toISOString().slice(0,10);
+      html += `<label class="field-label">${f.label}${f.required?'<span class="required">*</span>':''}</label>`;
+      html += `<input type="date" id="${f.id}" class="field-input" value="${today}">`;
     } else {
       html += `<label class="field-label">${f.label}${f.required?'<span class="required">*</span>':''}${f.cite?`<span class="law-cite">${f.cite}</span>`:''}</label>`;
       html += `<input type="${f.type}" id="${f.id}" class="field-input" placeholder="${esc(f.placeholder||'')}" value="${esc(saved)}">`;
@@ -2741,19 +2730,48 @@ function motionStageCaption(id) {
 // ── SAVE STEP ANSWERS ──
 function saveStepAnswers() {
   const flow = FLOWS[currentMotion];
+  if(!flow) return false;
   const step = flow.steps[currentStep];
+  if(!step) return false;
   step.fields.forEach(f => {
     const el = document.getElementById(f.id);
     if(!el) return;
     if(f.type === 'checkbox') answers[f.id] = el.checked ? 'true' : 'false';
     else answers[f.id] = el.value || '';
   });
+  return true;
+}
+
+function validateStep() {
+  const flow = FLOWS[currentMotion];
+  if(!flow) return true;
+  const step = flow.steps[currentStep];
+  if(!step) return true;
+  let valid = true;
+  for(const f of step.fields) {
+    if(!f.required) continue;
+    const el = document.getElementById(f.id);
+    if(!el) continue;
+    const val = f.type === 'checkbox' ? (el.checked ? 'true' : 'false') : (el.value || '').trim();
+    if(!val || val === 'false') {
+      el.style.borderColor = 'var(--red)';
+      el.style.boxShadow = '0 0 0 2px rgba(248,113,113,0.2)';
+      valid = false;
+    } else {
+      el.style.borderColor = '';
+      el.style.boxShadow = '';
+    }
+  }
+  if(!valid) toast('⚠️ Please fill in all required fields before continuing.');
+  return valid;
 }
 
 // ── NAVIGATION ──
 function nextStep() {
+  if(!validateStep()) return;
   saveStepAnswers();
   const flow = FLOWS[currentMotion];
+  if(!flow) return;
   if(currentStep === flow.steps.length - 1) {
     saveDraft();
     return;
@@ -2772,6 +2790,11 @@ function prevStep() {
 
 // ── SAVE DRAFT ──
 function saveDraft() {
+  if(!validateStep()) return;
+  if(!currentMotion || !FLOWS[currentMotion]) {
+    toast('⚠️ No motion selected. Please start again.');
+    return;
+  }
   const drafts = S.get('fl-motion-drafts', []);
   const flow = FLOWS[currentMotion];
   const id = Date.now();
@@ -2838,6 +2861,10 @@ function renderPreview(draft) {
   if(!draft) return;
   const a = draft.answers;
   const flow = FLOWS[draft.motion];
+  if(!flow) {
+    wrap.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:12px">⚠️</div><p style="font-size:13px">Motion type not found. The draft may be from a different version.</p></div>`;
+    return;
+  }
   let doc = '';
 
   if(draft.motion === '3850') {
@@ -3422,6 +3449,26 @@ function toast(msg) {
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+// ── SERVICE WORKER (PWA) ──
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', e => {
+  if(e.key === 'Enter') {
+    const wizard = document.getElementById('wizard');
+    if(wizard && wizard.classList.contains('open')) {
+      e.preventDefault();
+      nextStep();
+    }
+  }
+  if(e.key === 'Escape') {
+    const wizard = document.getElementById('wizard');
+    if(wizard && wizard.classList.contains('open')) closeWizard();
+  }
+});
 
 // ── BOOT ──
 renderRights();
