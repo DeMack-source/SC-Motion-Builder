@@ -442,6 +442,83 @@ body::after {
 
 /* FIELD ROW */
 .field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media(max-width:480px){ .field-row { grid-template-columns:1fr; } }
+
+@media (max-width: 640px) {
+  #tabnav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tn {
+    flex: 0 0 auto;
+    min-width: 72px;
+    padding: 10px 10px 9px;
+    font-size: 11px;
+    line-height: 1.2;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tn .ico {
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
+
+  .wizard-header,
+  .wizard-progress,
+  .wizard-body,
+  .wizard-controls {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .wizard-motion-label {
+    font-size: 16px;
+  }
+
+  .wizard-body {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .tab-panel.active {
+    padding-top: 14px;
+  }
+
+  .flow-stack {
+    gap: 10px;
+  }
+
+  .flow-box {
+    padding: 12px 13px;
+    border-radius: 14px;
+  }
+
+  .flow-copy {
+    font-size: 10px;
+    line-height: 1.65;
+  }
+
+  .flow-arrow {
+    font-size: 18px;
+  }
+
+  .library-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-toolbar {
+    padding: 12px 14px;
+  }
+
+  .preview-actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}
 
 /* WIZARD CONTROLS */
 .wizard-controls {
