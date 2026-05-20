@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#F9B24C"/>
+  <g transform="translate(256,260)">
+    <text text-anchor="middle" y="0" font-size="280" font-family="serif">⚖️</text>
+  </g>
+</svg>

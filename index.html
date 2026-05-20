@@ -982,6 +982,71 @@ body.low-distraction #tabnav { display: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition:none !important; animation:none !important; }
 }
+
+/* ── Audit / Review Mode ── */
+.audit-card { background:var(--ink-mid);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px }
+.audit-header { display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px;font-weight:600;color:var(--white) }
+.audit-score { font-size:28px;font-weight:700;font-family:var(--font-mono);margin-bottom:4px }
+.audit-label { font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px }
+.audit-bar { height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin:10px 0 14px }
+.audit-bar-fill { height:100%;border-radius:3px;transition:width .4s ease }
+.audit-items { display:flex;flex-direction:column;gap:6px }
+.audit-item { display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:6px;font-size:11px;line-height:1.5 }
+.audit-item.pass { background:rgba(52,211,153,.08) }
+.audit-item.warn { background:rgba(251,191,36,.08) }
+.audit-item.fail { background:rgba(248,113,113,.08) }
+.audit-icon { flex-shrink:0;width:16px;text-align:center }
+.audit-toggle { background:none;border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:11px;color:var(--white);cursor:pointer;transition:.2s }
+.audit-toggle:hover { background:var(--muted) }
+
+/* ── Case Locker enhancements ── */
+.draft-item { background:var(--ink-mid);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;transition:.2s }
+.draft-item:hover { border-color:var(--accent) }
+.draft-item-title { font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px }
+.draft-item-meta { display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:8px }
+.draft-item-actions { display:flex;gap:6px;flex-wrap:wrap }
+.draft-tag { display:inline-block;padding:1px 8px;border-radius:4px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;font-family:var(--font-mono) }
+.draft-highlight { background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3) !important }
+
+/* ── Timeline ── */
+.timeline-container { position:relative;padding-left:28px }
+.timeline-container::before { content:'';position:absolute;left:8px;top:4px;bottom:4px;width:2px;background:var(--border) }
+.timeline-entry { position:relative;margin-bottom:16px;padding:10px 14px;background:var(--ink-mid);border:1px solid var(--border);border-radius:8px }
+.timeline-entry::before { content:'';position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--ink) }
+.timeline-entry .entry-date { font-size:10px;font-family:var(--font-mono);color:var(--muted) }
+.timeline-entry .entry-title { font-size:12px;font-weight:600;color:var(--white);margin:2px 0 }
+.timeline-entry .entry-desc { font-size:11px;color:var(--muted);line-height:1.5 }
+.timeline-form { display:flex;flex-direction:column;gap:8px;margin-bottom:16px }
+.timeline-form-row { display:flex;gap:8px;flex-wrap:wrap }
+.timeline-form input,.timeline-form select { background:var(--ink-mid);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--white);font-size:12px;outline:none;flex:1;min-width:80px }
+.timeline-form textarea { background:var(--ink-mid);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--white);font-size:12px;outline:none;flex:1;min-width:100%;resize:vertical;font-family:inherit }
+.timeline-form button { background:var(--accent);border:none;border-radius:6px;padding:8px 16px;color:#000;font-weight:600;font-size:11px;cursor:pointer;transition:.2s;align-self:flex-start }
+.timeline-form button:hover { opacity:.85 }
+.timeline-empty { text-align:center;padding:24px;color:var(--muted);font-size:12px }
+
+/* ── Evidence / Exhibits ── */
+.evidence-panel { margin-top:16px;padding:12px;background:var(--ink-mid);border:1px solid var(--border);border-radius:10px }
+.evidence-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:10px }
+.evidence-header h4 { font-size:12px;font-weight:600;color:var(--white);margin:0 }
+.evidence-add { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px }
+.evidence-add input { background:var(--ink);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--white);font-size:11px;outline:none;flex:1;min-width:100px }
+.evidence-add button { background:var(--accent);border:none;border-radius:6px;padding:7px 12px;color:#000;font-weight:600;font-size:10px;cursor:pointer;white-space:nowrap }
+.evidence-list { display:flex;flex-direction:column;gap:4px }
+.evidence-item { display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--ink);border-radius:6px;font-size:11px;color:var(--white) }
+.evidence-item .ev-num { font-family:var(--font-mono);color:var(--muted);min-width:24px;font-size:10px }
+.evidence-item .ev-label { flex:1 }
+.evidence-item .ev-del { cursor:pointer;color:var(--muted);font-size:14px;line-height:1;padding:0 4px;transition:.2s }
+.evidence-item .ev-del:hover { color:var(--fire) }
+.evidence-empty { text-align:center;padding:16px;color:var(--muted);font-size:11px }
+
+/* ── Offline banner ── */
+.offline-banner { position:fixed;bottom:0;left:0;right:0;background:#92400e;color:#fef3c7;text-align:center;padding:8px 12px;font-size:11px;z-index:9999;transform:translateY(100%);transition:transform .3s ease }
+.offline-banner.show { transform:translateY(0) }
+
+/* ── Export toolbar ── */
+.export-toolbar { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px }
+.export-toolbar button { background:var(--ink-mid);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--white);font-size:11px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px }
+.export-toolbar button:hover { border-color:var(--accent);background:var(--ink-mid) }
 </style>
 </head>
 <body>
@@ -1143,11 +1208,28 @@ body.low-distraction #tabnav { display: none; }
 
 </div><!-- /tab-builder -->
 
-<!-- ═══ TAB: DRAFTS ═══ -->
+<!-- ═══ TAB: DRAFTS (CASE LOCKER) ═══ -->
 <div class="tab-panel" id="tab-drafts">
-  <div class="section-title">Saved Drafts</div>
+  <div class="section-title">Case Locker <span style="font-family:var(--font-mono);font-size:8px;color:var(--muted);font-weight:400;letter-spacing:0"> — Saved Drafts</span></div>
   <div class="draft-card">
     <p style="font-size:11px;color:var(--muted);margin-bottom:14px">Drafts are stored only on this device. No account required. No data transmitted.</p>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <input id="draft-search" type="search" placeholder="Search drafts..." style="flex:1;min-width:120px;background:var(--ink-mid);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--white);font-size:12px;outline:none">
+      <select id="draft-filter" style="background:var(--ink-mid);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--white);font-size:12px;outline:none;min-width:100px">
+        <option value="all">All Types</option>
+        <option value="3850">Rule 3.850</option>
+        <option value="3800">Rule 3.800</option>
+        <option value="expunge">Seal/Expunge</option>
+        <option value="terminate">Early Termination</option>
+        <option value="restitution">Restitution</option>
+        <option value="mitigation">Mitigation</option>
+        <option value="appeal">Appeal</option>
+        <option value="appeal-record">Record Prep</option>
+        <option value="appeal-rehearing">Rehearing</option>
+        <option value="2254">Federal 2254</option>
+      </select>
+    </div>
+    <div id="draft-stats" style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-bottom:10px"></div>
     <div id="draft-list"></div>
   </div>
 </div>
@@ -1299,9 +1381,10 @@ body.low-distraction #tabnav { display: none; }
   </div>
 </div>
 
-<!-- ═══ TAB: PREVIEW ═══ -->
+<!-- ═══ TAB: PREVIEW + REVIEW MODE ═══ -->
 <div class="tab-panel" id="tab-preview">
   <div class="section-title">Document Preview</div>
+  <div id="audit-panel" style="display:none;margin-bottom:16px"></div>
   <div id="preview-wrap">
     <div style="text-align:center;padding:40px 20px;color:var(--muted)">
       <div style="font-size:36px;margin-bottom:12px">📄</div>
@@ -1548,107 +1631,12 @@ body.low-distraction #tabnav { display: none; }
 
 <div id="toast"></div>
 <div class="autosave-indicator" id="autosave-indicator">✓ Auto-saved</div>
+<div class="offline-banner" id="offline-banner">⚠ You are offline — all data is saved locally and will sync when reconnected.</div>
+
 <script>
-// ═══════════════════════════════════════════════
-// SECOND CHANCE LEGAL MOTION BUILDER
-// Curated by Devyn Mack · v2026.1
-// Based on Roger Pitts / Second Chance Manual
-// ═══════════════════════════════════════════════
-
-// ── STATE ──
-let currentMotion = null;
-let currentQ = 0;
-let questions = [];
-let answers = {};
-let legalAnswers = {};
-let eligAnswers = {};
-let showElig = false;
-let lastDraftId = null;
-let previewOpen = true;
-let autoSaveTimer = null;
-let previewTimer = null;
-let qAnimDir = 'right';
-
-const S = {
-  get:(k,d=null)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch{return d;}},
-  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
-};
-
-// ── MOTION FLOWS ──────────────────────────────
-const FLOWS = {
-  "3850": {
-    title: "Motion for Postconviction Relief",
-    statute: "Fla. R. Crim. P. 3.850",
-    tag: "Rule 3.850",
-    color: "#F87171",
-    steps: [
-      {
-        id:"case-info",
-        title:"Case Information",
-        sub:"Provide the basic case details exactly as they appear on your court documents.",
-        tip:{label:"PRO TIP — Fla. R. Crim. P. 3.850(c)", text:"Your case number must match the exact format on your judgment."},
-        fields:[
-          {id:"county",      label:"County of Conviction",     type:"text",   required:true,  placeholder:"e.g., Broward", cite:""},
-          {id:"case-num",    label:"Case Number",               type:"text",   required:true,  placeholder:"e.g., 2019-CF-012345"},
-          {id:"judge",       label:"Presiding Judge",           type:"text",   required:false, placeholder:"e.g., Hon. [Last Name]"},
-          {id:"prosecutor",  label:"State Attorney (optional)", type:"text",   required:false, placeholder:""},
-          {id:"def-name",    label:"Your Full Legal Name",      type:"text",   required:true,  placeholder:"As it appears on the judgment"},
-          {id:"def-dob",     label:"Date of Birth",             type:"date",   required:true},
-        ]
-      },
-      {
-        id:"conviction",
-        title:"Conviction & Sentence Details",
-        sub:"Enter the offense, conviction date, and sentence as recorded by the court.",
-        tip:{label:"WHY THIS MATTERS — F.S. § 775.082", text:"The 2-year filing deadline under Rule 3.850 begins when your conviction becomes 'final'."},
-        fields:[
-          {id:"offense",       label:"Primary Offense Convicted Of",type:"text",  required:true, placeholder:"e.g., Robbery with a Firearm"},
-          {id:"offense-statute",label:"Florida Statute",            type:"text",  required:false,placeholder:"e.g., F.S. § 812.13(2)(a)"},
-          {id:"conviction-date",label:"Date of Conviction / Plea",  type:"date",  required:true},
-          {id:"sentence-date",  label:"Date of Sentencing",         type:"date",  required:true},
-          {id:"sentence-terms", label:"Sentence Imposed",           type:"text",  required:true, placeholder:"e.g., 15 years DOC + 5 years probation"},
-          {id:"currently-incarcerated", label:"Currently incarcerated?", type:"select", options:["Yes — in DOC custody","No — on probation / supervision","No — sentence completed"], required:true},
-        ]
-      },
-      {
-        id:"grounds",
-        title:"Grounds for Relief",
-        sub:"Select all grounds that apply to your case.",
-        tip:{label:"LEGAL STANDARD — Strickland v. Washington (1984)", text:"For ineffective assistance of counsel, you must show both deficient performance and prejudice."},
-        fields:[
-          {id:"grounds-iac",   label:"Ineffective Assistance of Counsel",  type:"checkbox", detail:"Attorney's performance fell below an objective standard of reasonableness"},
-          {id:"grounds-new",   label:"Newly Discovered Evidence",          type:"checkbox", detail:"Evidence not available at trial that would probably produce an acquittal"},
-          {id:"grounds-plea",  label:"Involuntary or Uninformed Plea",     type:"checkbox", detail:"Plea was not knowing, voluntary, and intelligent"},
-          {id:"grounds-sentence",label:"Illegal or Unconstitutional Sentence",type:"checkbox",detail:"Sentence exceeds statutory maximum"},
-          {id:"grounds-brady", label:"Brady Violation",                    type:"checkbox", detail:"Prosecution withheld material evidence"},
-          {id:"grounds-other", label:"Other Constitutional Violation",     type:"checkbox", detail:"Specify in the next section"},
-        ]
-      },
-      {
-        id:"facts",
-        title:"Statement of Facts",
-        sub:"In your own words, describe the specific facts supporting your grounds for relief.",
-        tip:{label:"WRITING GUIDANCE — Fla. R. Crim. P. 3.850(d)", text:"Each ground must be supported by specific facts."},
-        fields:[
-          {id:"facts-main",    label:"Statement of Facts",    type:"textarea", required:true,  placeholder:"Describe in detail the facts supporting each ground..."},
-          {id:"relief-sought", label:"Relief Requested",      type:"select", options:["Evidentiary Hearing","Vacation of Conviction","New Trial","Resentencing","Correction of Sentence","Other"], required:true},
-          {id:"prior-motions", label:"Have you filed a prior Rule 3.850 motion?", type:"select", options:["No — this is my first","Yes — previous motion was denied","Yes — previous motion was withdrawn"], required:true},
-        ]
-      },
-      {
-        id:"contact",
-        title:"Contact & Signature Information",
-        sub:"This information appears on the motion certificate of service and signature block.",
-        tip:{label:"PRO SE NOTE", text:"As a pro se filer, you must sign the motion under penalty of perjury."},
-        fields:[
-          {id:"filer-name",    label:"Your Full Name (as it appears on judgment)", type:"text", required:true},
-          {id:"dc-number",     label:"DC Number (if in DOC custody)",              type:"text", required:false, placeholder:"e.g., A12345"},
-          {id:"filer-address", label:"Mailing Address",                            type:"text", required:true, placeholder:"Current address or institution address"},
-          {id:"filer-city",    label:"City, State, ZIP",                           type:"text", required:true, placeholder:"e.g., Fort Lauderdale, FL 33301"},
-          {id:"state-atty-addr",label:"State Attorney's Office Address (for service)",type:"text",required:true, placeholder:"e.g., 201 SE 6th St, Fort Lauderdale, FL 33301"},
-          {id:"date-signed",   label:"Date",                                       type:"date", required:true},
-        ]
-      }
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
     ]
   },
 
@@ -2713,19 +2701,107 @@ function downloadDoc() {
   a.href = URL.createObjectURL(blob);
   a.download = 'second-chance-motion-draft-' + new Date().toISOString().slice(0,10) + '.txt';
   a.click();
-  toast('Downloaded!');
+  toast('Downloaded as TXT');
 }
 
-// ── DRAFTS ──
+function downloadDocx() {
+  const el = document.getElementById('doc-content');
+  if(!el) return;
+  const html = el.innerHTML;
+  const styled = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:\'Times New Roman\',serif;font-size:12pt;line-height:2;margin:1in}p{margin:0 0 8px}strong{font-weight:700}</style></head><body>'+html+'</body></html>';
+  const blob = new Blob([styled], {type:'application/msword'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'second-chance-motion-draft-' + new Date().toISOString().slice(0,10) + '.doc';
+  a.click();
+  toast('Downloaded as DOCX');
+}
+
+// ── MOTION AUDIT / REVIEW MODE ──
+function runMotionAudit() {
+  if(!lastViewedDraft) { toast('No draft to review'); return; }
+  const d = lastViewedDraft;
+  const a = d.answers||{};
+  const flow = FLOWS[d.motion];
+  const panel = document.getElementById('audit-panel');
+  if(!panel) return;
+  const req = flow ? flow.steps.flatMap(s=>s.fields.filter(f=>f.required).map(f=>f.id)) : [];
+  const items = [];
+  let pass = 0, warn = 0, fail = 0;
+  // Check required fields
+  req.forEach(fid => {
+    const val = a[fid];
+    if(val && val.toString().trim()) {
+      items.push({status:'pass',icon:'✅',text:esc(fid)+' — provided'});
+      pass++;
+    } else {
+      items.push({status:'warn',icon:'⚠️',text:esc(fid)+' — missing (recommended for completeness)'});
+      warn++;
+    }
+  });
+  // Check case number format
+  const cn = a['case-num'];
+  if(cn) {
+    if(/\d{4,}[-\s]?CF[-\s]?\d+/i.test(cn)) { items.push({status:'pass',icon:'✅',text:'Case number format looks standard'}); pass++; }
+    else { items.push({status:'warn',icon:'⚠️',text:'Case number format may be non-standard — verify against judgment'}); warn++; }
+  }
+  // Check date consistency
+  const created = new Date(d.created);
+  const signed = a['date-signed'] ? new Date(a['date-signed']) : null;
+  if(signed && !isNaN(signed.getTime())) {
+    if(signed > created) { items.push({status:'warn',icon:'⚠️',text:'Signature date is in the future relative to draft creation'}); warn++; }
+    else { items.push({status:'pass',icon:'✅',text:'Date consistency check passed'}); pass++; }
+  }
+  // Check evidence
+  const evCount = (d.evidence||[]).length;
+  if(evCount>0) { items.push({status:'pass',icon:'✅',text:evCount+' exhibit'+(evCount>1?'s':'')+' attached'}); pass++; }
+  // Check if this motion type has a statute
+  if(flow && flow.statute) {
+    const statuteUsed = htmlContains(flow.statute);
+    if(statuteUsed) { items.push({status:'pass',icon:'✅',text:'Statute/citation '+esc(flow.statute)+' present in document'}); pass++; }
+    else { items.push({status:'warn',icon:'⚠️',text:'Consider verifying '+esc(flow.statute)+' citation appears in document'}); warn++; }
+  }
+  const total = req.length+3+(evCount>0?1:0);
+  const score = total>0 ? Math.round(((pass*2+warn)/Math.max(total*2,1))*100) : 0;
+  panel.style.display = 'block';
+  panel.innerHTML = '<div class="audit-card"><div class="audit-header">🔍 Motion Audit — '+esc(d.title)+'</div><div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;flex-wrap:wrap"><div><div class="audit-score" style="color:'+(score>=80?'var(--green)':score>=50?'#fbbf24':'var(--red)')+'">'+score+'%</div><div class="audit-label">Readiness Score</div></div><div style="flex:1"><div class="audit-bar"><div class="audit-bar-fill" style="width:'+score+'%;background:'+(score>=80?'var(--green)':score>=50?'#fbbf24':'var(--red)')+'"></div></div><div style="display:flex;gap:12px;font-size:10px;color:var(--muted);font-family:var(--font-mono)"><span>✅ '+pass+' pass</span><span>⚠️ '+warn+' warnings</span><span>❌ '+fail+' fails</span></div></div></div><div class="audit-items">'+items.map(i => '<div class="audit-item '+i.status+'"><span class="audit-icon">'+i.icon+'</span><span>'+i.text+'</span></div>').join('')+'</div><div style="margin-top:12px"><button class="audit-toggle" onclick="document.getElementById(\'audit-panel\').style.display=\'none\'">Dismiss</button></div></div>';
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+  toast('Audit complete — '+score+'% readiness');
+}
+
+function htmlContains(text) {
+  const el = document.getElementById('doc-content');
+  return el && el.innerHTML.includes(text);
+}
+
+// ── DRAFTS (CASE LOCKER) ──
 function renderDrafts() {
   const drafts = S.get('fl-motion-drafts', []);
   const list = document.getElementById('draft-list');
+  const stats = document.getElementById('draft-stats');
   if(!list) return;
+  const query = (document.getElementById('draft-search')?.value||'').toLowerCase();
+  const filter = document.getElementById('draft-filter')?.value||'all';
+  let filtered = drafts.filter(d => {
+    if(filter!=='all' && d.motion!==filter) return false;
+    if(query) {
+      const haystack = (d.title+' '+d.tag+' '+d.statute+' '+(d.answers?Object.values(d.answers).join(' '):'')).toLowerCase();
+      return haystack.includes(query);
+    }
+    return true;
+  });
+  if(stats) stats.textContent = filtered.length+' of '+drafts.length+' drafts';
   if(!drafts.length) {
     list.innerHTML = '<div class="no-drafts"><div style="font-size:32px;margin-bottom:10px">📁</div><p>No drafts yet. Complete a motion in the Builder tab to save your first draft.</p></div>';
+    if(stats) stats.textContent='';
     return;
   }
-  list.innerHTML = drafts.map((d,i) => '<div class="draft-item"><div class="draft-info"><div class="draft-motion-name">'+esc(d.title)+'</div><div class="draft-date">'+new Date(d.created).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})+'</div><span class="draft-tag" style="background:'+d.color+'22;color:'+d.color+';border:1px solid '+d.color+'44;margin-top:5px;display:inline-block">'+esc(d.tag||d.motion)+'</span></div><div class="draft-actions"><button class="btn-draft-load" onclick="loadDraft('+i+')">📄 View</button><button class="btn-draft-delete" onclick="deleteDraft('+i+')">✕</button></div></div>').join('');
+  list.innerHTML = filtered.map((d,i) => {
+    const realIdx = drafts.indexOf(d);
+    const hasTimeline = d.timeline && d.timeline.length;
+    const hasEvidence = d.evidence && d.evidence.length;
+    return '<div class="draft-item'+(hasTimeline||hasEvidence?' draft-highlight':'')+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap"><div style="flex:1;min-width:0"><div class="draft-item-title">'+esc(d.title)+'</div><div class="draft-item-meta"><span>'+new Date(d.created).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})+'</span>'+(hasTimeline?'<span>⏱+TL</span>':'')+(hasEvidence?'<span>📎+'+(d.evidence.length)+'</span>':'')+'</div><span class="draft-tag" style="background:'+d.color+'22;color:'+d.color+';border:1px solid '+d.color+'44;display:inline-block">'+esc(d.tag||d.motion)+'</span></div></div><div class="draft-item-actions"><button class="btn-draft-load" onclick="loadDraft('+realIdx+')">📄 View</button><button class="btn-draft-delete" onclick="deleteDraft('+realIdx+')">✕</button></div></div>';
+  }).join('');
 }
 
 function loadDraft(i) {
@@ -2747,12 +2823,84 @@ function deleteDraft(i) {
 function renderPreview(draft) {
   const wrap = document.getElementById('preview-wrap');
   if(!wrap || !draft) return;
+  lastViewedDraft = draft;
   const a = draft.answers;
   const flow = FLOWS[draft.motion];
   if(!flow) { wrap.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:12px">📄</div><p style="font-size:13px">Motion type not found.</p></div>'; return; }
   const genMap = {'3850':gen3850,'3800':gen3800,'appeal':genAppeal,'appeal-record':genAppealRecord,'appeal-rehearing':genAppealRehearing,'2254':gen2254,'expunge':genExpunge,'terminate':genTerminate,'restitution':genRestitution,'mitigation':genMitigation};
   const doc = genMap[draft.motion] ? genMap[draft.motion](a, flow) : '<p>No document generator for this motion type.</p>';
-  wrap.innerHTML = '<div class="preview-card"><div class="preview-toolbar"><div class="preview-title">📄 '+esc(draft.title)+' — DRAFT</div><div class="preview-actions"><button class="btn-copy" onclick="copyDoc()">📋 Copy</button><button class="btn-download" onclick="downloadDoc()">⬇ Download</button><button class="btn-print" onclick="window.print()">🖨 Print</button></div></div><div class="preview-doc" id="doc-content">'+doc+'</div></div>';
+  const evHtml = renderEvidenceInline(draft);
+  const tlHtml = renderTimelineInline(draft);
+  wrap.innerHTML = '<div class="export-toolbar"><button onclick="runMotionAudit()">🔍 Review Motion</button><button onclick="downloadDocx()">⬇ Download DOCX</button><button onclick="downloadDoc()">📄 Download TXT</button><button onclick="window.print()">🖨 Print</button></div><div class="preview-card"><div class="preview-toolbar"><div class="preview-title">📄 '+esc(draft.title)+' — DRAFT</div><div class="preview-actions"><button class="btn-copy" onclick="copyDoc()">📋 Copy</button></div></div><div class="preview-doc" id="doc-content">'+doc+'</div></div>'+evHtml+tlHtml;
+}
+
+let lastViewedDraft = null;
+
+// ── EVIDENCE (inline in preview) ──
+function renderEvidenceInline(draft) {
+  const ev = draft.evidence||[];
+  return '<div class="evidence-panel"><div class="evidence-header"><h4>📎 Exhibits & Attachments</h4><span style="font-size:10px;color:var(--muted)">'+ev.length+' item'+(ev.length!==1?'s':'')+'</span></div><div class="evidence-add"><input id="ev-input" placeholder="Exhibit label (e.g. Plea Agreement)" onkeydown="if(event.key===\'Enter\')addEvidence()"><button onclick="addEvidence()">+ Add</button></div><div class="evidence-list" id="ev-list">'+(ev.length?ev.map((e,i) => '<div class="evidence-item"><span class="ev-num">#'+(i+1)+'</span><span class="ev-label">'+esc(e)+'</span><span class="ev-del" onclick="removeEvidence('+i+')">✕</span></div>').join(''):'<div class="evidence-empty">No exhibits added yet. Use the field above to list attachments.</div>')+'</div></div>';
+}
+
+function addEvidence() {
+  const inp = document.getElementById('ev-input');
+  if(!inp||!inp.value.trim()||!lastViewedDraft) return;
+  const drafts = S.get('fl-motion-drafts', []);
+  const d = drafts.find(x => x.id===lastViewedDraft.id);
+  if(!d) return;
+  if(!d.evidence) d.evidence = [];
+  d.evidence.push(inp.value.trim());
+  inp.value = '';
+  S.set('fl-motion-drafts', drafts);
+  renderPreview(lastViewedDraft);
+  toast('Exhibit added');
+}
+
+function removeEvidence(i) {
+  if(!lastViewedDraft) return;
+  const drafts = S.get('fl-motion-drafts', []);
+  const d = drafts.find(x => x.id===lastViewedDraft.id);
+  if(!d||!d.evidence) return;
+  d.evidence.splice(i,1);
+  S.set('fl-motion-drafts', drafts);
+  renderPreview(lastViewedDraft);
+}
+
+// ── TIMELINE (inline in preview) ──
+function renderTimelineInline(draft) {
+  const tl = draft.timeline||[];
+  return '<div class="evidence-panel" style="margin-top:12px"><div class="evidence-header"><h4>⏱ Case Timeline</h4><span style="font-size:10px;color:var(--muted)">'+tl.length+' event'+(tl.length!==1?'s':'')+'</span></div><div class="timeline-form"><div class="timeline-form-row"><input id="tl-date" type="date" placeholder="Date"><input id="tl-title" placeholder="Event (e.g. Arrest, Plea, Sentencing)"><select id="tl-type"><option value="">Type</option><option value="arrest">Arrest</option><option value="plea">Plea</option><option value="trial">Trial</option><option value="sentencing">Sentencing</option><option value="appeal">Appeal</option><option value="motion">Motion</option><option value="other">Other</option></select></div><textarea id="tl-desc" placeholder="Details (optional)" rows="2"></textarea><button onclick="addTimelineEntry()">+ Add Event</button></div><div class="timeline-container" id="tl-container">'+(tl.length?tl.map((e,i) => '<div class="timeline-entry"><div class="entry-date">'+esc(e.date)+' <span style="color:var(--muted)">· '+esc(e.type||'event')+'</span></div><div class="entry-title">'+esc(e.title)+'</div>'+(e.desc?'<div class="entry-desc">'+esc(e.desc)+'</div>':'')+'<div style="margin-top:6px"><button onclick="removeTimelineEntry('+i+')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:10px;color:var(--muted);cursor:pointer">✕ Remove</button></div></div>').join(''):'<div class="timeline-empty">No events yet. Add key dates to build a case timeline.</div>')+'</div></div>';
+}
+
+function addTimelineEntry() {
+  if(!lastViewedDraft) return;
+  const date = document.getElementById('tl-date')?.value;
+  const title = document.getElementById('tl-title')?.value.trim();
+  const type = document.getElementById('tl-type')?.value;
+  const desc = document.getElementById('tl-desc')?.value.trim();
+  if(!date||!title) { toast('Date and event title required'); return; }
+  const drafts = S.get('fl-motion-drafts', []);
+  const d = drafts.find(x => x.id===lastViewedDraft.id);
+  if(!d) return;
+  if(!d.timeline) d.timeline = [];
+  d.timeline.push({date,title,type:type||'other',desc:desc||''});
+  S.set('fl-motion-drafts', drafts);
+  document.getElementById('tl-date').value='';
+  document.getElementById('tl-title').value='';
+  document.getElementById('tl-type').value='';
+  document.getElementById('tl-desc').value='';
+  renderPreview(lastViewedDraft);
+  toast('Timeline event added');
+}
+
+function removeTimelineEntry(i) {
+  if(!lastViewedDraft) return;
+  const drafts = S.get('fl-motion-drafts', []);
+  const d = drafts.find(x => x.id===lastViewedDraft.id);
+  if(!d||!d.timeline) return;
+  d.timeline.splice(i,1);
+  S.set('fl-motion-drafts', drafts);
+  renderPreview(lastViewedDraft);
 }
 
 // ═══════════════════════════════════════════════
@@ -3294,6 +3442,8 @@ function saveDraft() {
     tag: flow.tag,
     color: flow.color,
     answers: {...answers},
+    evidence: [],
+    timeline: [],
     created: new Date().toISOString()
   });
   S.set('fl-motion-drafts', drafts);
@@ -3336,7 +3486,13 @@ renderCourts();
 renderClerks();
 document.getElementById('clerk-search')?.addEventListener('input', renderClerks);
 renderDrafts();
+document.getElementById('draft-search')?.addEventListener('input', renderDrafts);
+document.getElementById('draft-filter')?.addEventListener('change', renderDrafts);
 checkResumeDraft();
+// Offline detection
+window.addEventListener('offline', ()=>{ document.getElementById('offline-banner')?.classList.add('show'); });
+window.addEventListener('online', ()=>{ document.getElementById('offline-banner')?.classList.remove('show'); });
+if(!navigator.onLine) document.getElementById('offline-banner')?.classList.add('show');
 </script>
 </body>
 </html>
