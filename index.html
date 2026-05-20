@@ -1634,9 +1634,80 @@ body.low-distraction #tabnav { display: none; }
 <div class="offline-banner" id="offline-banner">⚠ You are offline — all data is saved locally and will sync when reconnected.</div>
 
 <script>
-if('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
+const FLOWS = {
+  "3850": {
+    title: "Motion for Postconviction Relief",
+    statute: "Fla. R. Crim. P. 3.850",
+    tag: "Rule 3.850",
+    color: "#F87171",
+    steps: [
+      {
+        id:"case-info",
+        title:"Case Information",
+        sub:"Provide the basic case details exactly as they appear on your court documents.",
+        tip:{label:"PRO TIP — Fla. R. Crim. P. 3.850(c)", text:"Your case number must match the exact format on your judgment."},
+        fields:[
+          {id:"county",      label:"County of Conviction",     type:"text",   required:true,  placeholder:"e.g., Broward", cite:""},
+          {id:"case-num",    label:"Case Number",               type:"text",   required:true,  placeholder:"e.g., 2019-CF-012345"},
+          {id:"judge",       label:"Presiding Judge",           type:"text",   required:false, placeholder:"e.g., Hon. [Last Name]"},
+          {id:"prosecutor",  label:"State Attorney (optional)", type:"text",   required:false, placeholder:""},
+          {id:"def-name",    label:"Your Full Legal Name",      type:"text",   required:true,  placeholder:"As it appears on the judgment"},
+          {id:"def-dob",     label:"Date of Birth",             type:"date",   required:true},
+        ]
+      },
+      {
+        id:"conviction",
+        title:"Conviction & Sentence Details",
+        sub:"Enter the offense, conviction date, and sentence as recorded by the court.",
+        tip:{label:"WHY THIS MATTERS", text:"The 2-year filing deadline under Rule 3.850 begins when your conviction becomes 'final'."},
+        fields:[
+          {id:"offense",       label:"Primary Offense Convicted Of",type:"text",  required:true, placeholder:"e.g., Robbery with a Firearm"},
+          {id:"offense-statute",label:"Florida Statute",            type:"text",  required:false,placeholder:"e.g., F.S. § 812.13(2)(a)"},
+          {id:"conviction-date",label:"Date of Conviction / Plea",  type:"date",  required:true},
+          {id:"sentence-date",  label:"Date of Sentencing",         type:"date",  required:true},
+          {id:"sentence-terms", label:"Sentence Imposed",           type:"text",  required:true, placeholder:"e.g., 15 years DOC + 5 years probation"},
+          {id:"currently-incarcerated", label:"Currently incarcerated?", type:"select", options:["Yes — in DOC custody","No — on probation / supervision","No — sentence completed"], required:true},
+        ]
+      },
+      {
+        id:"grounds",
+        title:"Grounds for Relief",
+        sub:"Select all grounds that apply to your case.",
+        tip:{label:"LEGAL STANDARD — Strickland v. Washington (1984)", text:"For IAC, you must show deficiency AND prejudice."},
+        fields:[
+          {id:"grounds-iac",   label:"Ineffective Assistance of Counsel",  type:"checkbox", detail:"Attorney's performance fell below an objective standard of reasonableness AND prejudiced the outcome"},
+          {id:"grounds-new",   label:"Newly Discovered Evidence",          type:"checkbox", detail:"Evidence not available at trial that would probably produce an acquittal"},
+          {id:"grounds-plea",  label:"Involuntary or Uninformed Plea",     type:"checkbox", detail:"Plea was not knowing, voluntary, and intelligent"},
+          {id:"grounds-sentence",label:"Illegal or Unconstitutional Sentence",type:"checkbox",detail:"Sentence exceeds statutory maximum or violates constitutional protections"},
+          {id:"grounds-brady", label:"Brady Violation",                    type:"checkbox", detail:"Prosecution withheld material evidence favorable to the defense"},
+          {id:"grounds-other", label:"Other Constitutional Violation",     type:"checkbox", detail:"Specify in the next section"},
+        ]
+      },
+      {
+        id:"facts",
+        title:"Statement of Facts",
+        sub:"Describe the specific facts supporting your grounds for relief.",
+        tip:{label:"WRITING GUIDANCE", text:"Each ground must be supported by specific facts, not just legal conclusions."},
+        fields:[
+          {id:"facts-main",    label:"Statement of Facts",    type:"textarea", required:true,  placeholder:"Describe in detail the facts supporting each ground for relief you selected above."},
+          {id:"relief-sought", label:"Relief Requested",      type:"select", options:["Evidentiary Hearing","Vacation of Conviction","New Trial","Resentencing","Correction of Sentence","Other"], required:true},
+          {id:"prior-motions", label:"Have you filed a prior Rule 3.850 motion?", type:"select", options:["No — this is my first","Yes — previous motion was denied","Yes — previous motion was withdrawn"], required:true},
+        ]
+      },
+      {
+        id:"contact",
+        title:"Contact & Signature Information",
+        sub:"This information appears on the motion certificate of service and signature block.",
+        tip:{label:"PRO SE NOTE", text:"As a pro se filer, you must sign the motion under penalty of perjury."},
+        fields:[
+          {id:"filer-name",    label:"Your Full Name (as it appears on judgment)", type:"text", required:true},
+          {id:"dc-number",     label:"DC Number (if in DOC custody)",              type:"text", required:false, placeholder:"e.g., A12345"},
+          {id:"filer-address", label:"Mailing Address",                            type:"text", required:true, placeholder:"Current address or institution address"},
+          {id:"filer-city",    label:"City, State, ZIP",                           type:"text", required:true, placeholder:"e.g., Fort Lauderdale, FL 33301"},
+          {id:"state-atty-addr",label:"State Attorney's Office Address (for service)",type:"text",required:true, placeholder:"e.g., 201 SE 6th St, Fort Lauderdale, FL 33301"},
+          {id:"date-signed",   label:"Date",                                       type:"date", required:true},
+        ]
+      }
     ]
   },
 
@@ -2163,6 +2234,10 @@ if('serviceWorker' in navigator) {
     ]
   }
 };
+
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 
 // ── RIGHTS DATA ──
 const RIGHTS = [
