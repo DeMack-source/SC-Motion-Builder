@@ -6,18 +6,19 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="FL Motion Builder">
-<meta name="theme-color" content="#050914">
-<meta name="description" content="Florida Legal Motion Builder — Guided post-conviction relief tools for Rule 3.850, 3.800, appellate process support, Seal/Expunge, and Early Termination. Part of the Second Chance ecosystem.">
-<title>FL Motion Builder | Second Chance Legal Tools</title>
+<meta name="apple-mobile-web-app-title" content="Second Chance">
+<meta name="theme-color" content="#0a0f1e">
+<meta name="description" content="Second Chance Legal Tools — Florida Motion Builder, deadline calculator, legal glossary, and guided post-conviction relief. Rule 3.850, 3.800, Seal/Expunge, and more.">
+<title>Second Chance Legal Tools | FL Motion Builder</title>
 <link rel="manifest" href="motion-manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════
-   SECOND CHANCE LEGAL TOOLS — MOTION BUILDER
+   SECOND CHANCE LEGAL TOOLS
+   Motion Builder · Deadline Calculator · Legal Glossary
    Design: Dark Legal / Institutional Maximalism
-   Curated by Devyn Mack · v2026.1
+   Curated by Devyn Mack · v2026.2
 ═══════════════════════════════════════════════ */
 
 :root {
@@ -1124,6 +1125,22 @@ body.low-distraction #tabnav { display: none; }
 .export-toolbar { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px }
 .export-toolbar button { background:var(--ink-mid);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--white);font-size:11px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px }
 .export-toolbar button:hover { border-color:var(--accent);background:var(--ink-mid) }
+
+/* TOOLS TAB */
+.calc-card { margin-bottom:16px;padding:16px;background:var(--ink-card);border-radius:var(--radius);border:1px solid var(--border) }
+.calc-label { display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:var(--font-mono);margin-bottom:6px }
+.calc-input { width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--ink-mid);color:var(--white);font-size:14px;font-family:var(--font-body);outline:none }
+.calc-input:focus { border-color:var(--gold) }
+.calc-result { padding:16px;margin-top:8px;border-radius:10px;background:var(--ink-card);border:1px solid var(--border) }
+.calc-result.highlight { border-color:rgba(249,178,76,0.3);background:var(--gold-dim) }
+.calc-result .label { font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:var(--font-mono) }
+.calc-result .value { font-size:18px;font-weight:700;color:var(--gold);margin-top:4px }
+.calc-result .note { font-size:11px;color:var(--muted);margin-top:6px }
+
+/* GLOSSARY TAB */
+.glossary-term { padding:14px 16px;background:var(--ink-card);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:8px }
+.glossary-term .term { font-weight:600;color:var(--gold);font-size:14px }
+.glossary-term .def { font-size:12px;color:var(--muted);line-height:1.7;margin-top:4px }
 </style>
 </head>
 <body>
@@ -1137,6 +1154,8 @@ body.low-distraction #tabnav { display: none; }
   <button class="tn" data-tab="courts"  onclick="switchTab('courts')"> <span class="ico">🏛</span>Courts</button>
   <button class="tn" data-tab="federal"  onclick="switchTab('federal')"> <span class="ico">🏛</span>Federal</button>
   <button class="tn" data-tab="rights"  onclick="switchTab('rights')"> <span class="ico">📜</span>Rights</button>
+  <button class="tn" data-tab="tools" onclick="switchTab('tools')"><span class="ico">🔧</span>Tools</button>
+  <button class="tn" data-tab="glossary" onclick="switchTab('glossary')"><span class="ico">📖</span>Glossary</button>
 </div>
 
 <div class="app">
@@ -1148,8 +1167,8 @@ body.low-distraction #tabnav { display: none; }
     <div class="brand">
       <div class="brand-seal">⚖️</div>
       <div class="brand-text">
-        <h1>FL Motion Builder</h1>
-        <div class="sub">Second Chance Legal Tools · v2026.1</div>
+        <h1>Second Chance Legal Tools</h1>
+        <div class="sub">Motion Builder · Deadline Calculator · Glossary</div>
       </div>
     </div>
     <div class="header-badge">
@@ -1702,6 +1721,51 @@ body.low-distraction #tabnav { display: none; }
     <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:8px">— Roger Pitts / Second Chance · Curated by Devyn Mack</div>
   </div>
   <div id="rights-list"></div>
+</div>
+
+<!-- ═══ TAB: TOOLS ═══ -->
+<div class="tab-panel" id="tab-tools">
+  <div class="section-title">Deadline Calculator</div>
+  <div style="background:var(--gold-dim);border:1px solid rgba(249,178,76,0.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:rgba(249,178,76,0.9);line-height:1.7">
+    Calculate critical filing deadlines based on Florida appellate rules. Enter a triggering event date below.
+  </div>
+  <div class="calc-card">
+    <label class="calc-label">Trial court order / judgment date</label>
+    <input class="calc-input" type="date" id="calcDate" onchange="calcDeadline()">
+  </div>
+  <div class="calc-card">
+    <label class="calc-label">Deadline category</label>
+    <select class="calc-input" id="calcType" onchange="calcDeadline()">
+      <option value="appeal">Notice of Appeal — 30 days (Fla. R. App. P. 9.110)</option>
+      <option value="3850">Rule 3.850 Motion — 2 years (Fla. R. Crim. P. 3.850)</option>
+      <option value="3800">Rule 3.800(a) — No time limit</option>
+      <option value="rehearing">Motion for Rehearing — 15 days (Fla. R. App. P. 9.330)</option>
+      <option value="clarification">Motion for Clarification — 15 days (Fla. R. App. P. 9.330)</option>
+      <option value="mandate">Issuance of Mandate — 15 days after rehearing deadline</option>
+      <option value="discretionary">Discretionary Review — 30 days (Fla. R. App. P. 9.120)</option>
+    </select>
+  </div>
+  <div id="calcResults"></div>
+  <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+    <div class="section-title" style="font-size:13px">📐 How These Deadlines Work</div>
+    <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+      <p><strong>Appeal (30 days):</strong> The clock starts the day after the order is rendered. If day 30 falls on a weekend or holiday, it extends to the next business day. Fla. R. App. P. 9.110(b).</p>
+      <p><strong>Rule 3.850 (2 years):</strong> Two years from the date the judgment becomes final (after mandate issues on direct appeal). Exceptions for newly discovered evidence, retroactive law changes, and unconstitutional sentences. Fla. R. Crim. P. 3.850(b).</p>
+      <p><strong>Rule 3.800(a):</strong> No deadline — an illegal sentence can be corrected at any time. Fla. R. Crim. P. 3.800(a).</p>
+      <p><strong>Rehearing (15 days):</strong> 15 days from the date of the appellate opinion. Fla. R. App. P. 9.330(a).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: GLOSSARY ═══ -->
+<div class="tab-panel" id="tab-glossary">
+  <div class="section-title">Legal Glossary</div>
+  <div style="background:var(--teal-dim);border:1px solid rgba(45,212,191,0.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:var(--teal);line-height:1.7">
+    Plain-English definitions of legal terms used throughout Florida post-conviction and appellate practice.
+  </div>
+  <input class="glossary-search" placeholder="Search terms…" oninput="filterGlossary(this.value)" id="glossarySearch" style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--ink-mid);color:var(--white);font-size:14px;font-family:var(--font-body);outline:none;margin-bottom:16px">
+  <div id="glossary-count" style="font-size:11px;color:var(--muted);margin-bottom:12px"></div>
+  <div id="glossary-list"></div>
 </div>
 
 </div><!-- /app -->
@@ -2450,6 +2514,47 @@ const FEDERAL_DISTRICTS = [
   }
 ];
 
+// ── GLOSSARY ──
+const GLOSSARY = [
+  {t:"Appeal", d:"A request to a higher court to review a lower court's decision."},
+  {t:"Appellant", d:"The party who files an appeal."},
+  {t:"Appellee", d:"The party responding to an appeal (usually the State)."},
+  {t:"Brief", d:"A written legal argument submitted to the court explaining why the decision should be upheld or reversed."},
+  {t:"Certificate of Appealability", d:"Required before a federal appeal can proceed in habeas cases. Shows the petitioner made a substantial constitutional claim."},
+  {t:"Constitutional Right", d:"A right guaranteed by the U.S. Constitution, such as due process, effective assistance of counsel, or protection against self-incrimination."},
+  {t:"Direct Appeal", d:"The first appeal as of right after a final judgment. In Florida, the Notice of Appeal must be filed within 30 days."},
+  {t:"En Banc", d:"A hearing before all judges of a court, rather than a panel of three. Usually reserved for significant legal questions."},
+  {t:"Evidentiary Hearing", d:"A court hearing where evidence (witnesses, documents) is presented to resolve factual disputes."},
+  {t:"Exhaustion of Remedies", d:"The requirement that a state prisoner must pursue all available state court remedies before seeking federal habeas relief."},
+  {t:"Final Order", d:"A court order that ends the case on its merits, leaving nothing further for the court to decide."},
+  {t:"Habeas Corpus", d:"A legal action challenging the legality of a person's detention. In Florida, post-conviction motions serve this function."},
+  {t:"Ineffective Assistance of Counsel", d:"A claim that trial counsel's performance fell below reasonable professional standards and prejudiced the outcome. Strickland v. Washington."},
+  {t:"Jurisdiction", d:"The court's legal authority to hear a case. Without jurisdiction, any order is void."},
+  {t:"Mandate", d:"The official communication from an appellate court to the trial court advising of the appeal's outcome."},
+  {t:"Notice of Appeal", d:"A formal document filed with the clerk stating the intent to appeal. In Florida, due within 30 days of the order."},
+  {t:"Per Curiam", d:"A Latin term meaning 'by the court.' A unanimous opinion issued by the court collectively rather than by a named judge."},
+  {t:"Petitioner", d:"The party filing a petition for review (in post-conviction or habeas cases)."},
+  {t:"Post-Conviction", d:"Legal proceedings that occur after a criminal conviction becomes final, challenging the legality of the conviction or sentence."},
+  {t:"Pro Se", d:"Representing yourself in court without a lawyer."},
+  {t:"Record on Appeal", d:"The official collection of all documents, filings, transcripts, and exhibits from the trial court sent to the appellate court."},
+  {t:"Remand", d:"When an appellate court sends a case back to the trial court for further proceedings consistent with the opinion."},
+  {t:"Respondent", d:"The party responding to a petition (typically the State in post-conviction cases)."},
+  {t:"Standard of Review", d:"The level of deference an appellate court gives to the lower court's decision. Common standards include de novo, abuse of discretion, and competent substantial evidence."},
+  {t:"Stay", d:"A court order temporarily halting proceedings. Often requested to stop an execution while an appeal is pending."},
+  {t:"Summary Denial", d:"When a trial court denies a post-conviction motion without holding an evidentiary hearing."},
+  {t:"Writ of Certiorari", d:"A discretionary review by the U.S. Supreme Court. Very few petitions are granted."},
+  {t:"Writ of Habeas Corpus (28 U.S.C. § 2254)", d:"The federal statute that allows state prisoners to challenge their detention on federal constitutional grounds."},
+  {t:"Default Judgment", d:"A judgment entered against a party who fails to respond to a pleading within the required time."},
+  {t:"Summary Judgment", d:"A decision made without a full trial when there is no genuine dispute about the material facts."},
+  {t:"Interlocutory Order", d:"A temporary or preliminary order that does not finally resolve the case. Generally not appealable until a final judgment."},
+  {t:"Supersedeas Bond", d:"A bond posted to stay enforcement of a judgment while an appeal is pending, guaranteeing payment if the appeal fails."},
+  {t:"Venue", d:"The geographic location where a case is heard. Proper venue is usually where the crime occurred."},
+  {t:"Prosecutorial Misconduct", d:"Improper conduct by a prosecutor that violates the defendant's right to a fair trial."},
+  {t:"Harmless Error", d:"An error that did not affect the outcome of the case and therefore does not warrant reversal."},
+  {t:"Plain Error", d:"A clear and obvious error that affected substantial rights, reviewable even if not raised at trial."},
+  {t:"Fundamental Error", d:"An error that goes to the very foundation of the case and renders the proceeding invalid."},
+];
+
 // ── UTILITY ──
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -2479,6 +2584,7 @@ function switchTab(tab) {
   if(tab==='rights') renderRights();
   if(tab==='courts') { renderClerks(); renderCourts(); }
   if(tab==='federal') renderFederal();
+  if(tab==='glossary') renderGlossary();
 }
 
 // ── MOTION SELECTION ──
@@ -2599,6 +2705,76 @@ function renderFederal() {
   const list = document.getElementById('federal-list');
   if(!list) return;
   list.innerHTML = FEDERAL_DISTRICTS.map(d => `<div class="lib-card" style="margin-bottom:10px"><div class="lib-title">${esc(d.name)}</div><div class="lib-statute">${esc(d.code)}</div><div class="lib-desc">Counties: ${esc(d.counties.join(', '))}</div><div class="lib-tip">${d.courthouses.map(c => `<strong>${esc(c.division)}:</strong> ${esc(c.address)}${c.note?` <span style="display:block;margin-top:4px">${esc(c.note)}</span>`:''}`).join('<hr style="border:none;border-top:1px solid var(--border);margin:8px 0">')}</div></div>`).join('');
+}
+
+// ── DEADLINE CALCULATOR ──
+const HOLIDAYS = [
+  '01-01','01-20-2025','01-20','02-17','05-26','06-19','07-04','09-01','10-13','11-11','11-27','12-25'
+];
+function isBusinessDay(d) {
+  const m = d.getMonth()+1, day = d.getDate(), y = d.getFullYear();
+  const mmdd = String(m).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+  if(d.getDay()===0||d.getDay()===6) return false;
+  if(HOLIDAYS.includes(mmdd)||HOLIDAYS.includes(mmdd+'-'+y)) return false;
+  return true;
+}
+function addBusinessDays(d, n) {
+  let r = new Date(d);
+  while(n>0){ r.setDate(r.getDate()+1); if(isBusinessDay(r)) n--; }
+  return r;
+}
+function calcDeadline() {
+  const el = document.getElementById('calcDate');
+  const type = document.getElementById('calcType').value;
+  const res = document.getElementById('calcResults');
+  if(!el||!el.value||!res) return;
+  const start = new Date(el.value+'T12:00:00');
+  const daysMap = { appeal:30, '3850':730, '3800':null, rehearing:15, clarification:15, mandate:30, discretionary:30 };
+  const labels = {
+    appeal:'Notice of Appeal deadline',
+    '3850':'Rule 3.850 deadline (2 years)',
+    '3800':'Rule 3.800(a) — no deadline',
+    rehearing:'Motion for Rehearing deadline',
+    clarification:'Motion for Clarification deadline',
+    mandate:'Mandate issuance (approx.)',
+    discretionary:'Discretionary Review deadline'
+  };
+  const days = daysMap[type];
+  if(days===null) {
+    res.innerHTML = `<div class="calc-result highlight"><div class="label">${esc(labels[type])}</div><div class="value" style="color:var(--teal)">No time limit</div><div class="note">A Rule 3.800(a) motion to correct an illegal sentence can be filed at any time. There is no statutory deadline.</div></div>`;
+    return;
+  }
+  const due = addBusinessDays(start, days);
+  const options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  res.innerHTML = `
+    <div class="calc-result highlight">
+      <div class="label">Trigger Date</div>
+      <div class="value" style="color:var(--white);font-size:14px">${start.toLocaleDateString('en-US',options)}</div>
+    </div>
+    <div class="calc-result highlight">
+      <div class="label">${esc(labels[type])}</div>
+      <div class="value">${due.toLocaleDateString('en-US',options)}</div>
+      <div class="note">${days} calendar days, counting only business days. ${due<new Date()?'⚠ This deadline may have passed.':'This deadline is in the future.'}</div>
+    </div>`;
+}
+
+// ── GLOSSARY ──
+function renderGlossary() {
+  const list = document.getElementById('glossary-list');
+  const count = document.getElementById('glossary-count');
+  if(!list) return;
+  if(count) count.textContent = `${GLOSSARY.length} terms`;
+  list.innerHTML = GLOSSARY.map(g=>`<div class="glossary-term"><div class="term">${esc(g.t)}</div><div class="def">${esc(g.d)}</div></div>`).join('');
+}
+function filterGlossary(val) {
+  const list = document.getElementById('glossary-list');
+  const count = document.getElementById('glossary-count');
+  if(!list) return;
+  const term = (val||'').trim().toLowerCase();
+  const filtered = GLOSSARY.filter(g => !term || g.t.toLowerCase().includes(term) || g.d.toLowerCase().includes(term));
+  if(count) count.textContent = `${filtered.length} of ${GLOSSARY.length} terms`;
+  list.innerHTML = filtered.map(g=>`<div class="glossary-term"><div class="term">${esc(g.t)}</div><div class="def">${esc(g.d)}</div></div>`).join('');
+  if(!filtered.length) list.innerHTML = `<div class="no-drafts">No terms match that search.</div>`;
 }
 
 // ── DOCUMENT GENERATORS ──
@@ -3641,6 +3817,8 @@ renderDrafts();
 document.getElementById('draft-search')?.addEventListener('input', renderDrafts);
 document.getElementById('draft-filter')?.addEventListener('change', renderDrafts);
 checkResumeDraft();
+renderGlossary();
+document.getElementById('glossarySearch')?.addEventListener('input', function(){filterGlossary(this.value);});
 // Offline detection
 window.addEventListener('offline', ()=>{ document.getElementById('offline-banner')?.classList.add('show'); });
 window.addEventListener('online', ()=>{ document.getElementById('offline-banner')?.classList.remove('show'); });

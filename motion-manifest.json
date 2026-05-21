@@ -1,7 +1,7 @@
 {
-  "name": "FL Motion Builder",
-  "short_name": "FL Motion",
-  "description": "Florida Legal Motion Builder — Guided post-conviction relief tools for Rule 3.850, 3.800, Seal/Expunge, Early Termination, and more. Part of the Second Chance ecosystem.",
+  "name": "Second Chance Legal Tools",
+  "short_name": "Second Chance",
+  "description": "Florida Legal Motion Builder with deadline calculator, legal glossary, and guided post-conviction relief tools for Rule 3.850, 3.800, Seal/Expunge, and more.",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#050914",
