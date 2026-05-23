@@ -1369,6 +1369,73 @@ body.low-distraction #tabnav { display: none; }
 .glossary-term { padding:14px 16px;background:var(--ink-card);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:8px }
 .glossary-term .term { font-weight:600;color:var(--gold);font-size:14px }
 .glossary-term .def { font-size:12px;color:var(--muted);line-height:1.7;margin-top:4px }
+
+/* ═══ CASE SESSION BAR ═══ */
+.session-bar {
+  display: none; margin: -6px 0 14px;
+  background: var(--ink-card); border: 1px solid var(--gold); border-radius: 10px;
+  overflow: hidden; animation: slideUp 0.25s ease;
+}
+.session-bar.active { display: block; }
+.session-bar-inner {
+  padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+}
+.session-bar-icon { font-size: 16px; flex-shrink: 0; }
+.session-bar-info { flex: 1; min-width: 0; font-size: 12px; line-height: 1.5; }
+.session-bar-info .sb-charge { color: var(--white); font-weight: 700; }
+.session-bar-info .sb-county { color: var(--gold); }
+.session-bar-info .sb-case-num { font-family: var(--font-mono); color: var(--muted); font-size: 10px; }
+.session-bar-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-session-clear {
+  font-size: 10px; padding: 5px 10px; border-radius: 6px;
+  cursor: pointer; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); font-family: var(--font-body);
+  transition: all 0.2s;
+}
+.btn-session-clear:hover { color: var(--red); border-color: rgba(248,113,113,0.3); }
+
+/* ═══ INTAKE FORM ═══ */
+.intake-overlay {
+  display: none; position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.intake-overlay.open { display: flex; }
+.intake-modal {
+  background: var(--ink-card); border: 1px solid var(--border);
+  border-radius: 16px; width: 100%; max-width: 440px;
+  animation: slideUp 0.3s ease; overflow: hidden;
+}
+.intake-modal-header {
+  padding: 18px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.intake-modal-header h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--white); margin: 0; }
+.intake-modal-body { padding: 18px 20px; }
+.intake-modal-body .field-group { margin-bottom: 12px; }
+.intake-modal-body .field-group:last-child { margin-bottom: 0; }
+.intake-modal-footer {
+  padding: 14px 20px; border-top: 1px solid var(--border);
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+.btn-intake-save {
+  background: var(--gold); color: var(--ink); border: none;
+  border-radius: 8px; padding: 10px 20px; font-family: var(--font-body);
+  font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.btn-intake-save:hover { box-shadow: var(--gold-glow); }
+.btn-intake-skip {
+  background: transparent; color: var(--muted); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 18px; font-family: var(--font-body);
+  font-size: 13px; cursor: pointer; transition: all 0.2s;
+}
+.btn-intake-skip:hover { color: var(--white); }
+.intake-charge-badge {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 1px;
+  padding: 3px 10px; border-radius: 6px; background: rgba(249,178,76,0.15);
+  color: var(--gold); display: inline-block; margin-bottom: 14px;
+}
 </style>
 </head>
 <body>
@@ -1457,6 +1524,54 @@ body.low-distraction #tabnav { display: none; }
   <div class="charge-empty" id="charge-empty">
     <span class="ce-icon">🔍</span>
     Search any Florida felony above to see legal intelligence, strategic analysis, risk assessment, and applicable motions.
+  </div>
+
+  <!-- ═══ CASE SESSION BAR ═══ -->
+  <div class="session-bar" id="session-bar">
+    <div class="session-bar-inner">
+      <div class="session-bar-icon">📋</div>
+      <div class="session-bar-info">
+        <span class="sb-charge"></span>
+        <span class="sb-county"></span>
+        <span class="sb-case-num"></span>
+      </div>
+      <div class="session-bar-actions">
+        <button class="btn-session-clear" onclick="clearSession()">✕ Clear Case</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ INTAKE FORM (shown after charge selection) ═══ -->
+  <div class="intake-overlay" id="intake-form">
+    <div class="intake-modal">
+      <div class="intake-modal-header">
+        <span style="font-size:20px">📋</span>
+        <h3>Set Up Your Case</h3>
+      </div>
+      <div class="intake-modal-body">
+        <div class="intake-charge-badge" id="intake-charge-badge"></div>
+        <div class="field-group">
+          <label class="field-label">County of Court</label>
+          <input class="field-input" id="intake-county" placeholder="e.g. Broward, Miami-Dade, Duval" oninput="intakeDirty=true">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Case Number <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input class="field-input" id="intake-case-num" placeholder="e.g. 2019-CF-012345" oninput="intakeDirty=true">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Defendant Name <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input class="field-input" id="intake-def-name" placeholder="Full legal name" oninput="intakeDirty=true">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Date of Birth <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input class="field-input" id="intake-dob" type="date">
+        </div>
+      </div>
+      <div class="intake-modal-footer">
+        <button class="btn-intake-skip" onclick="closeIntake()">Skip for Now</button>
+        <button class="btn-intake-save" onclick="saveIntake()">✓ Save Case</button>
+      </div>
+    </div>
   </div>
 
   <div class="section-title">Select Your Motion Type</div>
@@ -3507,6 +3622,145 @@ function removeTimelineEntry(i) {
 let chargeTimeline = 'pretrial';
 let chargeSelected = null;
 let chargePlainEnglish = false;
+let intakeDirty = false;
+
+// ── CASE SESSION STATE ──
+let caseSession = loadSession();
+
+function loadSession() {
+  try { const s = localStorage.getItem('fl-case-session'); return s ? JSON.parse(s) : null; }
+  catch(e) { return null; }
+}
+
+function saveSession(data) {
+  caseSession = data;
+  if (data) {
+    data.timestamp = Date.now();
+    localStorage.setItem('fl-case-session', JSON.stringify(data));
+  } else localStorage.removeItem('fl-case-session');
+  renderSessionBar();
+}
+
+function clearSession() {
+  saveSession(null);
+  document.getElementById('session-bar')?.classList.remove('active');
+  toast('Case cleared');
+}
+
+function renderSessionBar() {
+  const bar = document.getElementById('session-bar');
+  if (!bar) return;
+  if (!caseSession) { bar.classList.remove('active'); return; }
+  bar.classList.add('active');
+  const sb = bar.querySelector('.sb-charge');
+  const co = bar.querySelector('.sb-county');
+  const cn = bar.querySelector('.sb-case-num');
+  if (sb) sb.textContent = caseSession.chargeName || '';
+  if (co) co.textContent = caseSession.county || '';
+  if (cn) cn.textContent = caseSession.caseNum || '';
+}
+
+function openIntake(chargeName) {
+  const overlay = document.getElementById('intake-form');
+  if (!overlay) return;
+  document.getElementById('intake-charge-badge').textContent = chargeName;
+  if (caseSession) {
+    document.getElementById('intake-county').value = caseSession.county || '';
+    document.getElementById('intake-case-num').value = caseSession.caseNum || '';
+    document.getElementById('intake-def-name').value = caseSession.defendantName || '';
+    document.getElementById('intake-dob').value = caseSession.defendantDOB || '';
+  } else {
+    document.getElementById('intake-county').value = '';
+    document.getElementById('intake-case-num').value = '';
+    document.getElementById('intake-def-name').value = '';
+    document.getElementById('intake-dob').value = '';
+  }
+  intakeDirty = false;
+  overlay.classList.add('open');
+}
+
+function closeIntake() {
+  document.getElementById('intake-form')?.classList.remove('open');
+}
+
+function saveIntake() {
+  const county = document.getElementById('intake-county')?.value.trim() || '';
+  const caseNum = document.getElementById('intake-case-num')?.value.trim() || '';
+  const defName = document.getElementById('intake-def-name')?.value.trim() || '';
+  const dob = document.getElementById('intake-dob')?.value || '';
+  const data = {
+    chargeName: chargeSelected ? chargeSelected.name : '',
+    chargeStatute: chargeSelected ? chargeSelected.statute : '',
+    timeline: chargeTimeline,
+    county, caseNum, defendantName: defName, defendantDOB: dob
+  };
+  saveSession(data);
+  closeIntake();
+  toast('Case saved — motion builders will auto-fill your data');
+}
+
+function buildPrefillFromSession(mid) {
+  if (!caseSession) return {};
+  const prefill = {};
+  const flow = FLOWS[mid];
+  if (!flow) return prefill;
+
+  if (caseSession.county) {
+    const countyFields = flow.steps.flatMap(s => s.fields.filter(f =>
+      f.id === 'county' || f.id === 'arrest-county'
+    ));
+    countyFields.forEach(f => { prefill[f.id] = caseSession.county; });
+  }
+  if (caseSession.caseNum) {
+    const cnFields = flow.steps.flatMap(s => s.fields.filter(f =>
+      f.id === 'case-num' || f.id === 'pet-case-num'
+    ));
+    cnFields.forEach(f => { prefill[f.id] = caseSession.caseNum; });
+  }
+  if (caseSession.defendantName) {
+    const nameFields = flow.steps.flatMap(s => s.fields.filter(f =>
+      f.label && (f.label.toLowerCase().includes('full name') ||
+        f.label.toLowerCase().includes('your full') ||
+        f.label.toLowerCase().includes('petitioner name') ||
+        f.label.toLowerCase().includes('appellant name') ||
+        f.label.toLowerCase().includes('legal name') ||
+        f.id === 'def-name' || f.id === 'def-name' ||
+        f.id === 'pet-name' || f.id === 'subject-name' ||
+        f.id === 'appellant-name' || f.id === 'appellant-name')
+    ));
+    const seen = new Set();
+    nameFields.forEach(f => { if (!seen.has(f.id)) { seen.add(f.id); prefill[f.id] = caseSession.defendantName; } });
+  }
+  if (caseSession.chargeName) {
+    const offenseFields = flow.steps.flatMap(s => s.fields.filter(f =>
+      f.id === 'offense' || f.id === 'arrest-charge'
+    ));
+    offenseFields.forEach(f => { prefill[f.id] = caseSession.chargeName; });
+  }
+  if (caseSession.defendantDOB) {
+    const dobFields = flow.steps.flatMap(s => s.fields.filter(f =>
+      f.id === 'def-dob' || f.id === 'pet-dob'
+    ));
+    dobFields.forEach(f => { prefill[f.id] = caseSession.defendantDOB; });
+  }
+  return prefill;
+}
+
+function launchWithSession(mid) {
+  if (!FLOWS[mid]) { toast('Motion type not available'); return; }
+  const prefill = buildPrefillFromSession(mid);
+  currentMotion = mid;
+  currentQ = 0;
+  answers = prefill;
+  legalAnswers = {};
+  eligAnswers = {};
+  const btn = document.getElementById('start-btn');
+  btn.disabled = false;
+  document.getElementById('start-btn-text').textContent = 'Begin — ' + FLOWS[mid].title;
+  switchTab('builder');
+  startWizard();
+  toast('Fields pre-filled from your case session');
+}
 
 const CHARGE_MOTION_MAP = {
   "First-Degree Murder": ["3850","3800","appeal"],
@@ -3593,6 +3847,7 @@ function selectCharge(idx) {
   document.getElementById('charge-ac').classList.remove('open');
   document.getElementById('charge-empty').style.display = 'none';
   renderChargeIntel(c);
+  openIntake(c.name);
 }
 
 function setTimeline(tl) {
@@ -3735,15 +3990,10 @@ function renderChargeMotions(c) {
   html += buildMotions.map(mid => {
     const flow = FLOWS[mid];
     if (!flow) return '';
-    return '<span class="charge-motion-chip build" onclick="buildFromCharge(\''+mid+'\')">⚡ Build '+esc(flow.tag)+'</span>';
+    return '<span class="charge-motion-chip build" onclick="launchWithSession(\''+mid+'\')">⚡ Build '+esc(flow.tag)+'</span>';
   }).join('');
 
   el.innerHTML = html;
-}
-
-function buildFromCharge(mid) {
-  if (!FLOWS[mid]) { toast('Motion type not available'); return; }
-  launchMotion(mid);
 }
 
 function renderStrategic(c) {
@@ -3812,6 +4062,7 @@ function renderCollateral(c) {
 }
 
 initChargeSearch();
+if (caseSession) renderSessionBar();
 // ═══════════════════════════════════════════════
 // NEW ARCHITECTURE: Single-Question Wizard
 // ═══════════════════════════════════════════════
