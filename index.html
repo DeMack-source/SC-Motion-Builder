@@ -13,6 +13,7 @@
 <link rel="manifest" href="motion-manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="charges.js"></script>
 <style>
 /* ═══════════════════════════════════════════════
    SECOND CHANCE LEGAL TOOLS
@@ -1061,86 +1062,232 @@ body.low-distraction #tabnav { display: none; }
   *, *::before, *::after { transition:none !important; animation:none !important; }
 }
 
-/* ── Audit / Review Mode ── */
-.audit-card { background:var(--ink-mid);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px }
-.audit-header { display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px;font-weight:600;color:var(--white) }
-.audit-score { font-size:28px;font-weight:700;font-family:var(--font-mono);margin-bottom:4px }
-.audit-label { font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px }
-.audit-bar { height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin:10px 0 14px }
-.audit-bar-fill { height:100%;border-radius:3px;transition:width .4s ease }
-.audit-items { display:flex;flex-direction:column;gap:6px }
-.audit-item { display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:6px;font-size:11px;line-height:1.5 }
-.audit-item.pass { background:rgba(52,211,153,.08) }
-.audit-item.warn { background:rgba(251,191,36,.08) }
-.audit-item.fail { background:rgba(248,113,113,.08) }
-.audit-icon { flex-shrink:0;width:16px;text-align:center }
-.audit-toggle { background:none;border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:11px;color:var(--white);cursor:pointer;transition:.2s }
-.audit-toggle:hover { background:var(--muted) }
+/* ═══ CHARGE SEARCH ENGINE ═══ */
+.charge-search-section { margin-bottom: 20px; }
+.charge-search-wrap { position: relative; }
+.charge-search-bar {
+  width: 100%;
+  background: var(--ink-card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px 14px 44px;
+  color: var(--white);
+  font-size: 15px;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.charge-search-bar:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(249,178,76,0.1);
+}
+.charge-search-bar::placeholder { color: rgba(255,255,255,0.25); }
+.charge-search-icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 16px; color: var(--muted); pointer-events: none;
+}
+.charge-autocomplete {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 200;
+  background: var(--ink-lift); border: 1px solid var(--border);
+  border-radius: 0 0 12px 12px; max-height: 280px; overflow-y: auto;
+  display: none; box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+.charge-autocomplete.open { display: block; }
+.charge-ac-item {
+  padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--border);
+  transition: background 0.15s; display: flex; align-items: center; gap: 10px;
+}
+.charge-ac-item:last-child { border-bottom: none; }
+.charge-ac-item:hover, .charge-ac-item.highlight { background: var(--gold-dim); }
+.charge-ac-degree {
+  font-family: var(--font-mono); font-size: 8px; letter-spacing: 1px;
+  padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
+}
+.charge-ac-degree.capital { background: rgba(248,113,113,0.2); color: var(--red); }
+.charge-ac-degree.life { background: rgba(249,178,76,0.15); color: var(--gold); }
+.charge-ac-degree.f1 { background: rgba(251,191,36,0.12); color: #fbbf24; }
+.charge-ac-degree.f2 { background: rgba(96,165,250,0.12); color: var(--sky); }
+.charge-ac-name { font-size: 13px; font-weight: 600; color: var(--white); flex: 1; }
+.charge-ac-statute { font-family: var(--font-mono); font-size: 9px; color: var(--muted); flex-shrink: 0; }
 
-/* ── Case Locker enhancements ── */
-.draft-item { background:var(--ink-mid);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;transition:.2s }
-.draft-item:hover { border-color:var(--accent) }
-.draft-item-title { font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px }
-.draft-item-meta { display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:8px }
-.draft-item-actions { display:flex;gap:6px;flex-wrap:wrap }
-.draft-tag { display:inline-block;padding:1px 8px;border-radius:4px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;font-family:var(--font-mono) }
-.draft-highlight { background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3) !important }
+/* Timeline toggle */
+.timeline-toggle-wrap {
+  display: flex; gap: 6px; margin: 12px 0 0;
+  background: var(--ink-mid); border-radius: 10px; padding: 4px;
+}
+.timeline-toggle-btn {
+  flex: 1; padding: 9px 12px; border: none; border-radius: 8px;
+  font-family: var(--font-body); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  background: transparent; color: var(--muted);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.timeline-toggle-btn.active { background: var(--gold); color: var(--ink); box-shadow: 0 2px 8px rgba(249,178,76,0.3); }
+.timeline-toggle-btn:hover:not(.active) { color: var(--white); }
 
-/* ── Timeline ── */
-.timeline-container { position:relative;padding-left:28px }
-.timeline-container::before { content:'';position:absolute;left:8px;top:4px;bottom:4px;width:2px;background:var(--border) }
-.timeline-entry { position:relative;margin-bottom:16px;padding:10px 14px;background:var(--ink-mid);border:1px solid var(--border);border-radius:8px }
-.timeline-entry::before { content:'';position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--ink) }
-.timeline-entry .entry-date { font-size:10px;font-family:var(--font-mono);color:var(--muted) }
-.timeline-entry .entry-title { font-size:12px;font-weight:600;color:var(--white);margin:2px 0 }
-.timeline-entry .entry-desc { font-size:11px;color:var(--muted);line-height:1.5 }
-.timeline-form { display:flex;flex-direction:column;gap:8px;margin-bottom:16px }
-.timeline-form-row { display:flex;gap:8px;flex-wrap:wrap }
-.timeline-form input,.timeline-form select { background:var(--ink-mid);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--white);font-size:12px;outline:none;flex:1;min-width:80px }
-.timeline-form textarea { background:var(--ink-mid);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--white);font-size:12px;outline:none;flex:1;min-width:100%;resize:vertical;font-family:inherit }
-.timeline-form button { background:var(--accent);border:none;border-radius:6px;padding:8px 16px;color:#000;font-weight:600;font-size:11px;cursor:pointer;transition:.2s;align-self:flex-start }
-.timeline-form button:hover { opacity:.85 }
-.timeline-empty { text-align:center;padding:24px;color:var(--muted);font-size:12px }
+/* Intel card */
+.charge-intel {
+  display: none; margin-top: 14px;
+  background: var(--ink-card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+.charge-intel.open { display: block; }
+.charge-intel-header {
+  padding: 16px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.charge-intel-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--white); }
+.charge-intel-statute { font-family: var(--font-mono); font-size: 9px; color: var(--gold); letter-spacing: 1px; margin-top: 3px; }
+.charge-intel-degree {
+  font-family: var(--font-mono); font-size: 9px; padding: 3px 10px;
+  border-radius: 6px; letter-spacing: 1px; text-transform: uppercase;
+  flex-shrink: 0;
+}
+.charge-intel-degree.capital { background: rgba(248,113,113,0.2); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+.charge-intel-degree.life { background: rgba(249,178,76,0.15); color: var(--gold); border: 1px solid rgba(249,178,76,0.3); }
+.charge-intel-degree.f1 { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+.charge-intel-degree.f2 { background: rgba(96,165,250,0.12); color: var(--sky); border: 1px solid rgba(96,165,250,0.25); }
 
-/* ── Evidence / Exhibits ── */
-.evidence-panel { margin-top:16px;padding:12px;background:var(--ink-mid);border:1px solid var(--border);border-radius:10px }
-.evidence-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:10px }
-.evidence-header h4 { font-size:12px;font-weight:600;color:var(--white);margin:0 }
-.evidence-add { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px }
-.evidence-add input { background:var(--ink);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--white);font-size:11px;outline:none;flex:1;min-width:100px }
-.evidence-add button { background:var(--accent);border:none;border-radius:6px;padding:7px 12px;color:#000;font-weight:600;font-size:10px;cursor:pointer;white-space:nowrap }
-.evidence-list { display:flex;flex-direction:column;gap:4px }
-.evidence-item { display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--ink);border-radius:6px;font-size:11px;color:var(--white) }
-.evidence-item .ev-num { font-family:var(--font-mono);color:var(--muted);min-width:24px;font-size:10px }
-.evidence-item .ev-label { flex:1 }
-.evidence-item .ev-del { cursor:pointer;color:var(--muted);font-size:14px;line-height:1;padding:0 4px;transition:.2s }
-.evidence-item .ev-del:hover { color:var(--fire) }
-.evidence-empty { text-align:center;padding:16px;color:var(--muted);font-size:11px }
+/* Plain English bar */
+.charge-plain-toggle {
+  padding: 10px 18px; background: rgba(45,212,191,0.08);
+  border-bottom: 1px solid rgba(45,212,191,0.15);
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  font-size: 11px; color: var(--teal); line-height: 1.5;
+}
+.charge-plain-toggle:hover { background: rgba(45,212,191,0.12); }
+.charge-plain-toggle .toggle-indicator {
+  width: 16px; height: 16px; border-radius: 4px; border: 2px solid var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.2s; font-size: 9px;
+}
+.charge-plain-toggle .toggle-indicator.on { background: var(--teal); color: var(--ink); }
 
-/* ── Offline banner ── */
-.offline-banner { position:fixed;bottom:0;left:0;right:0;background:#92400e;color:#fef3c7;text-align:center;padding:8px 12px;font-size:11px;z-index:9999;transform:translateY(100%);transition:transform .3s ease }
-.offline-banner.show { transform:translateY(0) }
+/* Risk grid */
+.risk-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 6px; padding: 14px 18px;
+}
+.risk-badge {
+  padding: 8px 10px; border-radius: 8px; text-align: center;
+  font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.5px;
+  line-height: 1.4; text-transform: uppercase; cursor: help;
+}
+.risk-badge.critical { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+.risk-badge.danger { background: rgba(251,191,36,0.12); color: #fb923c; border: 1px solid rgba(251,191,36,0.25); }
+.risk-badge.warning { background: rgba(249,178,76,0.1); color: var(--gold); border: 1px solid rgba(249,178,76,0.2); }
+.risk-badge.safe { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+.risk-badge .rb-icon { display: block; font-size: 14px; margin-bottom: 4px; }
+.risk-badge .rb-label { display: block; font-weight: 700; }
 
-/* ── Export toolbar ── */
-.export-toolbar { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px }
-.export-toolbar button { background:var(--ink-mid);border:1px solid var(--border);border-radius:6px;padding:6px 12px;color:var(--white);font-size:11px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:5px }
-.export-toolbar button:hover { border-color:var(--accent);background:var(--ink-mid) }
+/* Intel body sections */
+.charge-intel-body { padding: 0 18px 18px; }
+.charge-section-label {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px;
+  color: var(--muted); text-transform: uppercase; margin: 14px 0 8px;
+  padding-bottom: 4px; border-bottom: 1px solid var(--border);
+}
+.charge-detail-list { list-style: none; padding: 0; margin: 0; }
+.charge-detail-list li {
+  font-size: 12px; color: var(--muted); padding: 4px 0;
+  display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
+}
+.charge-detail-list li::before { content: '›'; color: var(--gold); font-weight: 700; flex-shrink: 0; }
 
-/* TOOLS TAB */
-.calc-card { margin-bottom:16px;padding:16px;background:var(--ink-card);border-radius:var(--radius);border:1px solid var(--border) }
-.calc-label { display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:var(--font-mono);margin-bottom:6px }
-.calc-input { width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--ink-mid);color:var(--white);font-size:14px;font-family:var(--font-body);outline:none }
-.calc-input:focus { border-color:var(--gold) }
-.calc-result { padding:16px;margin-top:8px;border-radius:10px;background:var(--ink-card);border:1px solid var(--border) }
-.calc-result.highlight { border-color:rgba(249,178,76,0.3);background:var(--gold-dim) }
-.calc-result .label { font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:var(--font-mono) }
-.calc-result .value { font-size:18px;font-weight:700;color:var(--gold);margin-top:4px }
-.calc-result .note { font-size:11px;color:var(--muted);margin-top:6px }
+/* Timeline visual */
+.charge-timeline {
+  position: relative; padding-left: 24px; margin: 10px 0;
+}
+.charge-timeline::before {
+  content: ''; position: absolute; left: 6px; top: 4px; bottom: 4px;
+  width: 2px; background: linear-gradient(180deg, var(--gold), var(--teal), var(--muted));
+}
+.charge-tl-entry {
+  position: relative; padding: 6px 12px; margin-bottom: 4px;
+  font-size: 11px; color: var(--muted); line-height: 1.5;
+}
+.charge-tl-entry::before {
+  content: ''; position: absolute; left: -18px; top: 9px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--ink-card); border: 2px solid var(--gold);
+}
+.charge-tl-entry.current::before { background: var(--gold); box-shadow: 0 0 8px rgba(249,178,76,0.5); }
+.charge-tl-entry .tl-label { color: var(--white); font-weight: 600; }
+.charge-tl-entry .tl-sub { display: block; font-size: 10px; color: var(--muted); margin-top: 1px; }
 
-/* GLOSSARY TAB */
-.glossary-term { padding:14px 16px;background:var(--ink-card);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:8px }
-.glossary-term .term { font-weight:600;color:var(--gold);font-size:14px }
-.glossary-term .def { font-size:12px;color:var(--muted);line-height:1.7;margin-top:4px }
+/* Motion chips */
+.charge-motion-chips {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+}
+.charge-motion-chip {
+  padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
+  font-size: 10px; color: var(--muted); cursor: pointer;
+  transition: all 0.2s; background: transparent; font-family: var(--font-body);
+}
+.charge-motion-chip:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+.charge-motion-chip.build {
+  background: var(--gold); color: var(--ink); border-color: var(--gold);
+  font-weight: 700; font-size: 11px; padding: 8px 16px;
+}
+.charge-motion-chip.build:hover { box-shadow: var(--gold-glow); }
+
+/* Detection alerts */
+.charge-alerts { margin: 0 18px 14px; }
+.charge-alert {
+  padding: 10px 12px; border-radius: 8px; margin-bottom: 6px;
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 11px; line-height: 1.5;
+}
+.charge-alert.critical { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); color: rgba(248,113,113,0.9); }
+.charge-alert.warning { background: rgba(249,178,76,0.08); border: 1px solid rgba(249,178,76,0.2); color: rgba(249,178,76,0.85); }
+.charge-alert .ca-icon { flex-shrink: 0; }
+.charge-alert .ca-text a { color: var(--gold); text-decoration: underline; }
+
+/* Strategic analysis */
+.charge-strategic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+@media(max-width:480px) { .charge-strategic-grid { grid-template-columns: 1fr; } }
+.charge-strat-card {
+  padding: 12px; border-radius: 10px; border: 1px solid var(--border);
+}
+.charge-strat-card.defenses { background: rgba(74,222,128,0.05); border-color: rgba(74,222,128,0.2); }
+.charge-strat-card.weaknesses { background: rgba(248,113,113,0.05); border-color: rgba(248,113,113,0.2); }
+.charge-strat-card.attacks { background: rgba(96,165,250,0.05); border-color: rgba(96,165,250,0.2); }
+.charge-strat-card h5 { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-mono); margin-bottom: 6px; }
+.charge-strat-card.defenses h5 { color: var(--green); }
+.charge-strat-card.weaknesses h5 { color: var(--red); }
+.charge-strat-card.attacks h5 { color: var(--sky); }
+.charge-strat-card ul { list-style: none; padding: 0; margin: 0; }
+.charge-strat-card li { font-size: 11px; color: var(--muted); padding: 2px 0; line-height: 1.5; }
+.charge-strat-card li::before { content: '› '; }
+
+/* Collateral consequences */
+.charge-collateral-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; margin: 10px 0; }
+.charge-collateral-item {
+  padding: 8px 10px; border-radius: 6px; background: var(--ink-mid);
+  border: 1px solid var(--border); font-size: 11px; line-height: 1.5;
+}
+.charge-collateral-item .cc-icon { display: block; font-size: 16px; margin-bottom: 4px; }
+.charge-collateral-item .cc-label { color: var(--white); font-weight: 600; font-size: 10px; display: block; margin-bottom: 2px; }
+.charge-collateral-item .cc-detail { color: var(--muted); font-size: 10px; display: block; }
+
+/* Critical countdown */
+.charge-countdown-wrap { padding: 0 18px 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+.charge-countdown {
+  flex: 1; min-width: 100px; padding: 10px; border-radius: 8px; text-align: center;
+  background: var(--ink-mid); border: 1px solid var(--border);
+}
+.charge-countdown.urgent { border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.1); }
+.charge-countdown .cd-value { font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--gold); }
+.charge-countdown.urgent .cd-value { color: var(--red); }
+.charge-countdown .cd-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+/* Empty state */
+.charge-empty {
+  text-align: center; padding: 30px 20px; color: var(--muted);
+  font-size: 13px; line-height: 1.7;
+}
+.charge-empty .ce-icon { font-size: 36px; margin-bottom: 12px; display: block; }
 </style>
 </head>
 <body>
@@ -1182,12 +1329,53 @@ body.low-distraction #tabnav { display: none; }
     <p><strong>Not legal advice.</strong> This tool helps you organize your information and understand Florida motion procedures. Always consult a licensed Florida attorney when possible. Florida Legal Services: <strong>1-800-747-0502</strong>. Florida Justice Center: <strong>954-758-7555</strong>.</p>
   </div>
 
-  <div class="resume-banner" id="resume-banner">
-    <p>You have an unfinished motion. Continue where you left off?</p>
-    <div style="display:flex;gap:8px;flex-shrink:0">
-      <button class="resume-btn" onclick="resumeDraft()">Continue</button>
-      <button class="resume-btn-secondary" onclick="clearAutoDraft()">Start Fresh</button>
+  <!-- ═══ CHARGE LEGAL INTELLIGENCE ENGINE ═══ -->
+  <div class="charge-search-section">
+    <div class="charge-search-wrap">
+      <span class="charge-search-icon">🔍</span>
+      <input class="charge-search-bar" id="charge-search" type="search" placeholder="Search a charge — e.g. murder, 893.135, trafficking, fentanyl, armed robbery..." autocomplete="off" spellcheck="false">
+      <div class="charge-autocomplete" id="charge-ac"></div>
     </div>
+    <div class="timeline-toggle-wrap">
+      <button class="timeline-toggle-btn active" id="tl-pretrial" onclick="setTimeline('pretrial')">⚖️ Pre-Trial</button>
+      <button class="timeline-toggle-btn" id="tl-postconviction" onclick="setTimeline('postconviction')">📜 Post-Conviction</button>
+    </div>
+  </div>
+
+  <!-- ═══ CHARGE INTEL CARD ═══ -->
+  <div class="charge-intel" id="charge-intel">
+    <div class="charge-intel-header">
+      <div>
+        <div class="charge-intel-title" id="ci-name"></div>
+        <div class="charge-intel-statute" id="ci-statute"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px" id="ci-plain"></div>
+      </div>
+      <div class="charge-intel-degree" id="ci-degree"></div>
+    </div>
+    <div class="charge-plain-toggle" id="ci-plain-toggle" onclick="togglePlainEnglish()">
+      <div class="toggle-indicator">✓</div>
+      <span>Plain English view — shows legal terms in everyday language</span>
+    </div>
+    <div class="risk-grid" id="ci-risks"></div>
+    <div class="charge-alerts" id="ci-alerts"></div>
+    <div class="charge-intel-body">
+      <div class="charge-section-label">Procedural Timeline</div>
+      <div class="charge-timeline" id="ci-timeline"></div>
+      <div class="charge-countdown-wrap" id="ci-countdown"></div>
+      <div class="charge-section-label">Critical Motions</div>
+      <div class="charge-motion-chips" id="ci-motions"></div>
+      <div class="charge-section-label">Strategic Analysis</div>
+      <div class="charge-strategic-grid" id="ci-strategic"></div>
+      <div class="charge-section-label">Constitutional Issues</div>
+      <div class="charge-detail-list" id="ci-constitutional"></div>
+      <div class="charge-section-label">Collateral Consequences</div>
+      <div class="charge-collateral-grid" id="ci-collateral"></div>
+    </div>
+  </div>
+
+  <div class="charge-empty" id="charge-empty">
+    <span class="ce-icon">🔍</span>
+    Search any Florida felony above to see legal intelligence, strategic analysis, risk assessment, and applicable motions.
   </div>
 
   <div class="section-title">Select Your Motion Type</div>
@@ -3231,6 +3419,318 @@ function removeTimelineEntry(i) {
   renderPreview(lastViewedDraft);
 }
 
+// ═══════════════════════════════════════════════
+// CHARGE LEGAL INTELLIGENCE ENGINE
+// ═══════════════════════════════════════════════
+
+let chargeTimeline = 'pretrial';
+let chargeSelected = null;
+let chargePlainEnglish = false;
+
+const CHARGE_MOTION_MAP = {
+  "First-Degree Murder": ["3850","3800","appeal"],
+  "Second-Degree Murder": ["3850","3800","appeal"],
+  "Armed Robbery": ["3850","3800","appeal"],
+  "Sexual Battery": ["3850","appeal"],
+  "Kidnapping": ["3850","3800","appeal"],
+  "Fentanyl Trafficking": ["3850","3800","appeal"],
+  "Arson": ["3850","3800","appeal"],
+  "Carjacking": ["3850","3800","appeal"],
+  "Home Invasion Robbery": ["3850","3800","appeal"],
+  "Aggravated Child Abuse": ["3850","appeal"],
+  "Cannabis Trafficking": ["3850","3800","appeal"],
+  "DUI Manslaughter": ["3850","3800","appeal"],
+  "Felon in Possession of Firearm": ["3850","3800","appeal"],
+  "Cocaine Trafficking": ["3850","3800","appeal"],
+  "Attempted First-Degree Murder": ["3850","3800","appeal"]
+};
+
+function initChargeSearch() {
+  const input = document.getElementById('charge-search');
+  if (!input) return;
+  let debounceTimer;
+  input.addEventListener('input', function() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => searchCharges(this.value), 150);
+  });
+  input.addEventListener('focus', function() {
+    if (this.value.trim().length >= 1) searchCharges(this.value);
+  });
+  document.addEventListener('click', function(e) {
+    const wrap = document.getElementById('charge-ac');
+    if (wrap && !e.target.closest('.charge-search-wrap')) {
+      wrap.classList.remove('open');
+    }
+  });
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.getElementById('charge-ac')?.classList.remove('open');
+    }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const items = document.querySelectorAll('.charge-ac-item');
+      const current = document.querySelector('.charge-ac-item.highlight');
+      let idx = -1;
+      if (current) { idx = Array.from(items).indexOf(current); current.classList.remove('highlight'); }
+      if (e.key === 'ArrowDown') idx = Math.min(idx + 1, items.length - 1);
+      else idx = Math.max(idx - 1, 0);
+      if (items[idx]) items[idx].classList.add('highlight');
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const highlighted = document.querySelector('.charge-ac-item.highlight');
+      if (highlighted) { highlighted.click(); return; }
+      if (input.value.trim().length >= 1) searchCharges(input.value);
+    }
+  });
+}
+
+function searchCharges(query) {
+  const ac = document.getElementById('charge-ac');
+  const results = fuzzySearchCharges(query);
+  if (!results.length || !query.trim()) {
+    ac.classList.remove('open');
+    return;
+  }
+  ac.innerHTML = results.map((r, i) => {
+    const c = r.charge;
+    const degClass = c.degree.includes('Capital') ? 'capital' : c.degree.includes('Life') ? 'life' : c.degree.includes('F1') ? 'f1' : 'f2';
+    return '<div class="charge-ac-item" data-idx="'+r.idx+'" onclick="selectCharge('+r.idx+')">'+
+      '<span class="charge-ac-degree '+degClass+'">'+esc(c.degree.replace('Felony','').trim())+'</span>'+
+      '<span class="charge-ac-name">'+esc(c.name)+'</span>'+
+      '<span class="charge-ac-statute">'+esc(c.statute)+'</span>'+
+    '</div>';
+  }).join('');
+  ac.classList.add('open');
+}
+
+function selectCharge(idx) {
+  const c = CHARGES[idx];
+  if (!c) return;
+  chargeSelected = c;
+  document.getElementById('charge-search').value = c.name;
+  document.getElementById('charge-ac').classList.remove('open');
+  document.getElementById('charge-empty').style.display = 'none';
+  renderChargeIntel(c);
+}
+
+function setTimeline(tl) {
+  chargeTimeline = tl;
+  document.getElementById('tl-pretrial').classList.toggle('active', tl === 'pretrial');
+  document.getElementById('tl-postconviction').classList.toggle('active', tl === 'postconviction');
+  if (chargeSelected) renderChargeIntel(chargeSelected);
+}
+
+function togglePlainEnglish() {
+  chargePlainEnglish = !chargePlainEnglish;
+  const toggle = document.getElementById('ci-plain-toggle');
+  const indicator = toggle.querySelector('.toggle-indicator');
+  indicator.classList.toggle('on', chargePlainEnglish);
+  if (chargeSelected) renderChargeIntel(chargeSelected);
+}
+
+function renderChargeIntel(c) {
+  const intel = document.getElementById('charge-intel');
+  intel.classList.add('open');
+
+  const tl = chargeTimeline;
+  const plain = chargePlainEnglish;
+
+  // Header
+  const degClass = c.degree.includes('Capital') ? 'capital' : c.degree.includes('Life') ? 'life' : c.degree.includes('F1') ? 'f1' : 'f2';
+  document.getElementById('ci-name').textContent = c.name;
+  document.getElementById('ci-statute').textContent = c.statute;
+  document.getElementById('ci-plain').textContent = plain ? c.plainEnglish : '';
+  document.getElementById('ci-plain').style.display = plain ? 'block' : 'none';
+  const degEl = document.getElementById('ci-degree');
+  degEl.textContent = c.degree;
+  degEl.className = 'charge-intel-degree ' + degClass;
+
+  // Plain English toggle indicator
+  const toggleEl = document.getElementById('ci-plain-toggle');
+  const indicator = toggleEl.querySelector('.toggle-indicator');
+  indicator.classList.toggle('on', plain);
+  toggleEl.querySelector('span').textContent = plain
+    ? 'Legal view — shows statute and formal language'
+    : 'Plain English view — shows legal terms in everyday language';
+
+  // Risk badges
+  renderRiskBadges(c, tl);
+
+  // Detection alerts
+  renderAlerts(c);
+
+  // Timeline
+  renderChargeTimeline(c, tl);
+
+  // Countdown/Deadlines
+  renderCountdowns(c, tl);
+
+  // Critical motions
+  renderChargeMotions(c);
+
+  // Strategic analysis
+  renderStrategic(c);
+
+  // Constitutional issues
+  renderConstitutional(c);
+
+  // Collateral consequences
+  renderCollateral(c);
+
+  intel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function renderRiskBadges(c, tl) {
+  const grid = document.getElementById('ci-risks');
+  const levels = getThreatLevels(c, tl);
+  if (!levels.length) { grid.innerHTML = ''; return; }
+  grid.innerHTML = levels.map(l => {
+    const iconMap = { critical: '🔴', danger: '🟠', warning: '🟡', safe: '🟢' };
+    return '<div class="risk-badge '+l.severity+'" title="'+esc(l.detail)+'">'+
+      '<span class="rb-icon">'+(iconMap[l.severity]||'⚪')+'</span>'+
+      '<span class="rb-label">'+esc(l.label)+'</span>'+
+    '</div>';
+  }).join('');
+}
+
+function renderAlerts(c) {
+  const el = document.getElementById('ci-alerts');
+  const alerts = getDetectionAlerts(c);
+  if (!alerts.length) { el.innerHTML = ''; return; }
+  el.innerHTML = alerts.map(a => {
+    const icon = a.type === 'critical' ? '🚨' : '⚠️';
+    return '<div class="charge-alert '+a.type+'"><span class="ca-icon">'+icon+'</span><span class="ca-text">'+esc(a.text)+'</span></div>';
+  }).join('');
+}
+
+function renderChargeTimeline(c, tl) {
+  const el = document.getElementById('ci-timeline');
+  const data = getProceduralTimeline(c, tl);
+  if (!data.stages.length) { el.innerHTML = ''; return; }
+  const stages = data.stages;
+  const last = stages.length - 1;
+  el.innerHTML = stages.map((s, i) => {
+    const isCurrent = i === Math.min(Math.floor(stages.length / 3), last);
+    const sub = i === 0 ? (tl === 'pretrial' ? 'Entry point' : 'Judgment entered')
+      : i === last ? (tl === 'pretrial' ? 'Trial or plea' : 'Reentry pathway')
+      : '';
+    return '<div class="charge-tl-entry'+(isCurrent ? ' current' : '')+'">'+
+      '<span class="tl-label">'+esc(s)+'</span>'+
+      (sub ? '<span class="tl-sub">'+esc(sub)+'</span>' : '')+
+    '</div>';
+  }).join('');
+}
+
+function renderCountdowns(c, tl) {
+  const el = document.getElementById('ci-countdown');
+  if (tl === 'pretrial') {
+    const speedyDays = c.procedural?.pretrial?.speedyTrialPeriod || '175';
+    el.innerHTML =
+      '<div class="charge-countdown"><div class="cd-value">'+speedyDays+'</div><div class="cd-label">Speedy Trial Days</div></div>'+
+      '<div class="charge-countdown"><div class="cd-value">'+esc(c.procedural?.pretrial?.arraignmentDeadline?.split('.')[0] || '21 days')+'</div><div class="cd-label">Arraignment Deadline</div></div>';
+  } else {
+    const pc = c.procedural?.postconviction;
+    el.innerHTML =
+      '<div class="charge-countdown"><div class="cd-value">'+esc(pc?.directAppealDeadline || '30 days')+'</div><div class="cd-label">Direct Appeal</div></div>'+
+      '<div class="charge-countdown"><div class="cd-value">'+esc(pc?.['3850Deadline'] || '2 years')+'</div><div class="cd-label">3.850 Deadline</div></div>'+
+      '<div class="charge-countdown urgent"><div class="cd-value">'+esc(pc?.['3800Deadline'] || 'No limit')+'</div><div class="cd-label">3.800(a) Limit</div></div>';
+  }
+}
+
+function renderChargeMotions(c) {
+  const el = document.getElementById('ci-motions');
+  const tl = chargeTimeline;
+  const motions = tl === 'pretrial'
+    ? (c.procedural?.pretrial?.criticalMotions || [])
+    : ['Direct Appeal', 'Rule 3.850 Motion', 'Rule 3.800 Motion', 'Clemency Application'];
+
+  const buildMotions = CHARGE_MOTION_MAP[c.name] || ['3850'];
+
+  let html = motions.slice(0, 5).map(m => {
+    return '<span class="charge-motion-chip">'+esc(m)+'</span>';
+  }).join('');
+
+  html += buildMotions.map(mid => {
+    const flow = FLOWS[mid];
+    if (!flow) return '';
+    return '<span class="charge-motion-chip build" onclick="buildFromCharge(\''+mid+'\')">⚡ Build '+esc(flow.tag)+'</span>';
+  }).join('');
+
+  el.innerHTML = html;
+}
+
+function buildFromCharge(mid) {
+  if (!FLOWS[mid]) { toast('Motion type not available'); return; }
+  launchMotion(mid);
+}
+
+function renderStrategic(c) {
+  const el = document.getElementById('ci-strategic');
+  const sa = getStrategicAnalysis(c);
+  if (!sa) { el.innerHTML = ''; return; }
+
+  let html = '';
+  if (sa.defenses && sa.defenses.length) {
+    html += '<div class="charge-strat-card defenses"><h5>🛡 Possible Defenses</h5><ul>'+
+      sa.defenses.slice(0, 6).map(d => '<li>'+esc(d)+'</li>').join('')+'</ul></div>';
+  }
+  if (sa.weaknesses && sa.weaknesses.length) {
+    html += '<div class="charge-strat-card weaknesses"><h5>⚠ Case Weaknesses</h5><ul>'+
+      sa.weaknesses.slice(0, 6).map(w => '<li>'+esc(w)+'</li>').join('')+'</ul></div>';
+  }
+  if (sa.attackVectors && sa.attackVectors.length) {
+    html += '<div class="charge-strat-card attacks"><h5>🎯 Attack Vectors</h5><ul>'+
+      sa.attackVectors.slice(0, 6).map(a => '<li>'+esc(a)+'</li>').join('')+'</ul></div>';
+  }
+  el.innerHTML = html;
+}
+
+function renderConstitutional(c) {
+  const el = document.getElementById('ci-constitutional');
+  const con = c.constitutional;
+  if (!con) { el.innerHTML = ''; return; }
+  let html = '';
+  const labelMap = {
+    fourthAmendment: '4th Amendment — Unlawful Search/Seizure',
+    fifthAmendment: '5th Amendment — Self-Incrimination / Miranda',
+    sixthAmendment: '6th Amendment — Right to Counsel / Fair Trial',
+    dueProcess: '14th Amendment — Due Process',
+    iacPathways: 'IAC — Ineffective Assistance Pathways'
+  };
+  for (const [key, label] of Object.entries(labelMap)) {
+    const items = con[key];
+    if (items && items.length) {
+      html += '<li><strong style="color:var(--gold)">'+esc(label)+':</strong> ' +
+        items.slice(0, 4).map(i => esc(i)).join('; ') + '</li>';
+    }
+  }
+  el.innerHTML = html || '<li style="color:var(--muted)">Constitutional analysis available with case-specific facts.</li>';
+}
+
+function renderCollateral(c) {
+  const el = document.getElementById('ci-collateral');
+  const col = c.collateral;
+  if (!col) { el.innerHTML = ''; return; }
+  const iconMap = {
+    immigration: '🛂', firearm: '🔫', voting: '🗳', employment: '💼',
+    housing: '🏠', professionalLicenses: '📜', civilRights: '⚖️',
+    registration: '📋', publicBenefits: '💵', childCustody: '👶'
+  };
+  let html = '';
+  for (const [key, val] of Object.entries(col)) {
+    if (!val) continue;
+    const icon = iconMap[key] || '📌';
+    html += '<div class="charge-collateral-item">'+
+      '<span class="cc-icon">'+icon+'</span>'+
+      '<span class="cc-label">'+esc(key.replace(/([A-Z])/g,' $1').trim())+'</span>'+
+      '<span class="cc-detail">'+esc(val.length > 60 ? val.slice(0, 60)+'...' : val)+'</span>'+
+    '</div>';
+  }
+  el.innerHTML = html || '<div style="color:var(--muted);font-size:12px">No collateral consequence data available.</div>';
+}
+
+initChargeSearch();
 // ═══════════════════════════════════════════════
 // NEW ARCHITECTURE: Single-Question Wizard
 // ═══════════════════════════════════════════════
