@@ -1593,3 +1593,76 @@ const countyProfiles = {
     reentryResources: ["St. Johns Reentry Program"]
   }
 };
+
+// ═══════════════════════════════════════════════
+// ORM SCHEMA — Machine-Reasoning Data Layer
+// "The engine should reason, not just render"
+// ═══════════════════════════════════════════════
+// Transforms display-oriented charge data into
+// structured schema for legal analysis engine.
+// Extend this as new data sources become available.
+
+function toChargeSchema(charge) {
+  if (!charge) return null;
+  const metadata = {
+    id: charge.id || '',
+    name: charge.name || '',
+    plainEnglish: charge.plainEnglish || '',
+    statute: charge.statute || '',
+    degree: charge.degree || '',
+    keywords: charge.keywords || [],
+    aliases: charge.aliases || [],
+    schemaVersion: '1.0',
+    lastUpdated: '2026-05',
+    source: 'FL Statutes, Fla. R. Crim. P., case law corpus'
+  };
+  return {
+    statute: metadata,
+    metadata: {
+      chargeId: charge.id,
+      convictionStatus: 'presumed', // 'presumed' | 'adjudicated' | 'dismissed' | 'withheld'
+      pleaType: null,               // 'guilty' | 'no-contest' | 'not-guilty'
+      sentenceStatus: null          // 'pending' | 'imposed' | 'completed' | 'appealed'
+    },
+    procedural: charge.procedural || {},
+    sentencing: charge.sentencing || {},
+    constitutionalIssues: charge.constitutional || {},
+    collateralConsequences: charge.collateral || {},
+    strategicAttacks: charge.strategic || {},
+    timelines: {
+      pretrial: charge.procedural?.pretrial?.stageOrder || [],
+      criticalMotions: charge.procedural?.pretrial?.criticalMotions || [],
+      postconviction: charge.procedural?.postconviction || {}
+    },
+    bond: charge.bond || {},
+    detection: charge.detection || {},
+    countyOverrides: {}
+  };
+}
+
+// Runtime metadata enricher — merges session data into schema
+function enrichSchema(schema, session) {
+  if (!schema) return null;
+  if (session) {
+    schema.metadata.county = session.county || null;
+    schema.metadata.caseNumber = session.caseNum || null;
+    schema.metadata.defendantName = session.defendantName || null;
+    schema.metadata.defendantDOB = session.defendantDOB || null;
+    if (session.county && countyProfiles[session.county]) {
+      schema.countyOverrides[session.county] = countyProfiles[session.county];
+    }
+  }
+  return schema;
+}
+
+// Resolve a charge by name or statute — supports the capabilities engine
+function resolveCharge(nameOrStatute) {
+  if (!nameOrStatute) return null;
+  const q = nameOrStatute.toLowerCase();
+  for (const c of CHARGES) {
+    if (c.name.toLowerCase() === q || c.statute.toLowerCase() === q) return c;
+    if (c.keywords.some(k => k.toLowerCase() === q)) return c;
+    if (c.aliases.some(a => a.toLowerCase() === q)) return c;
+  }
+  return null;
+}

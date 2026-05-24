@@ -899,6 +899,25 @@ body::after {
 .reentry-check-label { font-size: 12px; font-weight: 600; color: var(--white); }
 .reentry-check-desc { font-size: 10px; color: var(--muted); margin-top: 1px; }
 @media(max-width:600px) { .reentry-grid { grid-template-columns: 1fr; } }
+
+/* ── CAPABILITIES ENGINE ── */
+.reentry-cap-summary { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.reentry-cap-stat { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: var(--stat-color); padding: 4px 10px; border: 1px solid var(--stat-color); border-radius: 20px; background: rgba(0,0,0,0.2); }
+.reentry-cap-stat-num { font-family: var(--font-mono); font-size: 14px; font-weight: 700; }
+.reentry-cap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.reentry-cap-item { background: var(--ink-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; cursor: pointer; transition: .15s; }
+.reentry-cap-item:hover { border-color: rgba(255,255,255,0.12); }
+.reentry-cap-item.expanded { border-color: rgba(249,178,76,0.2); }
+.reentry-cap-header { display: flex; align-items: center; gap: 8px; padding: 8px 10px; }
+.reentry-cap-icon { font-size: 16px; flex-shrink: 0; }
+.reentry-cap-label { flex: 1; font-size: 11px; font-weight: 600; color: var(--white); }
+.reentry-cap-status { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 6px; border: 1px solid; border-radius: 4px; white-space: nowrap; }
+.reentry-cap-body { display: none; padding: 0 10px 10px; font-size: 10px; line-height: 1.6; }
+.reentry-cap-item.expanded .reentry-cap-body { display: block; }
+.reentry-cap-note { color: var(--muted); margin-bottom: 6px; }
+.reentry-cap-action { color: var(--white); padding: 5px 8px; background: rgba(96,165,250,0.08); border-left: 2px solid var(--sky); border-radius: 4px; font-size: 10px; }
+.reentry-cap-action-icon { margin-right: 4px; }
+@media(max-width:600px) { .reentry-cap-grid { grid-template-columns: 1fr; } }
 #toast {
   position: fixed;
   bottom: 70px;
@@ -4895,6 +4914,128 @@ function getCollateralSummary(charge) {
   return Object.entries(charge.collateral).filter(([k,v]) => v).map(([k,v]) => ({ icon: iconMap[k] || '📌', label: k.replace(/([A-Z])/g,' $1').trim(), detail: v }));
 }
 
+// ═══════════════════════════════════════════════
+// LEGAL CAPABILITIES ENGINE
+// "What can this person STILL legally do right now?"
+// ═══════════════════════════════════════════════
+
+function computeCapabilities(charge, session) {
+  const caps = [];
+  const name = charge ? (charge.name || '').toLowerCase() : '';
+  const degree = charge ? (charge.degree || '') : '';
+  const isCapital = degree.includes('Capital');
+  const isLife = degree.includes('Life');
+  const isMurder = name.includes('murder');
+  const isSexualBattery = name.includes('sexual battery');
+  const isDrugTrafficking = name.includes('trafficking');
+  const isFirearmRelated = name.includes('firearm') || name.includes('armed') || name.includes('carjacking') || name.includes('robbery');
+  const isViolent = isMurder || isSexualBattery || isFirearmRelated || name.includes('arson') || name.includes('kidnapping') || name.includes('child abuse') || name.includes('home invasion');
+  const isDrug = name.includes('cannabis') || name.includes('cocaine') || name.includes('fentanyl') || name.includes('trafficking');
+  const county = session?.county || '';
+
+  // 1. VOTE
+  if (isMurder || isSexualBattery) {
+    caps.push({ id:'vote', status:'needsAction', icon:'🗳️', label:'Vote', note:'Forfeited — requires executive clemency for murder or sexual battery convictions per FL Constitution Art. VI, § 4.', action:'Apply to FL Clemency Board for restoration of voting rights.' });
+  } else if (isCapital || isLife) {
+    caps.push({ id:'vote', status:'needsAction', icon:'🗳️', label:'Vote', note:'Restored after full sentence completion including parole/probation per Amendment 4.', action:'Register at RegisterToVoteFlorida.gov once all sentence terms are complete.' });
+  } else {
+    caps.push({ id:'vote', status:'preserved', icon:'🗳️', label:'Vote', note:'Right to vote is preserved. Complete sentence terms, then register.', action:'RegisterToVoteFlorida.gov' });
+  }
+
+  // 2. JURY SERVICE
+  caps.push({ id:'jury', status:'forfeited', icon:'⚖️', label:'Serve on a Jury', note:'Permanently forfeited in Florida for felony conviction. Can only be restored through clemency.', action:'Apply for clemency through FL Clemency Board if restoration desired.' });
+
+  // 3. FIREARMS
+  if (isViolent || isDrugTrafficking) {
+    caps.push({ id:'firearm', status:'forfeited', icon:'🔫', label:'Possess Firearms', note:'Lifetime ban under 18 U.S.C. § 922(g) and FL law. No restoration path for violent/drug trafficking felonies in Florida.', action:'Permanent — no legal path to restoration in FL. Seek advice if uncertain.' });
+  } else {
+    caps.push({ id:'firearm', status:'forfeited', icon:'🔫', label:'Possess Firearms', note:'Lifetime ban under 18 U.S.C. § 922(g). Limited restoration possible through FL clemency or expungement (if conviction set aside).', action:'Seal/expunge may restore firearm rights if conviction is set aside. Otherwise clemency required.' });
+  }
+
+  // 4. EMPLOYMENT
+  if (isSexualBattery) {
+    caps.push({ id:'employment', status:'restricted', icon:'💼', label:'Work (Most Jobs)', note:'Sex offense convictions trigger permanent restrictions on working with children, the elderly, and disabled. Must register as sexual offender.', action:'Check FL sexual offender employment restrictions. Certain professions (healthcare, education) may be permanently barred.' });
+  } else {
+    caps.push({ id:'employment', status:'preserved', icon:'💼', label:'Work (Most Jobs)', note:'No blanket employment ban. Certain licensed professions (law, healthcare, real estate, education) may have restrictions. Many employers use background checks.', action:'Seek seal/expunge to improve employment prospects. Look into fair-chance hiring employers.' });
+  }
+
+  // 5. PUBLIC HOUSING
+  if (isSexualBattery) {
+    caps.push({ id:'housing', status:'forfeited', icon:'🏠', label:'Public Housing (HUD)', note:'Lifetime ban under HUD rules for sex offense convictions. No federal housing eligibility.', action:'Seek private housing, transitional reentry housing, or county-specific programs.' });
+  } else if (isDrugTrafficking) {
+    caps.push({ id:'housing', status:'restricted', icon:'🏠', label:'Public Housing (HUD)', note:'Mandatory 3-year ban for drug trafficking (first offense). Lifetime ban for subsequent. Local PHAs may have stricter rules.', action:'After 3 years, apply through local PHA. Seek transitional housing in the interim.' });
+  } else {
+    caps.push({ id:'housing', status:'varies', icon:'🏠', label:'Public Housing (HUD)', note:'No automatic ban. PHA reviews on case-by-case basis considering: nature of offense, time since, rehabilitation evidence.', action:'Contact local PHA directly. Collect rehabilitation evidence and character references.' });
+  }
+
+  // 6. FEDERAL STUDENT AID
+  caps.push({ id:'studentAid', status:'preserved', icon:'🎓', label:'Federal Student Aid (FAFSA/Pell)', note:'FAFSA eligibility restored since 2021 for most drug offenses. Previous ban limited to drug convictions is no longer enforced.', action:'File FAFSA at studentaid.gov. Check with school\'s financial aid office.' });
+
+  // 7. MILITARY SERVICE
+  caps.push({ id:'military', status:'forfeited', icon:'🎖️', label:'Military Service', note:'Felony conviction generally prohibits enlistment in all branches. Waivers extremely rare for serious felonies.', action:'No enlistment path for most felonies. Consider civilian service programs (AmeriCorps, Peace Corps may have restrictions).' });
+
+  // 8. HOLD PUBLIC OFFICE
+  caps.push({ id:'publicOffice', status:'forfeited', icon:'🏛️', label:'Hold Public Office', note:'Forfeited under FL Constitution for felony conviction. Not restored without clemency.', action:'Clemency required for restoration.' });
+
+  // 9. ADOPT / FOSTER
+  caps.push({ id:'adopt', status:'restricted', icon:'👶', label:'Adopt or Foster Children', note:'Felony conviction does not automatically bar adoption but significantly impacts home study. Certain offenses (violence, child abuse, sexual) create presumptive bars.', action:'Seal/expunge improves chances. Consult with adoption agency about specific restrictions.' });
+
+  // 10. PROFESSIONAL LICENSES
+  if (isMurder || isSexualBattery) {
+    caps.push({ id:'profLicense', status:'forfeited', icon:'📜', label:'Professional Licenses', note:'Murder and sexual battery convictions permanently disqualify many professional licenses under FL law (moral turpitude clause).', action:'Check specific licensing board requirements. Some may consider expungement.' });
+  } else {
+    caps.push({ id:'profLicense', status:'varies', icon:'📜', label:'Professional Licenses', note:'FL licensing boards evaluate on case-by-case basis. Key factors: time since conviction, relationship to profession, rehabilitation evidence.', action:'Contact licensing board directly. Demonstrate rehabilitation. Seal/expunge record first if eligible.' });
+  }
+
+  // 11. MAKE CONTRACTS
+  caps.push({ id:'contracts', status:'preserved', icon:'📝', label:'Make Contracts', note:'Full right to enter contracts preserved. Cannot be restricted based on felony status.', action:'No action needed — right is fully intact.' });
+
+  // 12. OWN PROPERTY
+  caps.push({ id:'property', status:'preserved', icon:'🏘️', label:'Own Property', note:'Full right to own, buy, sell, and inherit property preserved.', action:'No action needed — right is fully intact.' });
+
+  // 13. MARRY / DIVORCE
+  caps.push({ id:'family', status:'preserved', icon:'💍', label:'Marry / Divorce / Parent', note:'Full rights preserved. Felony status cannot restrict marriage, divorce, or parental rights (though it may factor in custody evaluations).', action:'No action needed. For custody concerns, document rehabilitation.' });
+
+  // 14. ACCESS COURTS (SUE/BE SUED)
+  caps.push({ id:'accessCourts', status:'preserved', icon:'⚡', label:'Access Courts (Sue/Be Sued)', note:'Full access to courts preserved. Can file civil lawsuits, appeal, and seek legal remedies.', action:'No action needed — right is fully intact. For criminal appeals, deadlines apply.' });
+
+  // 15. MAKE A WILL / INHERIT
+  caps.push({ id:'estate', status:'preserved', icon:'📄', label:'Make a Will / Inherit', note:'Full testamentary rights preserved. Can make wills, trusts, and inherit property.', action:'No action needed.' });
+
+  // 16. MEDICAL DECISIONS
+  caps.push({ id:'medical', status:'preserved', icon:'🏥', label:'Medical Decision-Making', note:'Full right to make medical decisions, healthcare directives, and appoint healthcare surrogates.', action:'No action needed.' });
+
+  // 17. PRACTICE RELIGION
+  caps.push({ id:'religion', status:'preserved', icon:'⛪', label:'Practice Religion', note:'Full religious freedom preserved under First Amendment. Cannot be restricted.', action:'No action needed.' });
+
+  // 18. IMMIGRATION STATUS
+  if (isDrugTrafficking || isViolent || isMurder || isSexualBattery) {
+    caps.push({ id:'immigration', status:'needsAction', icon:'🛂', label:'Immigration Status', note:'Aggravated felony under INA — mandatory deportation for non-citizens. No relief available for most aggravated felonies.', action:'URGENT: Consult with immigration attorney immediately. File for any available relief (withholding of removal, CAT protection).' });
+  } else if (isDrug) {
+    caps.push({ id:'immigration', status:'needsAction', icon:'🛂', label:'Immigration Status', note:'Drug trafficking conviction is an aggravated felony under INA. Non-citizens face deportation.', action:'URGENT: Consult with immigration attorney. Possible relief depends on specific offense and immigration history.' });
+  } else {
+    caps.push({ id:'immigration', status:'needsAction', icon:'🛂', label:'Immigration Status', note:'Many felonies trigger immigration consequences. Non-citizens should never assume a guilty plea is safe.', action:'Consult with immigration attorney before any plea or post-conviction proceeding.' });
+  }
+
+  // 19. DRIVER'S LICENSE
+  caps.push({ id:'driversLicense', status:'varies', icon:'🚗', label:'Driver\'s License', note:'FL DHSMV may suspend license upon felony conviction. Reinstatement requires payment of fees and completion of court-ordered programs.', action:'Check license status at flhsmv.gov. Pay reinstatement fee ($45-$130) and complete any required programs.' });
+
+  // 20. VOTER REGISTRATION
+  caps.push({ id:'passport', status:'preserved', icon:'🛂', label:'Apply for US Passport', note:'Right to apply for US passport preserved. Incarceration or probation may limit ability to travel, but no legal bar on passport issuance.', action:'Apply at travel.state.gov. If on probation, get travel clearance from PO first.' });
+
+  // 21. FOOD ASSISTANCE (SNAP)
+  caps.push({ id:'snap', status:'varies', icon:'🍎', label:'Food Assistance (SNAP)', note:'FL has modified SNAP ban for drug felons. State opted out of federal lifetime ban. Eligibility depends on compliance with probation/parole.', action:'Apply through FL ACCESS (myflorida.com/access). Provide proof of compliance with sentence terms.' });
+
+  // 22. MEDICAID
+  caps.push({ id:'medicaid', status:'preserved', icon:'🏥', label:'Medicaid / Healthcare', note:'Medicaid eligibility is not barred by felony conviction. Apply through FL ACCESS.', action:'Apply at myflorida.com/access or healthcare.gov.' });
+
+  // Build counts
+  const counts = { preserved:0, restricted:0, forfeited:0, needsAction:0, varies:0 };
+  caps.forEach(c => counts[c.status]++);
+
+  return { capabilities: caps, counts, chargeName: charge?.name || '', county };
+}
+
 function renderReentry() {
   const el = document.getElementById('reentry-content');
   if (!el) return;
@@ -4905,14 +5046,10 @@ function renderReentry() {
   const chargeStatute = session?.chargeStatute || '';
   const defendantName = session?.defendantName || '';
 
-  // Find the charge object
-  let charge = null;
-  if (chargeName) {
-    for (const c of CHARGES) {
-      if (c.name === chargeName || c.statute === chargeStatute) { charge = c; break; }
-    }
-  }
-
+  // Find the charge object using schema engine
+  let charge = chargeName ? resolveCharge(chargeName) || resolveCharge(chargeStatute) : null;
+  // Build structured schema for capabilities engine
+  const chargeSchema = charge ? enrichSchema(toChargeSchema(charge), session) : null;
   // County profile
   const profile = getCountyProfile(county);
   const checklist = loadReentryChecklist();
@@ -4949,6 +5086,36 @@ function renderReentry() {
     '</div>' +
     (!session ? '<div class="reentry-hero-cta"><span class="reentry-cta-btn" onclick="switchTab(\'builder\')">⚡ Start by searching a charge above</span></div>' : '') +
   '</div>';
+
+  // ── WHAT YOU CAN STILL DO ──
+  const caps = computeCapabilities(charge, session);
+  const statusLabels = { preserved:'Preserved', restricted:'Restricted', forfeited:'Forfeited', needsAction:'Action Needed', varies:'Varies' };
+  const statusColors = { preserved:'var(--green)', restricted:'var(--gold)', forfeited:'var(--red)', needsAction:'var(--sky)', varies:'var(--muted)' };
+
+  html += '<div class="reentry-section"><div class="reentry-section-title">🔍 What You Can Still Legally Do</div>' +
+    '<div class="reentry-cap-summary">' +
+    Object.entries(caps.counts).filter(([k,v]) => v > 0).map(([k,v]) =>
+      '<span class="reentry-cap-stat" style="--stat-color:' + (statusColors[k] || 'var(--muted)') + '">' +
+      '<span class="reentry-cap-stat-num">' + v + '</span> ' + statusLabels[k] +
+      '</span>'
+    ).join('') +
+    '</div>' +
+    '<div class="reentry-cap-grid">' +
+    caps.capabilities.map(c => {
+      const sc = statusColors[c.status] || 'var(--muted)';
+      return '<div class="reentry-cap-item" onclick="this.classList.toggle(\'expanded\')">' +
+        '<div class="reentry-cap-header">' +
+        '<span class="reentry-cap-icon">' + c.icon + '</span>' +
+        '<span class="reentry-cap-label">' + esc(c.label) + '</span>' +
+        '<span class="reentry-cap-status" style="color:' + sc + ';border-color:' + sc + '">' + statusLabels[c.status] + '</span>' +
+        '</div>' +
+        '<div class="reentry-cap-body">' +
+        '<div class="reentry-cap-note">' + esc(c.note) + '</div>' +
+        (c.action ? '<div class="reentry-cap-action"><span class="reentry-cap-action-icon">➡️</span>' + esc(c.action) + '</div>' : '') +
+        '</div>' +
+        '</div>';
+    }).join('') +
+    '</div></div>';
 
   // ── STATUS CARDS ──
   html += '<div class="reentry-grid">';
