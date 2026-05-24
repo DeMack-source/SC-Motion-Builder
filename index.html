@@ -2234,6 +2234,152 @@ body.low-distraction #tabnav { display: none; }
   border-radius: 3px;
   transition: width 0.5s ease;
 }
+
+/* ═══ CASE WEAKNESS SCANNER ═══ */
+.scanner-dashboard {
+  background: var(--ink-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  overflow: hidden;
+  animation: fadeSlideIn 0.35s ease;
+}
+.scanner-dash-inner { padding: 0; }
+
+.scanner-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.scanner-header--compact { padding: 10px 14px; }
+.scanner-title-row {
+  display: flex; align-items: center;
+  gap: 8px;
+}
+.scanner-icon { font-size: 18px; }
+.scanner-title {
+  font-size: 14px; font-weight: 700;
+  color: var(--white); flex: 1;
+}
+.scanner-count {
+  font-size: 11px; font-family: var(--font-mono);
+  color: var(--muted);
+  padding: 2px 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+}
+.scanner-summary {
+  display: flex; gap: 6px;
+  margin-top: 8px;
+}
+.scanner-summary-item {
+  font-size: 10px; font-weight: 600;
+  padding: 2px 8px; border-radius: 8px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.scanner-summary--critical {
+  background: var(--red-dim);
+  color: var(--red);
+}
+.scanner-summary--high {
+  background: rgba(249,178,76,0.12);
+  color: var(--gold);
+}
+.scanner-summary--total {
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
+}
+
+.scanner-domains { padding: 8px 12px; }
+
+.scanner-domain {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.02);
+}
+.scanner-domain-header {
+  display: flex; align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  user-select: none;
+}
+.scanner-domain-header:hover { background: rgba(255,255,255,0.03); }
+.scanner-domain-header.open { border-bottom: 1px solid var(--border); }
+
+.sd-icon { font-size: 16px; flex-shrink: 0; }
+.sd-label { font-size: 12px; font-weight: 700; color: var(--white); flex: 1; }
+.sd-count {
+  font-size: 10px; font-family: var(--font-mono);
+  color: var(--muted);
+  padding: 1px 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+}
+.sd-badge {
+  font-size: 9px; font-weight: 600;
+  padding: 2px 6px; border-radius: 6px;
+  text-transform: uppercase;
+}
+.sd-badge--critical { background: var(--red-dim); color: var(--red); }
+.sd-badge--high { background: rgba(249,178,76,0.12); color: var(--gold); }
+.sd-toggle {
+  font-size: 10px; color: var(--muted);
+  transition: transform 0.2s;
+}
+.scanner-domain-header.open .sd-toggle { transform: rotate(180deg); }
+
+.scanner-domain-body {
+  display: none;
+  padding: 10px 12px;
+}
+.scanner-domain-body.open { display: block; }
+
+.sd-desc {
+  font-size: 11px; color: var(--muted);
+  line-height: 1.4;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+}
+
+.sd-item {
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  border-left: 3px solid var(--border);
+  background: rgba(255,255,255,0.03);
+}
+.sd-item--critical { border-left-color: var(--red); }
+.sd-item--high { border-left-color: var(--gold); }
+.sd-item--medium { border-left-color: var(--sky); }
+.sd-item--info { border-left-color: var(--muted); }
+
+.sd-item-top {
+  display: flex; align-items: center;
+  gap: 6px; margin-bottom: 4px;
+}
+.sd-item-sev { font-size: 12px; }
+.sd-item-title { font-size: 12px; font-weight: 700; color: var(--white); flex: 1; }
+.sd-item-severity {
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  padding: 1px 6px; border-radius: 6px;
+  background: rgba(255,255,255,0.06);
+  color: var(--muted);
+}
+.sd-item-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.sd-item-rule { font-size: 10px; color: var(--sky); margin-top: 3px; }
+.sd-item-action { font-size: 10px; color: var(--muted); margin-top: 4px; line-height: 1.3; }
+.sd-more {
+  font-size: 10px; color: var(--sky);
+  text-align: center; padding: 6px;
+  cursor: pointer; font-weight: 600;
+}
+
 .intake-overlay {
   display: none; position: fixed; inset: 0; z-index: 9999;
   background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
@@ -2915,6 +3061,11 @@ body::before {
   <!-- ═══ DEADLINE INTELLIGENCE PANEL ═══ -->
   <div class="deadline-panel" id="deadline-panel" style="display:none"></div>
 
+  <!-- ═══ CASE WEAKNESS SCANNER (Dashboard) ═══ -->
+  <div class="scanner-dashboard" id="scanner-dashboard" style="display:none">
+    <div class="scanner-dash-inner" id="scanner-dash-inner"></div>
+  </div>
+
   <div class="section-title">Select Your Motion Type</div>
 
   <div class="motion-grid" id="motion-grid">
@@ -3334,17 +3485,8 @@ body::before {
   </div>
 
   <!-- PREVIEW STRATEGIC WEAKNESS DETECTION -->
-  <div class="weakness-section" id="weakness-section-preview" style="display:none">
-    <div class="weakness-header">
-      <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px">🎯</span>
-        <div>
-          <span class="section-title" style="margin:0">Strategic Weakness Detection</span>
-          <div class="weakness-subtitle">Auto-surfaced defenses, constitutional issues, and procedural attacks based on case data</div>
-        </div>
-      </div>
-    </div>
-    <div class="weakness-stack" id="weakness-stack-preview"></div>
+  <div class="scanner-dashboard" id="weakness-section-preview" style="display:none">
+    <div class="scanner-dash-inner" id="weakness-stack-preview"></div>
   </div>
 
   <div id="audit-panel" style="display:none;margin-bottom:16px"></div>
@@ -6796,6 +6938,7 @@ function renderStateMachine() {
     '<span class="sm-action-chip">' + a + '</span>'
   ).join('');
   renderDeadlineIntelligence();
+  renderScannerDashboard();
 }
 
 function filterMotionsByState() {
@@ -7525,7 +7668,7 @@ function startWizardAfterElig() {
   document.getElementById('live-preview').style.display = 'block';
   renderRiskGrid(currentMotion, answers);
   renderTimeline(currentMotion, answers);
-  renderWeaknesses(currentMotion, answers);
+  renderCaseScanner(currentMotion, answers);
   renderEligibilityPanel();
   renderCaseIntelligence();
   renderEmergencyAlerts();
@@ -8241,7 +8384,7 @@ function updateLivePreview() {
   // Refresh risk assessment, timeline, and weaknesses on every preview update
   renderRiskGrid(currentMotion, merged);
   renderTimeline(currentMotion, merged);
-  renderWeaknesses(currentMotion, merged);
+  renderCaseScanner(currentMotion, merged);
   renderEligibilityPanel();
   renderCaseIntelligence();
   renderEmergencyAlerts();
@@ -8910,20 +9053,177 @@ function detectWeaknesses(motionId, answers) {
   return weaks;
 }
 
-function renderWeaknesses(motionId, answers) {
+// ═══════════════════════════════════════════════
+// CASE WEAKNESS SCANNER
+// Diagnostic engine — groups weaknesses by domain
+// ═══════════════════════════════════════════════
+
+const WEAKNESS_CATEGORIES = {
+  constitutional: { icon:'⚖️', label:'Constitutional', color:'#A78BFA',
+    desc:'Fourth, Fifth, Sixth, and Eighth Amendment violations — suppression, IAC, Brady, double jeopardy, and cruel and unusual punishment.' },
+  evidence: { icon:'📋', label:'Evidence', color:'#60A5FA',
+    desc:'Chain of custody, hearsay, CI reliability, authentication, and scientific evidence challenges.' },
+  sentencing: { icon:'⚡', label:'Sentencing', color:'#F87171',
+    desc:'Illegal sentence, scoresheet errors, mandatory minimum avoidance, PRR/HFO, youth mitigation, and Bearden protections.' },
+  procedural: { icon:'🔄', label:'Procedural', color:'#F9B24C',
+    desc:'Speedy trial, preservation of error, appeal deadlines, prosecutorial misconduct, and jurisdictional bars.' },
+  defense: { icon:'🛡️', label:'Defense', color:'#4ADE80',
+    desc:'Self-defense, constructive possession, weight thresholds, specific intent, competency, de minimis, and factual innocence theories.' }
+};
+
+function categorizeWeaknesses(weaks) {
+  const cats = {};
+  Object.keys(WEAKNESS_CATEGORIES).forEach(k => { cats[k] = []; });
+  weaks.forEach(w => {
+    const cat = w.category || 'procedural';
+    if (!cats[cat]) cats[cat] = [];
+    cats[cat].push(w);
+  });
+  return cats;
+}
+
+function countSeverity(weaks, level) {
+  return weaks.filter(w => w.severity === level).length;
+}
+
+function renderCaseScanner(motionId, answers) {
   const container = document.getElementById('weakness-stack');
   const section = document.getElementById('weakness-section');
   if (!container || !section) return;
+
   const weaks = detectWeaknesses(motionId, answers);
   if (!weaks.length) { section.style.display = 'none'; return; }
   section.style.display = 'block';
+
+  const cats = categorizeWeaknesses(weaks);
+  const total = weaks.length;
+  const criticalCount = countSeverity(weaks, 'critical');
+  const highCount = countSeverity(weaks, 'high');
+
+  let html = '<div class="scanner-header">' +
+    '<div class="scanner-title-row">' +
+      '<span class="scanner-icon">🔍</span>' +
+      '<span class="scanner-title">Case Weakness Scanner</span>' +
+      '<span class="scanner-count">' + total + ' issues</span>' +
+    '</div>' +
+    '<div class="scanner-summary">' +
+      (criticalCount ? '<span class="scanner-summary-item scanner-summary--critical">' + criticalCount + ' critical</span>' : '') +
+      (highCount ? '<span class="scanner-summary-item scanner-summary--high">' + highCount + ' high</span>' : '') +
+      '<span class="scanner-summary-item scanner-summary--total">' + (total - criticalCount - highCount) + ' medium/info</span>' +
+    '</div>' +
+  '</div>';
+
+  // Domain cards
+  html += '<div class="scanner-domains">';
+  Object.keys(WEAKNESS_CATEGORIES).forEach(key => {
+    const cat = WEAKNESS_CATEGORIES[key];
+    const items = cats[key] || [];
+    if (!items.length) return;
+    const catCrit = countSeverity(items, 'critical');
+    const catHigh = countSeverity(items, 'high');
+    html += '<div class="scanner-domain">' +
+      '<div class="scanner-domain-header" onclick="this.nextElementSibling.classList.toggle(\'open\');this.classList.toggle(\'open\')">' +
+        '<span class="sd-icon" style="color:' + cat.color + '">' + cat.icon + '</span>' +
+        '<span class="sd-label">' + cat.label + '</span>' +
+        '<span class="sd-count">' + items.length + '</span>' +
+        (catCrit ? '<span class="sd-badge sd-badge--critical">' + catCrit + ' critical</span>' : '') +
+        (catHigh ? '<span class="sd-badge sd-badge--high">' + catHigh + ' high</span>' : '') +
+        '<span class="sd-toggle">▼</span>' +
+      '</div>' +
+      '<div class="scanner-domain-body">' +
+        '<div class="sd-desc">' + cat.desc + '</div>' +
+        items.map(w => {
+          const sevClass = 'sd-item--' + w.severity;
+          const sevIcon = w.severity === 'critical' ? '🔴' : w.severity === 'high' ? '🟠' : w.severity === 'medium' ? '🟡' : '🔵';
+          return '<div class="sd-item ' + sevClass + '">' +
+            '<div class="sd-item-top">' +
+              '<span class="sd-item-sev">' + sevIcon + '</span>' +
+              '<span class="sd-item-title">' + esc(w.title) + '</span>' +
+              '<span class="sd-item-severity">' + w.severity + '</span>' +
+            '</div>' +
+            '<div class="sd-item-desc">' + esc(w.desc) + '</div>' +
+            '<div class="sd-item-rule">' + esc(w.rule) + '</div>' +
+            '<div class="sd-item-action"><strong>→ Strategy:</strong> ' + esc(w.action) + '</div>' +
+            renderXai(w.xai) +
+          '</div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  container.innerHTML = html;
+
+  // Re-categorize existing weaknesses for display in cmd-open card
+  document.getElementById('weak-h')?.classList.contains('open') || cmdOpen('weak-h');
   cmdOpen('weak-h');
-  container.innerHTML = weaks.map(w => {
-    const catClass = 'weakness-category--' + w.category;
-    const sevClass = 'weakness-severity--' + w.severity;
-    const cardClass = 'weakness-card weakness-card--' + w.severity;
-    return '<div class="' + cardClass + '"><div class="weakness-top"><span class="weakness-icon">' + w.icon + '</span><span class="weakness-title">' + esc(w.title) + '</span><span class="weakness-category ' + catClass + '">' + w.category + '</span><span class="weakness-severity ' + sevClass + '">' + w.severity + '</span></div><div class="weakness-body"><div class="weakness-desc">' + esc(w.desc) + '</div><div class="weakness-rule">' + esc(w.rule) + '</div><div class="weakness-action"><strong>→ Strategy:</strong> ' + esc(w.action) + '</div>' + renderXai(w.xai) + '</div></div>';
-  }).join('');
+}
+
+function renderScannerDashboard() {
+  const el = document.getElementById('scanner-dashboard');
+  const inner = document.getElementById('scanner-dash-inner');
+  if (!el || !inner) return;
+
+  const hasCaseOrMotion = caseSession || currentMotion;
+  if (!hasCaseOrMotion) { el.style.display = 'none'; return; }
+
+  const weaks = detectWeaknesses(currentMotion, answers);
+  if (!weaks.length) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+
+  const cats = categorizeWeaknesses(weaks);
+  const total = weaks.length;
+  const criticalCount = countSeverity(weaks, 'critical');
+  const highCount = countSeverity(weaks, 'high');
+
+  let html = '<div class="scanner-header">' +
+    '<div class="scanner-title-row">' +
+      '<span class="scanner-icon">🔍</span>' +
+      '<span class="scanner-title">Case Weakness Scanner</span>' +
+      '<span class="scanner-count">' + total + ' issues found</span>' +
+    '</div>' +
+    '<div class="scanner-summary">' +
+      (criticalCount ? '<span class="scanner-summary-item scanner-summary--critical">' + criticalCount + ' critical</span>' : '') +
+      (highCount ? '<span class="scanner-summary-item scanner-summary--high">' + highCount + ' high</span>' : '') +
+      '<span class="scanner-summary-item scanner-summary--total">' + (total - criticalCount - highCount) + ' medium/info</span>' +
+    '</div>' +
+  '</div>';
+
+  html += '<div class="scanner-domains">';
+  Object.keys(WEAKNESS_CATEGORIES).forEach(key => {
+    const cat = WEAKNESS_CATEGORIES[key];
+    const items = cats[key] || [];
+    if (!items.length) return;
+    const catCrit = countSeverity(items, 'critical');
+    const catHigh = countSeverity(items, 'high');
+    html += '<div class="scanner-domain">' +
+      '<div class="scanner-domain-header" onclick="this.nextElementSibling.classList.toggle(\'open\');this.classList.toggle(\'open\')">' +
+        '<span class="sd-icon" style="color:' + cat.color + '">' + cat.icon + '</span>' +
+        '<span class="sd-label">' + cat.label + '</span>' +
+        '<span class="sd-count">' + items.length + '</span>' +
+        (catCrit ? '<span class="sd-badge sd-badge--critical">' + catCrit + ' critical</span>' : '') +
+        (catHigh ? '<span class="sd-badge sd-badge--high">' + catHigh + ' high</span>' : '') +
+        '<span class="sd-toggle">▼</span>' +
+      '</div>' +
+      '<div class="scanner-domain-body">' +
+        '<div class="sd-desc">' + cat.desc + '</div>' +
+        items.slice(0, 3).map(w => {
+          const sevIcon = w.severity === 'critical' ? '🔴' : w.severity === 'high' ? '🟠' : '🟡';
+          return '<div class="sd-item sd-item--' + w.severity + '">' +
+            '<div class="sd-item-top">' +
+              '<span class="sd-item-sev">' + sevIcon + '</span>' +
+              '<span class="sd-item-title">' + esc(w.title) + '</span>' +
+            '</div>' +
+            '<div class="sd-item-desc">' + esc(w.desc) + '</div>' +
+          '</div>';
+        }).join('') +
+        (items.length > 3 ? '<div class="sd-more">+' + (items.length - 3) + ' more issues — open motion builder for full scanner</div>' : '') +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  inner.innerHTML = html;
 }
 
 function renderWeaknessesPreview(motionId, answers) {
@@ -8933,12 +9233,50 @@ function renderWeaknessesPreview(motionId, answers) {
   const weaks = detectWeaknesses(motionId, answers);
   if (!weaks.length) { section.style.display = 'none'; return; }
   section.style.display = 'block';
-  container.innerHTML = weaks.map(w => {
-    const catClass = 'weakness-category--' + w.category;
-    const sevClass = 'weakness-severity--' + w.severity;
-    const cardClass = 'weakness-card weakness-card--' + w.severity;
-    return '<div class="' + cardClass + '"><div class="weakness-top"><span class="weakness-icon">' + w.icon + '</span><span class="weakness-title">' + esc(w.title) + '</span><span class="weakness-category ' + catClass + '">' + w.category + '</span><span class="weakness-severity ' + sevClass + '">' + w.severity + '</span></div><div class="weakness-body"><div class="weakness-desc">' + esc(w.desc) + '</div><div class="weakness-rule">' + esc(w.rule) + '</div><div class="weakness-action"><strong>→ Strategy:</strong> ' + esc(w.action) + '</div>' + renderXai(w.xai) + '</div></div>';
-  }).join('');
+  const cats = categorizeWeaknesses(weaks);
+  const total = weaks.length;
+  const criticalCount = countSeverity(weaks, 'critical');
+
+  let html = '<div class="scanner-header scanner-header--compact">' +
+    '<div class="scanner-title-row">' +
+      '<span class="scanner-icon">🔍</span>' +
+      '<span class="scanner-title">Case Weakness Scanner</span>' +
+      '<span class="scanner-count">' + total + ' issues</span>' +
+      (criticalCount ? '<span class="scanner-summary-item scanner-summary--critical">' + criticalCount + ' critical</span>' : '') +
+    '</div>' +
+  '</div>';
+
+  html += '<div class="scanner-domains">';
+  Object.keys(WEAKNESS_CATEGORIES).forEach(key => {
+    const cat = WEAKNESS_CATEGORIES[key];
+    const items = cats[key] || [];
+    if (!items.length) return;
+    html += '<div class="scanner-domain">' +
+      '<div class="scanner-domain-header" onclick="this.nextElementSibling.classList.toggle(\'open\');this.classList.toggle(\'open\')">' +
+        '<span class="sd-icon" style="color:' + cat.color + '">' + cat.icon + '</span>' +
+        '<span class="sd-label">' + cat.label + '</span>' +
+        '<span class="sd-count">' + items.length + '</span>' +
+        '<span class="sd-toggle">▼</span>' +
+      '</div>' +
+      '<div class="scanner-domain-body">' +
+        items.map(w => {
+          const sevIcon = w.severity === 'critical' ? '🔴' : w.severity === 'high' ? '🟠' : w.severity === 'medium' ? '🟡' : '🔵';
+          return '<div class="sd-item sd-item--' + w.severity + '">' +
+            '<div class="sd-item-top">' +
+              '<span class="sd-item-sev">' + sevIcon + '</span>' +
+              '<span class="sd-item-title">' + esc(w.title) + '</span>' +
+              '<span class="sd-item-severity">' + w.severity + '</span>' +
+            '</div>' +
+            '<div class="sd-item-desc">' + esc(w.desc) + '</div>' +
+            '<div class="sd-item-action"><strong>→ Strategy:</strong> ' + esc(w.action) + '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  container.innerHTML = html;
 }
 
 // ── ELIGIBILITY INTELLIGENCE ──
