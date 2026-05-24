@@ -955,15 +955,35 @@ body::after {
 .strength-meter { background: var(--ink-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
 .strength-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .strength-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-.strength-pct { font-family: var(--font-mono); font-size: 16px; font-weight: 700; }
-.strength-track { height: 6px; background: rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; margin-bottom: 10px; }
+.strength-pct { font-family: var(--font-mono); font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.strength-label-tag { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
+.strength-track { height: 6px; background: rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
 .strength-fill { height: 100%; border-radius: 6px; transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1); }
-.strength-checklist { list-style: none; padding: 0; margin: 0; }
-.strength-checklist li { font-size: 11px; color: var(--muted); padding: 4px 0; display: flex; align-items: center; gap: 8px; }
-.strength-checklist li.done { color: var(--green); }
-.strength-checklist li.missing { color: var(--muted); }
-.strength-checklist .check { color: var(--green); }
-.strength-checklist .cross { color: var(--muted); }
+.strength-reasoning { font-size: 11px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; padding: 8px 10px; background: rgba(255,255,255,0.03); border-radius: 6px; border-left: 2px solid var(--gold); }
+.strength-dimensions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+.str-dim-card { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--ink-mid); border: 1px solid var(--border); border-radius: 6px; }
+.str-dim-icon { font-size: 16px; flex-shrink: 0; }
+.str-dim-content { flex: 1; min-width: 0; }
+.str-dim-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+.str-dim-bar { height: 3px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; margin-bottom: 2px; }
+.str-dim-fill { height: 100%; border-radius: 3px; }
+.str-dim-pct { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--white); }
+.str-dim-tag { font-size: 10px; font-weight: 600; color: var(--white); padding: 2px 6px; border: 1px solid; border-radius: 4px; display: inline-block; }
+.str-dim-count { font-size: 11px; color: var(--white); font-weight: 600; }
+.strength-docs { margin-bottom: 12px; }
+.strength-docs-header { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.strength-docs-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.strength-doc-chip { font-size: 10px; padding: 3px 8px; background: var(--ink-lift); border: 1px solid var(--border); border-radius: 4px; color: var(--white); }
+.str-sw-section { margin-bottom: 8px; }
+.str-sw-header { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.strengths-hdr { color: var(--green); }
+.weaknesses-hdr { color: var(--gold); }
+.recs-hdr { color: var(--sky); }
+.str-sw-item { font-size: 10px; padding: 4px 8px; margin-bottom: 2px; border-radius: 4px; line-height: 1.5; }
+.str-sw-strength { background: rgba(74,222,128,0.08); border-left: 2px solid var(--green); color: var(--white); }
+.str-sw-weakness { background: rgba(249,178,76,0.08); border-left: 2px solid var(--gold); color: var(--white); }
+.str-sw-rec { background: rgba(96,165,250,0.08); border-left: 2px solid var(--sky); color: var(--white); }
+@media(max-width:480px) { .strength-dimensions { grid-template-columns: 1fr; } }
 
 /* Live preview in builder */
 .live-preview { background: var(--ink-card); border: 1px solid rgba(249,178,76,0.2); border-radius: var(--radius); overflow: hidden; margin-top: 16px; }
@@ -1709,6 +1729,36 @@ body.low-distraction #tabnav { display: none; }
 .charge-collateral-item .cc-label { color: var(--white); font-weight: 600; font-size: 10px; display: block; margin-bottom: 2px; }
 .charge-collateral-item .cc-detail { color: var(--muted); font-size: 10px; display: block; }
 
+/* ── County Intelligence ── */
+.county-label { display: none; align-items: center; gap: 8px; }
+.ci-county-name { font-weight: 400; font-size: 11px; color: var(--sky); }
+#ci-county { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.county-intel-card {
+  background: var(--ink-mid); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+}
+.county-intel-card.warn { border-color: rgba(249,178,76,0.3); background: rgba(249,178,76,0.05); }
+.ci-card-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--white);
+  background: var(--ink-lift); border-bottom: 1px solid var(--border);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.ci-card-ico { font-size: 14px; }
+.ci-card-body { padding: 10px 12px; font-size: 11px; }
+.ci-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 3px 0; gap: 8px; }
+.ci-row-label { color: var(--muted); white-space: nowrap; flex-shrink: 0; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; }
+.ci-row-val { color: var(--white); text-align: right; font-size: 11px; }
+.ci-note { color: var(--muted); font-size: 10px; line-height: 1.5; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+.ci-diversion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.ci-diversion-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--white); padding: 3px 0; }
+.ci-diversion-item.dim { opacity: 0.4; }
+.ci-div-icon { font-size: 11px; flex-shrink: 0; }
+.ci-list { margin: 0; padding: 0 0 0 14px; font-size: 10px; color: var(--white); line-height: 1.7; }
+.ci-list li { margin-bottom: 2px; }
+@media(max-width:480px) {
+  .ci-diversion-grid { grid-template-columns: 1fr; }
+}
+
 /* Critical countdown */
 .charge-countdown-wrap { padding: 0 18px 14px; display: flex; gap: 10px; flex-wrap: wrap; }
 .charge-countdown {
@@ -2393,6 +2443,8 @@ body::before {
       <div class="charge-detail-list" id="ci-constitutional"></div>
       <div class="charge-section-label">Collateral Consequences</div>
       <div class="charge-collateral-grid" id="ci-collateral"></div>
+      <div class="charge-section-label county-label">County Intelligence <span class="ci-county-name" id="ci-county-name"></span></div>
+      <div id="ci-county"></div>
     </div>
   </div>
 
@@ -5649,6 +5701,9 @@ function renderChargeIntel(c) {
   // Collateral consequences
   renderCollateral(c);
 
+  // County intelligence
+  renderCountyIntel(c);
+
   intel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
@@ -5772,6 +5827,124 @@ function renderConstitutional(c) {
     }
   }
   el.innerHTML = html || '<li style="color:var(--muted)">Constitutional analysis available with case-specific facts.</li>';
+}
+
+function getCountyProfile(raw) {
+  if (!raw || !raw.trim()) return null;
+  const c = raw.trim().toLowerCase();
+  const keys = Object.keys(countyProfiles);
+  for (const key of keys) {
+    if (key.toLowerCase() === c) return { key, data: countyProfiles[key] };
+    if (c.includes(key.toLowerCase()) || key.toLowerCase().includes(c)) return { key, data: countyProfiles[key] };
+    const parts = key.split(/[- ]/);
+    for (const p of parts) { if (p === c) return { key, data: countyProfiles[key] }; }
+  }
+  return null;
+}
+
+function renderCountyIntel(c) {
+  const el = document.getElementById('ci-county');
+  const nameEl = document.getElementById('ci-county-name');
+  const countyRaw = caseSession?.county || '';
+  const profile = getCountyProfile(countyRaw);
+  if (!profile) {
+    if (el) el.innerHTML = '';
+    if (nameEl) nameEl.textContent = '';
+    const header = document.querySelector('.county-label');
+    if (header) header.style.display = 'none';
+    return;
+  }
+  const header = document.querySelector('.county-label');
+  if (header) header.style.display = 'flex';
+  if (nameEl) nameEl.textContent = '📍 ' + profile.key;
+
+  const d = profile.data;
+  let html = '';
+
+  // Bond culture
+  html += '<div class="county-intel-card">' +
+    '<div class="ci-card-header"><span class="ci-card-ico">💰</span>Bond Culture</div>' +
+    '<div class="ci-card-body">' +
+    '<div class="ci-row"><span class="ci-row-label">Tendency</span><span class="ci-row-val">' + esc(d.bondCulture.tendency) + '</span></div>' +
+    '<div class="ci-row"><span class="ci-row-label">Typical Range</span><span class="ci-row-val">' + esc(d.bondCulture.typicalRange) + '</span></div>' +
+    '<div class="ci-row"><span class="ci-row-label">F1 Range</span><span class="ci-row-val">' + esc(d.bondCulture.f1Range) + '</span></div>' +
+    (d.bondCulture.notes ? '<div class="ci-note">' + esc(d.bondCulture.notes) + '</div>' : '') +
+    '</div></div>';
+
+  // Diversion programs
+  const div = d.diversionPrograms;
+  const divItems = [
+    { k: 'pretrial', l: 'Pretrial Diversion' },
+    { k: 'drugCourt', l: 'Drug Court' },
+    { k: 'mentalHealthCourt', l: 'Mental Health Court' },
+    { k: 'veteransCourt', l: 'Veterans Court' },
+    { k: 'teenCourt', l: 'Teen Court' }
+  ];
+  html += '<div class="county-intel-card">' +
+    '<div class="ci-card-header"><span class="ci-card-ico">🔄</span>Diversion Programs</div>' +
+    '<div class="ci-card-body"><div class="ci-diversion-grid">' +
+    divItems.map(i => '<div class="ci-diversion-item' + (div[i.k] ? '' : ' dim') + '"><span class="ci-div-icon">' + (div[i.k] ? '✅' : '❌') + '</span><span>' + i.l + '</span></div>').join('') +
+    '</div></div></div>';
+
+  // Sentencing patterns
+  html += '<div class="county-intel-card">' +
+    '<div class="ci-card-header"><span class="ci-card-ico">⚖️</span>Sentencing Patterns</div>' +
+    '<div class="ci-card-body">' +
+    '<div class="ci-row"><span class="ci-row-label">Tendency</span><span class="ci-row-val">' + esc(d.sentencingPatterns.tendency) + '</span></div>' +
+    '<div class="ci-row"><span class="ci-row-label">Drug Sentences</span><span class="ci-row-val">' + esc(d.sentencingPatterns.drugSentences) + '</span></div>' +
+    '<div class="ci-row"><span class="ci-row-label">Violent Sentences</span><span class="ci-row-val">' + esc(d.sentencingPatterns.violentSentences) + '</span></div>' +
+    (d.sentencingPatterns.notes ? '<div class="ci-note">' + esc(d.sentencingPatterns.notes) + '</div>' : '') +
+    '</div></div>';
+
+  // Specialty courts
+  if (d.specialtyCourts && d.specialtyCourts.length) {
+    html += '<div class="county-intel-card">' +
+      '<div class="ci-card-header"><span class="ci-card-ico">🏛️</span>Specialty Courts</div>' +
+      '<div class="ci-card-body"><ul class="ci-list">' +
+      d.specialtyCourts.map(s => '<li>' + esc(s) + '</li>').join('') +
+      '</ul></div></div>';
+  }
+
+  // Rocket docket
+  if (d.rocketDocket) {
+    html += '<div class="county-intel-card warn">' +
+      '<div class="ci-card-header"><span class="ci-card-ico">🚀</span>Rocket Docket</div>' +
+      '<div class="ci-card-body"><div class="ci-note">This county operates a rocket docket — cases move faster than statewide average. Prepare motions and responses quickly.</div></div></div>';
+  }
+
+  // Admin orders
+  if (d.localAdminOrders && d.localAdminOrders.length) {
+    html += '<div class="county-intel-card">' +
+      '<div class="ci-card-header"><span class="ci-card-ico">📋</span>Local Admin Orders</div>' +
+      '<div class="ci-card-body"><ul class="ci-list">' +
+      d.localAdminOrders.map(a => '<li>' + esc(a) + '</li>').join('') +
+      '</ul></div></div>';
+  }
+
+  // Unique rules
+  if (d.uniqueRules && d.uniqueRules.length) {
+    html += '<div class="county-intel-card">' +
+      '<div class="ci-card-header"><span class="ci-card-ico">📌</span>Local Rules & Culture</div>' +
+      '<div class="ci-card-body"><ul class="ci-list">' +
+      d.uniqueRules.map(r => '<li>' + esc(r) + '</li>').join('') +
+      '</ul></div></div>';
+  }
+
+  // SAO + Reentry
+  html += '<div class="county-intel-card">' +
+    '<div class="ci-card-header"><span class="ci-card-ico">👤</span>Key Offices</div>' +
+    '<div class="ci-card-body"><div class="ci-row"><span class="ci-row-label">State Attorney</span><span class="ci-row-val">' + esc(d.recommendedSAList?.[0] || 'N/A') + '</span></div>' +
+    '<div class="ci-row"><span class="ci-row-label">Public Defender</span><span class="ci-row-val">' + esc(d.recommendedSAList?.[1] || 'N/A') + '</span></div></div></div>';
+
+  if (d.reentryResources && d.reentryResources.length) {
+    html += '<div class="county-intel-card">' +
+      '<div class="ci-card-header"><span class="ci-card-ico">🤝</span>Reentry Resources</div>' +
+      '<div class="ci-card-body"><ul class="ci-list">' +
+      d.reentryResources.map(r => '<li>' + esc(r) + '</li>').join('') +
+      '</ul></div></div>';
+  }
+
+  el.innerHTML = html;
 }
 
 function renderCollateral(c) {
@@ -6102,6 +6275,257 @@ function validateCurrent() {
   return true;
 }
 
+// ═══════════════════════════════════════════════
+// MOTION STRENGTH LAYER — AI-Powered Assessment
+// ═══════════════════════════════════════════════
+
+const MOTION_EVALUATORS = {
+  "3850": {
+    assess: function(a, e) {
+      let score = 50, reasons = [], strengths = [], weaknesses = [], recs = [];
+      const timely = (e['elig-3850-1'] || '').toLowerCase();
+      const prior = (e['elig-3850-2'] || '').toLowerCase();
+      const claim = (e['elig-3850-3'] || '').toLowerCase();
+
+      if (timely.includes('yes')) { score -= 25; weaknesses.push('Beyond 2-year deadline — procedural bar unless exception applies'); recs.push('Argue timeliness exception (newly discovered evidence, retroactive change in law)'); }
+      else if (timely.includes('no')) { score += 15; strengths.push('Within 2-year filing window'); }
+
+      if (prior.includes('yes')) { score -= 20; weaknesses.push('Successive 3.850 — requires appellate permission'); recs.push('Seek leave from appellate court before filing successive petition'); }
+      else if (prior.includes('no')) { score += 10; strengths.push('First 3.850 petition — no successive bar'); }
+
+      if (claim.includes('newly') || claim.includes('illegal')) { score += 15; strengths.push('Claim type (new evidence/illegal sentence) has strongest legal footing'); }
+      else if (claim.includes('yes')) { score += 5; }
+      else if (claim.includes('no')) { score -= 10; weaknesses.push('Claim type weak — IAC and other claims face higher pleading standards'); recs.push('Develop specific factual allegations — conclusory claims are routinely denied'); }
+
+      const hasFacts = (a['3850-facts'] || '').length > 50;
+      if (hasFacts) { score += 10; strengths.push('Detailed factual allegations strengthen the pleading'); }
+      else { weaknesses.push('Short or missing statement of facts'); recs.push('Include specific dates, names, and events in the statement of facts'); }
+
+      if (score < 0) score = 0;
+      if (score > 100) score = 100;
+
+      const burden = hasFacts ? 'high' : 'very-high';
+      const diff = prior.includes('yes') ? 'expert' : 'high';
+      const docs = ['Judgment & Sentence', 'Appellate Mandate (if appealed)', 'Supporting Affidavits', 'Memorandum of Law', 'Certificate of Service'];
+
+      return { score, burden, difficulty: diff, requiredDocs: docs, reasoning: buildReasoning(score, strengths, weaknesses), strengths, weaknesses, recommendations: recs };
+    }
+  },
+  "3800": {
+    assess: function(a, e) {
+      let score = 55, reasons = [], strengths = [], weaknesses = [], recs = [];
+      const illegal = (a['3800-illegal-basis'] || '').toLowerCase();
+      const aboveMax = (a['3800-illegal-basis'] || '').toLowerCase().includes('maximum') || (a['sent-type'] || '').toLowerCase().includes('maximum');
+
+      if (aboveMax) { score += 20; strengths.push('Sentence exceeds statutory maximum — strongest 3.800(a) claim'); }
+      else if (illegal.includes('illegal') || illegal.includes('scoresheet') || illegal.includes('error')) { score += 10; strengths.push('Colorable illegality claim — scoresheet errors are common'); }
+      else if (illegal.includes('minimum') || illegal.includes('mandatory')) { score += 5; }
+      else { score -= 10; weaknesses.push('Unclear basis for illegality claim'); recs.push('Identify the specific sentencing error — check scoresheet, statutory maximum, and mandatory minimum'); }
+
+      const hasDetail = (a['3800-relief'] || '').length > 30;
+      if (hasDetail) { score += 10; strengths.push('Specific relief requested — court can act without speculation'); }
+      else { weaknesses.push('Vague or missing relief request'); recs.push('State exactly what sentence should be imposed and the legal authority'); }
+
+      score = Math.max(0, Math.min(100, score));
+      const burden = aboveMax ? 'low' : 'medium';
+      const diff = aboveMax ? 'easy' : 'moderate';
+      const docs = ['Sentencing Scoresheet', 'Judgment & Sentence', 'Applicable Statute', 'Sentencing Transcript (recommended)'];
+
+      return { score, burden, difficulty: diff, requiredDocs: docs, reasoning: buildReasoning(score, strengths, weaknesses), strengths, weaknesses, recommendations: recs };
+    }
+  },
+  "expunge": {
+    assess: function(a, e) {
+      let score = 50, strengths = [], weaknesses = [], recs = [];
+      const prior = (e['elig-exp-1'] || a['elig-prior-seal'] || '').toLowerCase();
+      const convicted = (e['elig-exp-2'] || a['elig-convicted'] || '').toLowerCase();
+      const chargeType = (a['elig-charge-type'] || '').toLowerCase();
+      const disqual = (a['elig-disqualifying'] || '').toLowerCase();
+
+      if (prior.includes('yes') || prior.includes('disqualify')) { score -= 30; weaknesses.push('One-time bar triggered — prior seal/expunge used'); recs.push('Only option is executive clemency'); }
+      else if (prior.includes('no')) { score += 10; strengths.push('One-time opportunity still available'); }
+
+      if (convicted.includes('convicted') || convicted.includes('yes')) { score -= 25; weaknesses.push('Adjudication of guilt — general bar to seal/expunge'); recs.push('Verify adjudication status — if withheld, correct the record'); }
+      else if (convicted.includes('withhold') || convicted.includes('no')) { score += 15; strengths.push('Adjudication withheld — meets core eligibility requirement'); }
+
+      if (chargeType.includes('dismissed') || chargeType.includes('nolle') || chargeType.includes('arrest only')) { score += 10; strengths.push('Charge disposition favorably qualifies'); }
+      else if (chargeType.includes('withhold')) { score += 5; }
+
+      if (disqual.includes('murder') || disqual.includes('sexual') || disqual.includes('robbery')) { score -= 20; weaknesses.push('Disqualifying offense category — statutory bar'); recs.push('Check F.S. § 943.0585(2)(a) for full list of disqualifying offenses'); }
+      else if (disqual.includes('none') || !disqual) { score += 10; strengths.push('No disqualifying offense detected'); }
+
+      const hasFdle = (a['fdle-cert'] || '').toLowerCase();
+      if (hasFdle.includes('yes') || hasFdle.includes('have')) { score += 10; strengths.push('FDLE Certificate of Eligibility on hand'); }
+
+      score = Math.max(0, Math.min(100, score));
+      const burden = 'low';
+      const diff = 'easy';
+      const docs = ['FDLE Certificate of Eligibility', 'Arrest/Disposition Record', 'Petition Form', 'Applicable Statute § 943.0585/§ 943.059'];
+
+      return { score, burden, difficulty: diff, requiredDocs: docs, reasoning: buildReasoning(score, strengths, weaknesses), strengths, weaknesses, recommendations: recs };
+    }
+  },
+  "terminate": {
+    assess: function(a, e) {
+      let score = 50, strengths = [], weaknesses = [], recs = [];
+      const pctComplete = parseInt(a['prob-pct'] || '0');
+      const hasViolations = (a['prob-violations'] || '').toLowerCase();
+      const hasEmployment = (a['prob-employment'] || '').toLowerCase();
+      const hasPOrec = (a['prob-po-rec'] || '').toLowerCase();
+      const paidFines = (a['prob-fines'] || '').toLowerCase();
+
+      if (pctComplete >= 50) { score += 15; strengths.push('Over 50% of probation completed — threshold met'); }
+      else { score -= 10; weaknesses.push('Under 50% completion — early termination less likely'); recs.push('Consider waiting until 50% completion or demonstrate exceptional circumstances'); }
+
+      if (hasViolations.includes('no') || hasViolations.includes('none')) { score += 15; strengths.push('No violations — clean probation record'); }
+      else if (hasViolations.length > 0) { score -= 15; weaknesses.push('Probation violations on record'); recs.push('Address violations before seeking early termination — complete any sanctions'); }
+
+      if (hasEmployment.includes('yes') || hasEmployment.includes('employed')) { score += 10; strengths.push('Employed — stability factor favors early termination'); }
+      else if (hasEmployment.length > 0) { score -= 5; }
+
+      if (hasPOrec.includes('favorable') || hasPOrec.includes('recommend') || hasPOrec.includes('support')) { score += 10; strengths.push('Probation Officer recommendation — very persuasive to the court'); }
+      else if (hasPOrec.includes('oppose') || hasPOrec.includes('no')) { score -= 15; weaknesses.push('Probation Officer opposes — significantly reduces chances'); recs.push('Address PO concerns and document compliance before filing'); }
+
+      if (paidFines.includes('yes') || paidFines.includes('paid') || paidFines.includes('complete')) { score += 5; strengths.push('Restitution/fines satisfied'); }
+
+      score = Math.max(0, Math.min(100, score));
+      const burden = 'medium';
+      const diff = 'moderate';
+      const docs = ['Probation Order', 'Compliance Record', 'Employment Verification', 'PO Recommendation', 'Financial Proof (restitution/fines)'];
+
+      return { score, burden, difficulty: diff, requiredDocs: docs, reasoning: buildReasoning(score, strengths, weaknesses), strengths, weaknesses, recommendations: recs };
+    }
+  },
+  "restitution": {
+    assess: function(a, e) {
+      let score = 45, strengths = [], weaknesses = [], recs = [];
+      const hardship = (a['rest-hardship'] || '').toLowerCase();
+      const efforts = (a['rest-efforts'] || '').toLowerCase();
+      const current = (a['rest-current-amount'] || '0').replace(/[^0-9]/g, '');
+      const income = (a['rest-income'] || '').toLowerCase();
+
+      if (hardship.length > 40) { score += 15; strengths.push('Detailed financial hardship documented'); }
+      else { weaknesses.push('Limited financial hardship explanation'); recs.push('Detail specific financial circumstances — medical expenses, job loss, family obligations'); }
+
+      if (efforts.includes('paid') || efforts.includes('partial') || efforts.includes('attempt')) { score += 10; strengths.push('Bona fide efforts to pay demonstrated'); }
+      else { weaknesses.push('No documented effort to pay'); recs.push('Document any payments made, even partial — good faith matters'); }
+
+      if (income.includes('minimum') || income.includes('unemployed') || income.includes('disability') || income.includes('fixed')) { score += 10; strengths.push('Limited income supports modification'); }
+
+      const amount = parseInt(current) || 0;
+      if (amount > 10000) { score += 5; strengths.push('Large restitution amount increases modification justification'); }
+
+      score = Math.max(0, Math.min(100, score));
+      const burden = 'medium';
+      const diff = 'moderate';
+      const docs = ['Restitution Order', 'Financial Affidavit', 'Proof of Income', 'Payment History', 'Hardship Documentation'];
+
+      return { score, burden, difficulty: diff, requiredDocs: docs, reasoning: buildReasoning(score, strengths, weaknesses), strengths, weaknesses, recommendations: recs };
+    }
+  },
+  "appeal": {
+    assess: function(a, e) {
+      let score = 50, strengths = [], weaknesses = [], recs = [];
+      const appellateDeadline = (a['app-deadline'] || '').toLowerCase();
+      const preserved = (a['app-issues'] || '').toLowerCase();
+      const hasTranscript = (a['app-transcript'] || '').toLowerCase();
+
+      if (appellateDeadline.includes('30') || appellateDeadline.includes('within') || appellateDeadline.includes('timely')) { score += 15; strengths.push('Timely filing — within appellate window'); }
+      else if (appellateDeadline.length > 0) { score -= 10; weaknesses.push('Potential timeliness concern'); recs.push('Verify entry date of order — appellate clock starts at entry, not hearing'); }
+
+      if (preserved.length > 50) { score += 15; strengths.push('Specific preserved issues identified — key to appellate success'); }
+      else { weaknesses.push('Issues not clearly identified or preserved'); recs.push('Identify specific errors preserved in the trial record with citations'); }
+
+      if (hasTranscript.includes('yes') || hasTranscript.includes('ordered')) { score += 10; strengths.push('Transcript ordered — critical for meaningful appellate review'); }
+      else { weaknesses.push('No transcript arranged'); recs.push('Order trial transcript immediately — delay can waive issues'); }
+
+      const hasRecord = (a['app-record-need'] || '').length > 20;
+      if (hasRecord) { score += 5; }
+
+      score = Math.max(0, Math.min(100, score));
+      const burden = 'high';
+      const diff = 'high';
+      const docs = ['Notice of Appeal', 'Order Being Appealed', 'Trial Transcript', 'Record on Appeal', 'Initial Brief'];
+
+      return { score, burden, difficulty: diff, requiredDocs: docs, reasoning: buildReasoning(score, strengths, weaknesses), strengths, weaknesses, recommendations: recs };
+    }
+  },
+  "2254": {
+    assess: function(a, e) {
+      let score = 40, strengths = [], weaknesses = [], recs = [];
+      const exhausted = (a['2254-exhausted'] || '').toLowerCase();
+      const claimType = (a['2254-claim-type'] || '').toLowerCase();
+      const timely = (a['2254-timely'] || '').toLowerCase();
+      const stateAppeal = (a['2254-state-appeal'] || '').toLowerCase();
+
+      if (exhausted.includes('yes') || exhausted.includes('appeal') || exhausted.includes('denied')) { score += 20; strengths.push('State remedies exhausted — jurisdictional prerequisite met'); }
+      else if (exhausted.includes('no')) { score -= 25; weaknesses.push('State remedies not exhausted — federal habeas requires exhaustion'); recs.push('File state postconviction first — federal court will dismiss unexhausted petitions'); }
+
+      if (claimType.includes('constitutional') || claimType.includes('ineffective') || claimType.includes('due process') || claimType.includes('cognizable')) { score += 15; strengths.push('Cognizable constitutional claim — proper federal habeas grounds'); }
+      else { weaknesses.push('Claim may not be cognizable in federal habeas'); recs.push('Frame claim as constitutional violation — federal habeas only reviews constitutional claims'); }
+
+      if (timely.includes('year') || timely.includes('<') || timely.includes('within')) { score += 10; strengths.push('Within AEDPA 1-year statute of limitations'); }
+      else if (timely.includes('over') || timely.includes('>')) { score -= 15; weaknesses.push('Potential AEDPA time bar'); recs.push('Calculate AEDPA deadline with statutory tolling — check for equitable tolling'); }
+
+      if (stateAppeal.includes('denied') || stateAppeal.includes('supreme')) { score += 5; strengths.push('State appellate review complete'); }
+
+      score = Math.max(0, Math.min(100, score));
+      const burden = 'very-high';
+      const diff = 'expert';
+      const docs = ['State Court Record (complete)', 'AEDPA Petition Form (AO 241)', 'Memorandum of Law', 'Proof of Exhaustion', 'Certificate of Appealability Request'];
+
+      return { score, burden, difficulty: diff, requiredDocs: docs, reasoning: buildReasoning(score, strengths, weaknesses), strengths, weaknesses, recommendations: recs };
+    }
+  },
+  "mitigation": {
+    assess: function(a, e) {
+      let score = 50, strengths = [], weaknesses = [], recs = [];
+      const bg = (a['mit-bio'] || '').toLowerCase();
+      const rehab = (a['mit-rehab'] || '').toLowerCase();
+      const accept = (a['mit-acceptance'] || '').toLowerCase();
+
+      if (bg.length > 100) { score += 15; strengths.push('Comprehensive personal background — humanizes the petitioner'); }
+      else { weaknesses.push('Limited personal background detail'); recs.push('Include family background, childhood experiences, trauma history, and turning points'); }
+
+      if (rehab.includes('program') || rehab.includes('counseling') || rehab.includes('treatment') || rehab.includes('classes')) { score += 15; strengths.push('Rehabilitation efforts documented — most compelling mitigation factor'); }
+      else { weaknesses.push('No rehabilitation evidence'); recs.push('Document all programs, counseling, treatment, and self-improvement since the offense'); }
+
+      if (accept.includes('responsibility') || accept.includes('sorry') || accept.includes('regret') || accept.includes('accountable')) { score += 10; strengths.push('Acceptance of responsibility shown'); }
+      else { weaknesses.push('No expression of accountability'); recs.push('Include a statement taking responsibility — courts weigh this heavily'); }
+
+      const hasTimeline = (a['mit-timeline'] || '').length > 50;
+      if (hasTimeline) { score += 5; }
+
+      score = Math.max(0, Math.min(100, score));
+      const burden = 'medium';
+      const diff = 'moderate';
+      const docs = ['Personal Statement', 'Character References', 'Rehabilitation Certificates', 'Employment/Education Records', 'Medical/Mental Health Records (if applicable)'];
+
+      return { score, burden, difficulty: diff, requiredDocs: docs, reasoning: buildReasoning(score, strengths, weaknesses), strengths, weaknesses, recommendations: recs };
+    }
+  }
+};
+
+function buildReasoning(score, strengths, weaknesses) {
+  if (score >= 80) return 'Strong case with multiple favorable factors — proceed with confidence';
+  if (score >= 60) return 'Moderately strong case — address weaknesses to strengthen position';
+  if (score >= 40) return 'Mixed outlook — weaknesses need attention before filing';
+  if (score >= 20) return 'Significant challenges exist — consult with attorney before filing';
+  return 'Major procedural or substantive barriers — legal consultation strongly recommended';
+}
+
+function evaluateMotionStrength(motionId, answers, eligAnswers) {
+  const evaluator = MOTION_EVALUATORS[motionId];
+  if (!evaluator) {
+    const s = calcStrength();
+    return { score: s.pct, burden: 'unknown', difficulty: 'unknown', requiredDocs: [], reasoning: 'Strength assessment based on field completion. Select a specific motion type for detailed analysis.', strengths: [], weaknesses: [], recommendations: [] };
+  }
+  const result = evaluator.assess(answers, eligAnswers);
+  const completion = calcStrength();
+  const finalScore = Math.round((result.score * 0.7 + completion.pct * 0.3));
+  return { ...result, score: finalScore };
+}
+
 // ── STRENGTH METER ──
 function calcStrength() {
   const flow = FLOWS[currentMotion];
@@ -6209,25 +6633,69 @@ function renderStatusBar() {
 function renderStrength() {
   const meter = document.getElementById('strength-meter');
   if(!meter) return;
-  const s = calcStrength();
-  const pct = s.pct;
-  const color = s.color;
-  
-  let colorCss = '';
-  if(pct < 40) colorCss = '#F87171';
-  else if(pct < 70) colorCss = '#F9B24C';
-  else colorCss = '#4ADE80';
-  
-  let checklistHtml = '';
-  if(s.missing.length) {
-    checklistHtml = '<ul class="strength-checklist">';
-    checklistHtml += '<li class="missing"><span class="cross">✕</span> Missing: ' + esc(s.missing.join(', ')) + '</li>';
-    checklistHtml += '</ul>';
-  } else if(pct === 100) {
-    checklistHtml = '<ul class="strength-checklist"><li class="done"><span class="check">✓</span> All required fields completed</li></ul>';
+
+  const motionId = currentMotion;
+  const assessment = evaluateMotionStrength(motionId, answers, eligAnswers);
+  const pct = assessment.score;
+  const s = assessment;
+
+  let colorCss = '#F87171';
+  let label = 'Weak';
+  if (pct >= 80) { colorCss = '#4ADE80'; label = 'Strong'; }
+  else if (pct >= 60) { colorCss = '#2DD4BF'; label = 'Moderate-Strong'; }
+  else if (pct >= 40) { colorCss = '#F9B24C'; label = 'Moderate'; }
+  else if (pct >= 20) { colorCss = '#F87171'; label = 'Weak'; }
+  else { colorCss = '#ef4444'; label = 'Critical'; }
+
+  // Burden display
+  const burdenMap = { 'low': ['🟢', 'Low'], 'medium': ['🟡', 'Medium'], 'high': ['🟠', 'High'], 'very-high': ['🔴', 'Very High'], 'unknown': ['⚪', 'Unknown'] };
+  const burdenInfo = burdenMap[s.burden] || ['⚪', 'Unknown'];
+
+  // Difficulty display
+  const diffMap = { 'easy': ['🟢', 'Easy'], 'moderate': ['🟡', 'Moderate'], 'high': ['🟠', 'High'], 'expert': ['🔴', 'Expert'], 'unknown': ['⚪', 'Unknown'] };
+  const diffInfo = diffMap[s.difficulty] || ['⚪', 'Unknown'];
+
+  // Strength bar
+  let html = '<div class="strength-meter">' +
+    '<div class="strength-header"><span class="strength-label">Motion Strength Assessment</span><span class="strength-pct" style="color:'+colorCss+'">'+pct+'% <span class="strength-label-tag" style="color:'+colorCss+'">'+label+'</span></span></div>' +
+    '<div class="strength-track"><div class="strength-fill" style="width:'+pct+'%;background:'+colorCss+'"></div></div>' +
+    '<div class="strength-reasoning">' + esc(s.reasoning) + '</div>' +
+    '<div class="strength-dimensions">';
+
+  // Dimension cards
+  html += '<div class="str-dim-card"><div class="str-dim-icon">📊</div><div class="str-dim-content"><div class="str-dim-label">Success Likelihood</div><div class="str-dim-bar"><div class="str-dim-fill" style="width:'+pct+'%;background:'+colorCss+'"></div></div><div class="str-dim-pct">'+pct+'%</div></div></div>';
+  html += '<div class="str-dim-card"><div class="str-dim-icon">📎</div><div class="str-dim-content"><div class="str-dim-label">Evidentiary Burden</div><div class="str-dim-tag" style="border-color:'+(s.burden==='low'?'#4ADE80':s.burden==='medium'?'#F9B24C':s.burden==='high'?'#F87171':'#ef4444')+'">'+burdenInfo[0]+' '+burdenInfo[1]+'</div></div></div>';
+  html += '<div class="str-dim-card"><div class="str-dim-icon">📋</div><div class="str-dim-content"><div class="str-dim-label">Required Docs</div><div class="str-dim-count">'+(s.requiredDocs.length || 0)+' items</div></div></div>';
+  html += '<div class="str-dim-card"><div class="str-dim-icon">🧩</div><div class="str-dim-content"><div class="str-dim-label">Procedural Difficulty</div><div class="str-dim-tag" style="border-color:'+(s.difficulty==='easy'?'#4ADE80':s.difficulty==='moderate'?'#F9B24C':s.difficulty==='high'?'#F87171':'#ef4444')+'">'+diffInfo[0]+' '+diffInfo[1]+'</div></div></div>';
+
+  html += '</div>';
+
+  // Required docs section
+  if (s.requiredDocs && s.requiredDocs.length) {
+    html += '<div class="strength-docs"><div class="strength-docs-header">📋 Required Documentation</div><div class="strength-docs-list">' +
+      s.requiredDocs.map(d => '<span class="strength-doc-chip">' + esc(d) + '</span>').join('') +
+    '</div></div>';
   }
-  
-  meter.innerHTML = '<div class="strength-meter"><div class="strength-header"><span class="strength-label">Motion Readiness</span><span class="strength-pct" style="color:'+colorCss+'">'+pct+'%</span></div><div class="strength-track"><div class="strength-fill" style="width:'+pct+'%;background:'+colorCss+'"></div></div>'+checklistHtml+'</div>';
+
+  // Strengths & Weaknesses
+  if (s.strengths && s.strengths.length) {
+    html += '<div class="str-sw-section"><div class="str-sw-header strengths-hdr">✅ Strengths (' + s.strengths.length + ')</div>' +
+      s.strengths.map(st => '<div class="str-sw-item str-sw-strength">' + esc(st) + '</div>').join('') +
+    '</div>';
+  }
+  if (s.weaknesses && s.weaknesses.length) {
+    html += '<div class="str-sw-section"><div class="str-sw-header weaknesses-hdr">⚠️ Weaknesses (' + s.weaknesses.length + ')</div>' +
+      s.weaknesses.map(w => '<div class="str-sw-item str-sw-weakness">' + esc(w) + '</div>').join('') +
+    '</div>';
+  }
+  if (s.recommendations && s.recommendations.length) {
+    html += '<div class="str-sw-section"><div class="str-sw-header recs-hdr">💡 Recommendations</div>' +
+      s.recommendations.map(r => '<div class="str-sw-item str-sw-rec">' + esc(r) + '</div>').join('') +
+    '</div>';
+  }
+
+  html += '</div>';
+  meter.innerHTML = html;
 }
 
 // ── LIVE PREVIEW ──

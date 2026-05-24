@@ -1205,3 +1205,391 @@ function getDetectionAlerts(charge) {
   }
   return alerts;
 }
+
+const countyProfiles = {
+  "Miami-Dade": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate to high", typicalRange: "$5K–$100K+", f1Range: "$25K–$200K+", notes: "Bond schedules are high relative to other FL counties. 11th Circuit has a presumptive bond schedule but judges frequently deviate upward. Arthur hearings common for serious F1s." },
+    sentencingPatterns: { tendency: "moderate to harsh", drugSentences: "Mandatory minimums regularly imposed", violentSentences: "long guidelines", notes: "State Attorney's Office under Graves has taken a tough-on-crime stance. Downward departures require substantial mitigation." },
+    localAdminOrders: ["AO 2023-01 (Bond schedule revision)", "AO 2022-05 (Specialty court referral protocol)", "AO 2021-12 (Virtual appearance procedures)"],
+    specialtyCourts: ["Drug Court (11th Circuit Felony Drug Court)", "Mental Health Court (11th Circuit MHC)", "Veterans Treatment Court", "Homeless Court"],
+    rocketDocket: false,
+    uniqueRules: ["11th Circuit requires courtesy copies for all paperless filings", "Miami-Dade has a dedicated Complex Business Litigation section that spills into criminal docket management"],
+    recommendedSAList: ["Roderick Vereen (State Attorney)", "Public Defender's Office 11th Circuit"],
+    reentryResources: ["Miami-Dade Reentry Task Force", "Eleventh Circuit Reentry Court", "CareerSource South Florida"]
+  },
+  "Broward": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: true },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$75K", f1Range: "$15K–$150K", notes: "17th Circuit has a standardized bond schedule. Broward is generally more bond-friendly than Miami-Dade. Pretrial services supervision is robust." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court diversion strongly encouraged for non-violent", violentSentences: "guideline-range", notes: "Broward has a strong drug court with deferred prosecution options. SAO under Pryor has emphasized diversion for low-level offenses." },
+    localAdminOrders: ["AO 2023-03 (Bond schedule)", "AO 2022-10 (Mental health screening protocol)", "AO 2021-08 (Pretrial release conditions)"],
+    specialtyCourts: ["Drug Court (17th Circuit)", "Mental Health Court", "Veterans Treatment Court", "Teen Court (juvenile diversion)"],
+    rocketDocket: false,
+    uniqueRules: ["17th Circuit mandates e-filing through the Broward County Clerk portal", "Broward has a dedicated Self-Help Center for pro se litigants"],
+    recommendedSAList: ["Harold F. Pryor (State Attorney)", "Broward Public Defender's Office"],
+    reentryResources: ["Broward Reentry Task Force", "Broward Ex-Offender Reentry Coalition (BERC)", "CareerSource Broward"]
+  },
+  "Palm Beach": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: true },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "15th Circuit follows a uniform bond schedule. Bond hearings are generally efficient. Pretrial services has a strong supervision component." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available; diversion common for first-time", violentSentences: "guideline-range", notes: "SAO under Aronberg has balanced approach. Drug court completion can lead to dismissal in appropriate cases." },
+    localAdminOrders: ["AO 2024-01 (Electronic discovery standards)", "AO 2023-05 (Specialty court referral procedures)", "AO 2022-03 (Bond schedule amendment)"],
+    specialtyCourts: ["Drug Court (15th Circuit Felony Drug Court)", "Mental Health Court", "Veterans Treatment Court", "Teen Court"],
+    rocketDocket: false,
+    uniqueRules: ["15th Circuit requires all discovery to be exchanged electronically", "Palm Beach has a separate County Court and Circuit Court filing system"],
+    recommendedSAList: ["Dave Aronberg (State Attorney)", "Palm Beach Public Defender's Office"],
+    reentryResources: ["Palm Beach County Reentry Task Force", "Palm Beach County Sheriff's Reentry Program", "CareerSource Palm Beach"]
+  },
+  "Duval": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate to high", typicalRange: "$5K–$100K", f1Range: "$25K–$250K", notes: "4th Circuit bond culture has tightened post-2020. SAO under Williams has been aggressive on violent offenses. Bond review hearings are common." },
+    sentencingPatterns: { tendency: "harsh", drugSentences: "Mandatory minimums frequently sought", violentSentences: "upper guidelines", notes: "Jacksonville has a historically high incarceration rate. SAO has a dedicated violent crime unit. Downward departures are less common than statewide average." },
+    localAdminOrders: ["AO 2023-07 (Bond hearing procedures)", "AO 2022-04 (Mental health diversion referral)", "AO 2021-11 (Jail credit calculation)"],
+    specialtyCourts: ["Drug Court (4th Circuit)", "Mental Health Court", "Veterans Treatment Court", "Domestic Violence Court"],
+    rocketDocket: true,
+    uniqueRules: ["4th Circuit has a rocket docket for certain felony categories", "Duval has consolidated case management for multi-defendant cases"],
+    recommendedSAList: ["Melissa Nelson (State Attorney)", "Duval Public Defender's Office"],
+    reentryResources: ["Jacksonville Reentry Center", "Duval County Reentry Task Force", "Gateway Community Services"]
+  },
+  "Hillsborough": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: true },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$75K", f1Range: "$15K–$100K", notes: "13th Circuit follows a standard bond schedule. Tampa has active pretrial services. Bond modifications are regularly considered." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Diversion programs well-utilized", violentSentences: "guideline-range", notes: "SAO under Warren has prioritized violent crime prosecution. Drug court and diversion are robust for qualifying defendants." },
+    localAdminOrders: ["AO 2023-04 (Pretrial release risk assessment)", "AO 2022-08 (Veterans court eligibility)", "AO 2021-06 (E-filing procedures)"],
+    specialtyCourts: ["Drug Court (13th Circuit)", "Mental Health Court", "Veterans Treatment Court", "DUI Court", "Teen Court"],
+    rocketDocket: false,
+    uniqueRules: ["13th Circuit uses a validated risk assessment tool for pretrial release decisions", "Hillsborough has designated complex case divisions"],
+    recommendedSAList: ["Andrew Warren (State Attorney)", "Hillsborough Public Defender's Office"],
+    reentryResources: ["Hillsborough County Reentry Program", "Tampa Reentry Center", "CareerSource Tampa Bay"]
+  },
+  "Orange": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: true },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "9th Circuit has a presumptive bond schedule. Orlando courts are generally efficient. Pretrial diversion programs are well-established." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available; emphasis on treatment over incarceration for low-level", violentSentences: "guideline-range", notes: "Orange County SAO has emphasized smart justice initiatives. Drug court completion can lead to dismissal or reduced charges." },
+    localAdminOrders: ["AO 2023-02 (Bond schedule revision)", "AO 2022-06 (Specialty court referral update)", "AO 2021-09 (Virtual hearing protocols)"],
+    specialtyCourts: ["Drug Court (9th Circuit)", "Mental Health Court", "Veterans Treatment Court", "Homelessness Court", "Teen Court"],
+    rocketDocket: false,
+    uniqueRules: ["9th Circuit has a consolidated docket system across Orange and Osceola", "Orlando has a well-developed Homeless Court program"],
+    recommendedSAList: ["Monique Worrell (State Attorney)", "Orange Public Defender's Office"],
+    reentryResources: ["Orange County Reentry Task Force", "Central Florida Reentry Center", "CareerSource Central Florida"]
+  },
+  "Pinellas": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$2K–$50K", f1Range: "$10K–$100K", notes: "6th Circuit has a standardized bond schedule. Clearwater/St. Pete are generally bond-accessible. Pretrial services actively supervises." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Diversion common for non-violent drug offenses", violentSentences: "guideline-range", notes: "Pinellas SAO has strong community court programs. Drug court is well-regarded and funded." },
+    localAdminOrders: ["AO 2023-09 (Bond hearing procedures)", "AO 2022-02 (Drug court eligibility expansion)", "AO 2021-07 (Mental health screening protocol)"],
+    specialtyCourts: ["Drug Court (6th Circuit)", "Mental Health Court", "Veterans Treatment Court", "Community Court"],
+    rocketDocket: false,
+    uniqueRules: ["Pinellas has a dedicated Community Court for quality-of-life offenses", "6th Circuit uses centralized case intake"],
+    recommendedSAList: ["Bruce Bartlett (State Attorney)", "Pinellas Public Defender's Office"],
+    reentryResources: ["Pinellas Reentry Program", "Gulf Coast reentry services", "CareerSource Pinellas"]
+  },
+  "Lee": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "20th Circuit uses standard bond schedule. Fort Myers courts generally follow presumptive ranges. Bond hearings conducted daily." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available; some mandatory minimums imposed", violentSentences: "guideline-range", notes: "Lee County SAO balance between diversion and prosecution. Southwest Florida trends conservative on sentencing." },
+    localAdminOrders: ["AO 2023-06 (Bond schedule)", "AO 2022-09 (Pretrial services protocol)", "AO 2021-05 (E-filing requirements)"],
+    specialtyCourts: ["Drug Court (20th Circuit)", "Mental Health Court", "Veterans Treatment Court", "DUI Court"],
+    rocketDocket: false,
+    uniqueRules: ["20th Circuit covers 5 counties with shared administrative orders", "Lee County has a centralized filing system for all divisions"],
+    recommendedSAList: ["Amira Fox (State Attorney)", "Lee Public Defender's Office"],
+    reentryResources: ["Lee County Reentry Task Force", "Southwest Florida Reentry Coalition", "CareerSource Southwest Florida"]
+  },
+  "Polk": {
+    diversionPrograms: { pretrial: false, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate to high", typicalRange: "$5K–$75K", f1Range: "$15K–$150K", notes: "10th Circuit bond schedules are moderately high. Bartow/Lakeland courts tend to follow schedule but judges have discretion. Bond review motions are somewhat common." },
+    sentencingPatterns: { tendency: "moderate to harsh", drugSentences: "Mandatory minimums applied for trafficking", violentSentences: "guideline to upper range", notes: "Polk SAO under Strobl has been aggressive on drug trafficking and violent crime. Downward departures require strong mitigation." },
+    localAdminOrders: ["AO 2023-08 (Bond hearing schedule)", "AO 2022-12 (Drug court expansion)", "AO 2021-04 (Courtroom technology standards)"],
+    specialtyCourts: ["Drug Court (10th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["10th Circuit serves 4 counties with centralized administration", "Polk has dedicated felony divisions with assigned judges"],
+    recommendedSAList: ["Brian Strobl (State Attorney)", "Polk Public Defender's Office"],
+    reentryResources: ["Polk County Reentry Initiative", "Lakeland reentry services", "CareerSource Polk"]
+  },
+  "Brevard": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "18th Circuit follows standard bond schedule. Melbourne/Cocoa courts generally adhere to presumptive bonds. Pretrial services available." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court participation encouraged", violentSentences: "guideline-range", notes: "Brevard SAO has a dedicated drug court unit. Space Coast has unique cultural considerations influencing sentencing." },
+    localAdminOrders: ["AO 2023-10 (Pretrial release conditions)", "AO 2022-07 (Specialty court referrals)", "AO 2021-03 (Jail credit calculation)"],
+    specialtyCourts: ["Drug Court (18th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["18th Circuit has specific divisions for Cape Canaveral area cases", "Brevard uses centralized intake for all felony filings"],
+    recommendedSAList: ["Phil Archer (State Attorney)", "Brevard Public Defender's Office"],
+    reentryResources: ["Brevard Reentry Program", "Space Coast reentry coalition", "CareerSource Brevard"]
+  },
+  "Volusia": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "7th Circuit bond schedule is standard. Daytona Beach courts follow presumptive ranges. Bond hearings are held daily by video." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available; diversion possible for first-time", violentSentences: "guideline-range", notes: "Volusia SAO under Belich has focused on gun crimes and drug trafficking. Diversion programs exist for qualifying offenses." },
+    localAdminOrders: ["AO 2023-11 (Video appearance standards)", "AO 2022-11 (Drug court eligibility)", "AO 2021-02 (Discovery exchange protocol)"],
+    specialtyCourts: ["Drug Court (7th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["7th Circuit covers Volusia, Flagler, Putnam, and St. Johns", "Daytona has specific traffic court divisions that sometimes handle misdemeanor drug cases"],
+    recommendedSAList: ["R.J. Larizza (State Attorney)", "Volusia Public Defender's Office"],
+    reentryResources: ["Volusia Reentry Program", "Daytona Beach reentry services", "CareerSource Volusia"]
+  },
+  "Seminole": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: true },
+    bondCulture: { tendency: "moderate", typicalRange: "$2K–$40K", f1Range: "$10K–$75K", notes: "18th Circuit shares bond schedule with Brevard. Sanford courts are generally bond-accessible. Pretrial services active." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Diversion strongly encouraged for first-time drug offenders", violentSentences: "guideline-range", notes: "Seminole SAO has a balanced approach. Drug court and diversion programs are well-funded and utilized." },
+    localAdminOrders: ["AO 2023-10 (Shared with Brevard)", "AO 2022-07 (Specialty court referrals)", "AO 2021-01 (Digital evidence standards)"],
+    specialtyCourts: ["Drug Court (18th Circuit)", "Mental Health Court", "Veterans Treatment Court", "Teen Court"],
+    rocketDocket: false,
+    uniqueRules: ["Seminole shares 18th Circuit administration with Brevard", "Sanford has a dedicated courthouse for criminal proceedings"],
+    recommendedSAList: ["Phil Archer (State Attorney)", "Seminole Public Defender's Office"],
+    reentryResources: ["Seminole County Reentry Program", "CareerSource Central Florida"]
+  },
+  "Escambia": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "1st Circuit bond schedule follows state guidelines. Pensacola courts generally adhere. Bond hearings by video are standard." },
+    sentencingPatterns: { tendency: "moderate to harsh", drugSentences: "Mandatory minimums applied for trafficking", violentSentences: "guideline-range", notes: "Panhandle tends toward conservative sentencing. SAO under Miller has prioritized drug trafficking prosecution." },
+    localAdminOrders: ["AO 2023-01 (1st Circuit bond schedule)", "AO 2022-03 (Video appearance procedures)", "AO 2021-05 (Discovery standards)"],
+    specialtyCourts: ["Drug Court (1st Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["1st Circuit covers Escambia, Santa Rosa, Okaloosa, and Walton", "Pensacola has a federal courthouse that influences local practice"],
+    recommendedSAList: ["Bill Eddins (State Attorney)", "Escambia Public Defender's Office"],
+    reentryResources: ["Escambia Reentry Initiative", "Pensacola reentry coalition", "CareerSource Escambia"]
+  },
+  "Leon": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: true },
+    bondCulture: { tendency: "moderate", typicalRange: "$2K–$40K", f1Range: "$10K–$75K", notes: "2nd Circuit bond schedule is moderate. Tallahassee courts are generally bond-accessible. Pretrial services is active and well-resourced." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Diversion common; drug court available", violentSentences: "guideline-range", notes: "Leon County SAO has strong community-oriented approach. Proximity to state capitol influences legal culture." },
+    localAdminOrders: ["AO 2023-04 (Pretrial risk assessment)", "AO 2022-06 (Mental health court expansion)", "AO 2021-09 (E-filing requirements)"],
+    specialtyCourts: ["Drug Court (2nd Circuit)", "Mental Health Court", "Veterans Treatment Court", "Teen Court"],
+    rocketDocket: false,
+    uniqueRules: ["2nd Circuit is the location of the Florida Supreme Court — local practice influenced by appellate culture", "Tallahassee has a dedicated criminal courthouse"],
+    recommendedSAList: ["Jack Campbell (State Attorney)", "Leon Public Defender's Office"],
+    reentryResources: ["Leon County Reentry Program", "Tallahassee reentry coalition", "CareerSource Capital Region"]
+  },
+  "Alachua": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: true },
+    bondCulture: { tendency: "moderate to low", typicalRange: "$2K–$35K", f1Range: "$10K–$75K", notes: "8th Circuit bond schedule is one of the more accessible in Florida. Gainesville courts favor pretrial release where feasible." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Diversion and drug court commonly used", violentSentences: "guideline-range", notes: "Alachua SAO under Cervone has emphasized restorative justice. University community influences progressive criminal justice approaches." },
+    localAdminOrders: ["AO 2023-03 (Bond policy)", "AO 2022-08 (Restorative justice referral)", "AO 2021-12 (Pretrial services expansion)"],
+    specialtyCourts: ["Drug Court (8th Circuit)", "Mental Health Court", "Veterans Treatment Court", "Teen Court", "Restorative Justice Court"],
+    rocketDocket: false,
+    uniqueRules: ["8th Circuit has a nationally recognized restorative justice program", "Alachua's proximity to UF Law School means more pro bono and legal clinic resources"],
+    recommendedSAList: ["Brian Kramer (State Attorney)", "Alachua Public Defender's Office"],
+    reentryResources: ["Alachua Reentry Initiative", "Gainesville reentry coalition", "CareerSource North Central Florida"]
+  },
+  "Collier": {
+    diversionPrograms: { pretrial: false, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$5K–$75K", f1Range: "$20K–$200K", notes: "20th Circuit schedule applies. Naples courts are affluent-area courts with higher bond tendencies. Pretrial services less developed than urban counties." },
+    sentencingPatterns: { tendency: "moderate to harsh", drugSentences: "Drug court available but less utilized", violentSentences: "guideline to upper range", notes: "Collier SAO has taken a tough stance on drug offenses. Downward departures are relatively uncommon." },
+    localAdminOrders: ["AO 2023-06 (Shared 20th Circuit bond schedule)", "AO 2022-09 (Pretrial protocol)", "AO 2021-05 (E-filing)"],
+    specialtyCourts: ["Drug Court (20th Circuit Collier division)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Collier shares 20th Circuit with Lee, Hendry, and Charlotte", "Naples has a separate courthouse annex for some proceedings"],
+    recommendedSAList: ["Amira Fox (State Attorney)", "Collier Public Defender's Office"],
+    reentryResources: ["Collier Reentry Program", "Naples reentry coalition", "CareerSource Southwest Florida"]
+  },
+  "Sarasota": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: true },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "12th Circuit bond schedule is standard. Sarasota courts generally follow presumptive ranges. Pretrial services is moderately active." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available; diversion possible", violentSentences: "guideline-range", notes: "Sarasota SAO has a balanced approach. Community courts available for quality-of-life offenses." },
+    localAdminOrders: ["AO 2023-05 (Bond hearing schedule)", "AO 2022-07 (Specialty court referral)", "AO 2021-10 (Video hearing standards)"],
+    specialtyCourts: ["Drug Court (12th Circuit)", "Mental Health Court", "Veterans Treatment Court", "Teen Court"],
+    rocketDocket: false,
+    uniqueRules: ["12th Circuit covers Sarasota, Manatee, and DeSoto", "Sarasota has a dedicated criminal justice center"],
+    recommendedSAList: ["Ed Brodsky (State Attorney)", "Sarasota Public Defender's Office"],
+    reentryResources: ["Sarasota Reentry Program", "CareerSource Sarasota"]
+  },
+  "Manatee": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "12th Circuit (shared with Sarasota). Bradenton courts are generally bond-accessible. Standard bond schedule applies." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available", violentSentences: "guideline-range", notes: "Manatee SAO under Brodsky has consistent approach with Sarasota. Diversion programs exist but less robust than urban counties." },
+    localAdminOrders: ["AO 2023-05 (12th Circuit)", "AO 2022-07 (Specialty court)", "AO 2021-10 (Virtual hearing standards)"],
+    specialtyCourts: ["Drug Court (12th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Manatee shares 12th Circuit administration with Sarasota", "Bradenton has a historical courthouse with limited docket capacity"],
+    recommendedSAList: ["Ed Brodsky (State Attorney)", "Manatee Public Defender's Office"],
+    reentryResources: ["Manatee Reentry Program", "CareerSource Suncoast"]
+  },
+  "Pasco": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$75K", notes: "6th Circuit (shared with Pinellas). Dade City courts follow standard bond schedule. Growing county with increasing docket." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available", violentSentences: "guideline-range", notes: "Pasco SAO has balanced approach. Growing population has increased docket complexity." },
+    localAdminOrders: ["AO 2023-09 (6th Circuit bond)", "AO 2022-02 (Drug court)", "AO 2021-07 (Mental health screening)"],
+    specialtyCourts: ["Drug Court (6th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Pasco shares 6th Circuit with Pinellas", "Two courthouse locations: Dade City (east) and New Port Richey (west)"],
+    recommendedSAList: ["Bruce Bartlett (State Attorney)", "Pasco Public Defender's Office"],
+    reentryResources: ["Pasco Reentry Program", "CareerSource Pasco"]
+  },
+  "Marion": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "5th Circuit bond schedule. Ocala courts generally follow presumptive ranges. Growing county with increasing caseload." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available", violentSentences: "guideline-range", notes: "Marion SAO under Gladson has consistent approach. Diversion available for qualifying first-time offenders." },
+    localAdminOrders: ["AO 2023-02 (5th Circuit bond schedule)", "AO 2022-05 (Drug court protocol)", "AO 2021-08 (Jail credit)"],
+    specialtyCourts: ["Drug Court (5th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["5th Circuit covers Marion, Citrus, Hernando, Lake, and Sumter", "Ocala has a historic courthouse with some modernized docket systems"],
+    recommendedSAList: ["William Gladson (State Attorney)", "Marion Public Defender's Office"],
+    reentryResources: ["Marion Reentry Initiative", "Ocala reentry coalition", "CareerSource Citrus Levy Marion"]
+  },
+  "St. Lucie": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "19th Circuit bond schedule. Fort Pierce courts are generally bond-accessible. Growing county with Treasure Coast legal culture." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available", violentSentences: "guideline-range", notes: "St. Lucie SAO has taken a balanced approach. Treasure Coast trends moderate on sentencing." },
+    localAdminOrders: ["AO 2023-03 (19th Circuit bond)", "AO 2022-06 (Pretrial release)", "AO 2021-11 (Discovery exchange)"],
+    specialtyCourts: ["Drug Court (19th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["19th Circuit covers St. Lucie, Martin, Okeechobee, and Indian River", "Fort Pierce has a federal courthouse that handles Southern District cases"],
+    recommendedSAList: ["Tom Bakkedahl (State Attorney)", "St. Lucie Public Defender's Office"],
+    reentryResources: ["St. Lucie Reentry Program", "Treasure Coast reentry coalition", "CareerSource St. Lucie"]
+  },
+  "Osceola": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: true },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "9th Circuit (shared with Orange). Kissimmee courts follow same bond schedule as Orange County. Growing rapidly." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available", violentSentences: "guideline-range", notes: "Osceola SAO shares 9th Circuit with Orange. Increasing caseload from population growth." },
+    localAdminOrders: ["AO 2023-02 (9th Circuit bond)", "AO 2022-06 (Specialty court)", "AO 2021-09 (Virtual hearing)"],
+    specialtyCourts: ["Drug Court (9th Circuit)", "Mental Health Court", "Veterans Treatment Court", "Teen Court"],
+    rocketDocket: false,
+    uniqueRules: ["Osceola shares 9th Circuit with Orange County", "Kissimmee courthouse handles growing docket with some specialty divisions"],
+    recommendedSAList: ["Monique Worrell (State Attorney)", "Osceola Public Defender's Office"],
+    reentryResources: ["Osceola Reentry Program", "CareerSource Central Florida"]
+  },
+  "Lake": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$75K", notes: "5th Circuit (shared with Marion). Tavares courts follow standard schedule. Growing retirement community county." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available but limited capacity", violentSentences: "guideline-range", notes: "Lake SAO shares 5th Circuit. Conservative trend but not extreme." },
+    localAdminOrders: ["AO 2023-02 (5th Circuit bond)", "AO 2022-05 (Drug court)", "AO 2021-08 (Jail credit)"],
+    specialtyCourts: ["Drug Court (5th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Lake shares 5th Circuit with 4 other counties", "Tavares has a historic waterfront courthouse"],
+    recommendedSAList: ["William Gladson (State Attorney)", "Lake Public Defender's Office"],
+    reentryResources: ["Lake Reentry Program", "CareerSource Central Florida"]
+  },
+  "Bay": {
+    diversionPrograms: { pretrial: false, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "14th Circuit bond schedule. Panama City courts are recovering from 2018 hurricane impacts on infrastructure." },
+    sentencingPatterns: { tendency: "moderate to harsh", drugSentences: "Mandatory minimums applied for trafficking", violentSentences: "guideline-range", notes: "Panhandle conservative sentencing culture. SAO under Hazel has emphasized drug enforcement." },
+    localAdminOrders: ["AO 2023-04 (14th Circuit bond)", "AO 2022-02 (Court operations)", "AO 2021-06 (E-filing)"],
+    specialtyCourts: ["Drug Court (14th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["14th Circuit covers Bay, Calhoun, Gulf, Holmes, Jackson, and Washington", "Panama City courthouse was rebuilt post-Hurricane Michael"],
+    recommendedSAList: ["Larry Basford (State Attorney)", "Bay Public Defender's Office"],
+    reentryResources: ["Bay County Reentry Program", "Panama City reentry coalition", "CareerSource Bay"]
+  },
+  "Flagler": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: false, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$2K–$40K", f1Range: "$10K–$75K", notes: "7th Circuit (shared with Volusia). Bunnell courts are generally accessible. Smaller county with limited resources." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available but limited", violentSentences: "guideline-range", notes: "Flagler SAO shares 7th Circuit. Smaller docket but growing." },
+    localAdminOrders: ["AO 2023-11 (7th Circuit video)", "AO 2022-11 (Drug court)", "AO 2021-02 (Discovery)"],
+    specialtyCourts: ["Drug Court (7th Circuit)", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Flagler shares 7th Circuit with Volusia, Putnam, St. Johns", "Bunnell courthouse is the smallest in the circuit"],
+    recommendedSAList: ["R.J. Larizza (State Attorney)", "Flagler Public Defender's Office"],
+    reentryResources: ["Flagler Reentry Program", "CareerSource Flagler"]
+  },
+  "Clay": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "4th Circuit (shared with Duval). Green Cove Springs courts follow similar patterns to Jacksonville but with smaller docket." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available", violentSentences: "guideline-range", notes: "Clay shares 4th Circuit SAO with Duval. Suburban county with different legal culture than urban Jacksonville." },
+    localAdminOrders: ["AO 2023-07 (4th Circuit bond)", "AO 2022-04 (Mental health)", "AO 2021-11 (Jail credit)"],
+    specialtyCourts: ["Drug Court (4th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Clay is part of 4th Circuit but has its own courthouse and docket", "Green Cove Springs courthouse is historic and smaller capacity"],
+    recommendedSAList: ["Melissa Nelson (State Attorney)", "Clay Public Defender's Office"],
+    reentryResources: ["Clay County Reentry Program", "CareerSource Clay"]
+  },
+  "Okaloosa": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "1st Circuit (shared with Escambia). Crestview/Fort Walton courts follow Panhandle norms." },
+    sentencingPatterns: { tendency: "moderate to harsh", drugSentences: "Mandatory minimums applied", violentSentences: "guideline-range", notes: "Okaloosa SAO shares 1st Circuit. Military presence influences legal culture." },
+    localAdminOrders: ["AO 2023-01 (1st Circuit bond)", "AO 2022-03 (Video appearance)", "AO 2021-05 (Discovery)"],
+    specialtyCourts: ["Drug Court (1st Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Okaloosa has significant military justice overlap with Eglin AFB and Hurlburt Field", "Fort Walton Beach has a separate annex courthouse"],
+    recommendedSAList: ["Bill Eddins (State Attorney)", "Okaloosa Public Defender's Office"],
+    reentryResources: ["Okaloosa Reentry Program", "CareerSource Okaloosa"]
+  },
+  "Charlotte": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$75K", notes: "20th Circuit (shared with Lee/Collier). Punta Gorda courts are generally accessible. Retiree-heavy population influences court culture." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available", violentSentences: "guideline-range", notes: "Charlotte shares 20th Circuit SAO with Lee and Collier." },
+    localAdminOrders: ["AO 2023-06 (20th Circuit bond)", "AO 2022-09 (Pretrial)", "AO 2021-05 (E-filing)"],
+    specialtyCourts: ["Drug Court (20th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Charlotte is the least populous county in 20th Circuit", "Punta Gorda courthouse has limited divisions"],
+    recommendedSAList: ["Amira Fox (State Attorney)", "Charlotte Public Defender's Office"],
+    reentryResources: ["Charlotte Reentry Program", "CareerSource Southwest Florida"]
+  },
+  "Hernando": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: false, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$75K", notes: "5th Circuit (shared with Marion). Brooksville courts generally follow circuit norms." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available but limited", violentSentences: "guideline-range", notes: "Hernando shares 5th Circuit SAO." },
+    localAdminOrders: ["AO 2023-02 (5th Circuit bond)", "AO 2022-05 (Drug court)", "AO 2021-08 (Jail credit)"],
+    specialtyCourts: ["Drug Court (5th Circuit)", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Hernando shares 5th Circuit with 4 other counties", "Brooksville courthouse is historic with modernized systems"],
+    recommendedSAList: ["William Gladson (State Attorney)", "Hernando Public Defender's Office"],
+    reentryResources: ["Hernando Reentry Program", "CareerSource Hernando"]
+  },
+  "Citrus": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: false, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$2K–$40K", f1Range: "$10K–$75K", notes: "5th Circuit. Inverness courts are generally accessible. Retiree-heavy population." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available but limited", violentSentences: "guideline-range", notes: "Citrus shares 5th Circuit SAO." },
+    localAdminOrders: ["AO 2023-02 (5th Circuit bond)", "AO 2022-05 (Drug court)", "AO 2021-08 (Jail credit)"],
+    specialtyCourts: ["Drug Court (5th Circuit)", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Citrus County has a single main courthouse in Inverness"],
+    recommendedSAList: ["William Gladson (State Attorney)", "Citrus Public Defender's Office"],
+    reentryResources: ["Citrus Reentry Program", "CareerSource Citrus Levy Marion"]
+  },
+  "Sumter": {
+    diversionPrograms: { pretrial: false, drugCourt: false, mentalHealthCourt: false, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$2K–$40K", f1Range: "$10K–$75K", notes: "5th Circuit. Bushnell courts serve a unique retiree-heavy population (The Villages)." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Limited drug court capacity", violentSentences: "guideline-range", notes: "Sumter has the lowest crime rate in Florida, reflected in smaller criminal docket." },
+    localAdminOrders: ["AO 2023-02 (5th Circuit bond)", "AO 2022-05 (limited drug court)", "AO 2021-08 (Jail credit)"],
+    specialtyCourts: ["Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Sumter County has the lowest felony caseload in the 5th Circuit", "The Villages population creates unique elder law and guardianship intersections with criminal cases"],
+    recommendedSAList: ["William Gladson (State Attorney)", "Sumter Public Defender's Office"],
+    reentryResources: ["Sumter Reentry Program"]
+  },
+  "Santa Rosa": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "1st Circuit (shared with Escambia). Milton courts follow Panhandle norms." },
+    sentencingPatterns: { tendency: "moderate to harsh", drugSentences: "Mandatory minimums applied for trafficking", violentSentences: "guideline-range", notes: "Santa Rosa shares 1st Circuit SAO. Conservative sentencing culture." },
+    localAdminOrders: ["AO 2023-01 (1st Circuit bond)", "AO 2022-03 (Video appearance)", "AO 2021-05 (Discovery)"],
+    specialtyCourts: ["Drug Court (1st Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Santa Rosa is the fastest-growing county in the Florida Panhandle", "Milton courthouse has expanded capacity to handle growing docket"],
+    recommendedSAList: ["Bill Eddins (State Attorney)", "Santa Rosa Public Defender's Office"],
+    reentryResources: ["Santa Rosa Reentry Program", "CareerSource Santa Rosa"]
+  },
+  "Indian River": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "19th Circuit (shared with St. Lucie). Vero Beach courts follow Treasure Coast legal culture." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available", violentSentences: "guideline-range", notes: "Indian River shares 19th Circuit SAO. Affluent retiree population influences court culture." },
+    localAdminOrders: ["AO 2023-03 (19th Circuit bond)", "AO 2022-06 (Pretrial)", "AO 2021-11 (Discovery)"],
+    specialtyCourts: ["Drug Court (19th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Indian River shares 19th Circuit with 3 other Treasure Coast counties", "Vero Beach has a historic courthouse with modern annex"],
+    recommendedSAList: ["Tom Bakkedahl (State Attorney)", "Indian River Public Defender's Office"],
+    reentryResources: ["Indian River Reentry Program", "CareerSource Indian River"]
+  },
+  "Martin": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "19th Circuit. Stuart courts are generally bond-accessible. Affluent Treasure Coast county." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available", violentSentences: "guideline-range", notes: "Martin shares 19th Circuit SAO." },
+    localAdminOrders: ["AO 2023-03 (19th Circuit bond)", "AO 2022-06 (Pretrial)", "AO 2021-11 (Discovery)"],
+    specialtyCourts: ["Drug Court (19th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["Martin County has one of the lowest crime rates in Florida", "Stuart courthouse handles a relatively modest criminal docket"],
+    recommendedSAList: ["Tom Bakkedahl (State Attorney)", "Martin Public Defender's Office"],
+    reentryResources: ["Martin Reentry Program", "CareerSource Martin"]
+  },
+  "St. Johns": {
+    diversionPrograms: { pretrial: true, drugCourt: true, mentalHealthCourt: true, veteransCourt: true, teenCourt: false },
+    bondCulture: { tendency: "moderate", typicalRange: "$3K–$50K", f1Range: "$10K–$100K", notes: "7th Circuit (shared with Volusia). St. Augustine courts are generally accessible. Rapidly growing county." },
+    sentencingPatterns: { tendency: "moderate", drugSentences: "Drug court available", violentSentences: "guideline-range", notes: "St. Johns shares 7th Circuit SAO. Affluent county with relatively low crime rates." },
+    localAdminOrders: ["AO 2023-11 (7th Circuit video)", "AO 2022-11 (Drug court)", "AO 2021-02 (Discovery)"],
+    specialtyCourts: ["Drug Court (7th Circuit)", "Mental Health Court", "Veterans Treatment Court"],
+    rocketDocket: false,
+    uniqueRules: ["St. Augustine has the oldest courthouse in the US still in use", "St. Johns is one of the fastest-growing counties in Florida"],
+    recommendedSAList: ["R.J. Larizza (State Attorney)", "St. Johns Public Defender's Office"],
+    reentryResources: ["St. Johns Reentry Program"]
+  }
+};
