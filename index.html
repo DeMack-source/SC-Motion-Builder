@@ -43,6 +43,148 @@
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body:    'DM Sans', system-ui, sans-serif;
   --font-mono:    'JetBrains Mono', monospace;
+
+  /* ── TACTICAL SYSTEM VARIABLES ── */
+  --tac-green:  #00ff88;
+  --tac-amber:  #ffaa00;
+  --tac-red:    #ff3355;
+  --tac-blue:   #00ccff;
+  --tac-cyan:   #00ffcc;
+  --tac-purple: #aa66ff;
+  --tac-scan:   rgba(0,255,136,0.03);
+  --tac-glow:   0 0 20px rgba(0,255,136,0.15);
+  --tac-border: rgba(0,255,136,0.12);
+  --tac-grid:   rgba(0,255,136,0.04);
+}
+
+/* ── TACTICAL ANIMATIONS ── */
+@keyframes tacPing {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%     { opacity:0.5; transform:scale(1.3); }
+}
+@keyframes tacScan {
+  0%   { transform:translateY(0); }
+  100% { transform:translateY(100vh); }
+}
+@keyframes tacDataFeed {
+  0%   { opacity:0; transform:translateY(4px); }
+  100% { opacity:1; transform:translateY(0); }
+}
+@keyframes tacGlow {
+  0%,100% { box-shadow:0 0 8px var(--tac-green),0 0 16px rgba(0,255,136,0.08); }
+  50%     { box-shadow:0 0 16px var(--tac-green),0 0 32px rgba(0,255,136,0.15); }
+}
+@keyframes tacRadar {
+  0%   { clip-path:polygon(50% 50%, 50% 0, 55% 0); }
+  25%  { clip-path:polygon(50% 50%, 100% 0, 100% 5%); }
+  50%  { clip-path:polygon(50% 50%, 100% 50%, 100% 55%); }
+  75%  { clip-path:polygon(50% 50%, 50% 100%, 55% 100%); }
+  100% { clip-path:polygon(50% 50%, 50% 0, 55% 0); }
+}
+@keyframes tacTypewriter {
+  from { width:0; }
+}
+@keyframes tacStripes {
+  0% { background-position:0 0; }
+  100% { background-position:40px 0; }
+}
+
+/* ── TACTICAL OVERLAY (radar scan line) ── */
+body .tac-overlay {
+  display:none;
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  overflow:hidden;
+}
+body .tac-overlay.active { display:block; }
+.tac-radar-line {
+  position:absolute; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(0,255,136,0.08) 30%, rgba(0,255,136,0.12) 50%, rgba(0,255,136,0.08) 70%, transparent 100%);
+  animation: tacScan 4s linear infinite;
+  opacity:0.4;
+}
+.tac-grid-overlay {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(var(--tac-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tac-grid) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity:0.3;
+}
+
+/* ── MISSION CONTROL HEADER ── */
+.site-header {
+  position:relative;
+  padding: 14px 0 12px;
+  border-bottom: 1px solid var(--tac-border);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: linear-gradient(180deg, rgba(0,255,136,0.02) 0%, transparent 100%);
+}
+.site-header::after {
+  content:''; position:absolute; bottom:-1px; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent 0%, var(--tac-green) 50%, transparent 100%);
+  opacity:0.3;
+}
+
+.brand-seal {
+  width:36px; height:36px;
+  background: var(--ink-card);
+  border:1px solid var(--tac-border);
+  border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px;
+  box-shadow: none;
+  position:relative;
+}
+.brand-seal::after {
+  content:''; position:absolute; inset:-1px; border-radius:6px;
+  box-shadow: 0 0 12px rgba(0,255,136,0.08);
+  animation: tacGlow 3s ease-in-out infinite;
+}
+.brand-text h1 {
+  font-family: var(--font-mono);
+  font-size: clamp(12px, 3vw, 16px);
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 1px;
+  line-height: 1.1;
+}
+.brand-text .sub {
+  font-size: 8px;
+  color: var(--tac-green);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity:0.6;
+  margin-top:1px;
+}
+
+.header-badge { display:none; }
+
+.tac-sysbar {
+  display:flex; align-items:center; gap:10px;
+  font-family: var(--font-mono); font-size:8px;
+}
+.tac-sys-stat {
+  display:flex; align-items:center; gap:4px;
+  padding:3px 8px;
+  border:1px solid var(--tac-border);
+  border-radius:4px;
+  background: rgba(0,255,136,0.03);
+  color: var(--tac-green);
+  opacity:0.7;
+  letter-spacing:0.5px;
+}
+.tac-sys-stat .tac-dot {
+  width:5px; height:5px; border-radius:50%;
+  background: var(--tac-green);
+  animation: tacPing 2s ease-in-out infinite;
+}
+.tac-sys-stat .tac-val {
+  color: var(--white); font-weight:700;
 }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
@@ -2380,6 +2522,148 @@ body.low-distraction #tabnav { display: none; }
   cursor: pointer; font-weight: 600;
 }
 
+/* ═══ CASE NARRATIVE ENGINE ═══ */
+.narrative-panel {
+  background: var(--ink-card);
+  border: 1px solid var(--tac-border);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  overflow: hidden;
+  animation: fadeSlideIn 0.35s ease;
+}
+.narr-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--tac-border);
+  background: rgba(0,255,136,0.02);
+  flex-wrap: wrap; gap: 8px;
+}
+.narr-title-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.narr-icon { font-size: 16px; }
+.narr-title {
+  font-size: 13px; font-weight: 700; color: var(--white);
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+.narr-meta {
+  font-size: 9px; color: var(--tac-green);
+  font-family: var(--font-mono);
+  opacity: 0.6;
+  margin-left: 6px;
+}
+.narr-actions { display: flex; gap: 6px; }
+.narr-btn {
+  font-family: var(--font-mono); font-size: 9px;
+  padding: 4px 10px; border-radius: 4px;
+  border: 1px solid var(--tac-border);
+  background: rgba(0,255,136,0.04);
+  color: var(--tac-green);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.narr-btn:hover {
+  background: rgba(0,255,136,0.1);
+  box-shadow: 0 0 12px rgba(0,255,136,0.1);
+}
+
+.narr-body { padding: 8px 12px; }
+
+.narr-section {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.02);
+}
+.narr-section-header {
+  display: flex; align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+.narr-section-header:hover { background: rgba(255,255,255,0.03); }
+.narr-section-header.open { border-bottom: 1px solid var(--border); }
+.ns-icon { font-size: 14px; }
+.ns-title { font-size: 11px; font-weight: 700; color: var(--white); flex: 1; letter-spacing: 0.5px; font-family: var(--font-mono); }
+.ns-count {
+  font-size: 8px; font-family: var(--font-mono);
+  color: var(--muted);
+  padding: 1px 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+}
+.ns-toggle {
+  font-size: 10px; color: var(--muted);
+  transition: transform 0.2s;
+}
+.narr-section-header.open .ns-toggle { transform: rotate(180deg); }
+
+.narr-section-body {
+  display: none;
+  padding: 10px 12px;
+}
+.narr-section-body.open { display: block; }
+
+.narr-line {
+  font-size: 11px; color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 4px;
+  border-left: 2px solid var(--tac-border);
+}
+
+.narr-item {
+  display: flex; gap: 8px;
+  padding: 7px 10px;
+  margin-bottom: 5px;
+  border-radius: 6px;
+  border-left: 3px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  align-items: flex-start;
+}
+.narr-item--critical { border-left-color: var(--red); }
+.narr-item--high { border-left-color: var(--gold); }
+.ni-icon { font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+.ni-body { flex: 1; min-width: 0; }
+.ni-text { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.ni-action { font-size: 10px; color: var(--sky); margin-top: 3px; }
+.ni-statute { font-size: 9px; color: var(--tac-green); font-family: var(--font-mono); margin-top: 2px; }
+
+.narr-placeholder {
+  font-size: 11px; color: var(--muted);
+  font-style: italic; opacity: 0.6;
+  padding: 8px;
+  text-align: center;
+}
+
+/* ── Narrative in Preview ── */
+.narr-preview-widget {
+  background: var(--ink-card);
+  border: 1px solid var(--tac-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+}
+.narr-preview-widget .npw-header {
+  font-size: 9px; color: var(--tac-green);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 6px;
+  opacity: 0.6;
+}
+.narr-preview-widget .npw-body {
+  font-size: 11px; color: var(--muted);
+  line-height: 1.6;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
 .intake-overlay {
   display: none; position: fixed; inset: 0; z-index: 9999;
   background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
@@ -2908,6 +3192,12 @@ body::before {
 
 <div class="app">
 
+<!-- TACTICAL OVERLAYS -->
+<div class="tac-overlay" id="tac-overlay">
+  <div class="tac-radar-line"></div>
+</div>
+<div class="tac-grid-overlay"></div>
+
 <!-- ═══ TAB: BUILDER ═══ -->
 <div class="tab-panel active" id="tab-builder">
 
@@ -2919,9 +3209,10 @@ body::before {
         <div class="sub">Motion Builder · Deadline Calculator · Glossary</div>
       </div>
     </div>
-    <div class="header-badge">
-      <div>Curated by <span>Devyn Mack</span></div>
-      <div>Roger Pitts / Second Chance</div>
+    <div class="tac-sysbar">
+      <div class="tac-sys-stat"><span class="tac-dot"></span>SYS ONLINE</div>
+      <div class="tac-sys-stat"><span class="tac-val" id="tac-case-count">0</span> CASES</div>
+      <div class="tac-sys-stat"><span class="tac-val" id="tac-motion-count">0</span> MOTIONS</div>
     </div>
   </div>
 
@@ -3065,6 +3356,9 @@ body::before {
   <div class="scanner-dashboard" id="scanner-dashboard" style="display:none">
     <div class="scanner-dash-inner" id="scanner-dash-inner"></div>
   </div>
+
+  <!-- ═══ CASE NARRATIVE ENGINE ═══ -->
+  <div class="narrative-panel" id="narrative-panel" style="display:none"></div>
 
   <div class="section-title">Select Your Motion Type</div>
 
@@ -6939,6 +7233,8 @@ function renderStateMachine() {
   ).join('');
   renderDeadlineIntelligence();
   renderScannerDashboard();
+  renderNarrativeView();
+  updateTacSysbar();
 }
 
 function filterMotionsByState() {
@@ -9159,6 +9455,15 @@ function renderCaseScanner(motionId, answers) {
   cmdOpen('weak-h');
 }
 
+function updateTacSysbar() {
+  const caseCount = document.getElementById('tac-case-count');
+  const motionCount = document.getElementById('tac-motion-count');
+  if (caseCount) caseCount.textContent = caseSession ? 1 : 0;
+  if (motionCount) motionCount.textContent = currentMotion ? 1 : 0;
+  const overlay = document.getElementById('tac-overlay');
+  if (overlay) overlay.classList.toggle('active', !!(caseSession || currentMotion));
+}
+
 function renderScannerDashboard() {
   const el = document.getElementById('scanner-dashboard');
   const inner = document.getElementById('scanner-dash-inner');
@@ -10341,6 +10646,198 @@ function toggleCaseFile() {
   var toggle = document.getElementById('casefile-toggle');
   if (body) body.style.display = caseFileOpen ? 'grid' : 'none';
   if (toggle) toggle.classList.toggle('open', caseFileOpen);
+}
+
+// ═══════════════════════════════════════════════
+// CASE NARRATIVE ENGINE
+// Dynamically builds coherent legal narrative from answers
+// ═══════════════════════════════════════════════
+
+function buildNarrative(motionId, answers) {
+  const a = answers || {};
+  const flow = FLOWS[motionId];
+  const motionTitle = flow ? flow.title : 'Legal Filing';
+  const sections = [];
+
+  // ── Overview ──
+  const parts = [];
+  const charge = a['offense'] || a['arrest-charge'] || 'the charged offense';
+  const county = caseSession?.county || a['county'] || 'the applicable county';
+  const caseNum = caseSession?.caseNum || a['case-num'] || '';
+  const defName = caseSession?.defendantName || a['def-name'] || a['pet-name'] || 'the defendant';
+  const resolution = a['case-resolution'] || '';
+  const sentenceDate = a['sentence-date'] || a['judgment-date'] || '';
+  const convictionDate = a['conviction-date'] || '';
+  const sentence = a['sentence-terms'] || a['sentence-imposed'] || '';
+  const incarceration = a['currently-incarcerated'] || '';
+  const facts = a['facts-main'] || a['facts'] || '';
+  const groundsFound = [];
+
+  if (charge && county) parts.push(defName + ' was charged with ' + charge + ' in ' + county + (caseNum ? ' (Case No. ' + caseNum + ')' : '') + '.');
+  if (resolution) parts.push('The case was resolved by ' + resolution.toLowerCase() + '.');
+  if (convictionDate) parts.push('Date of conviction: ' + convictionDate + '.');
+  if (sentenceDate && sentence) parts.push('A sentence of ' + sentence + ' was imposed on ' + sentenceDate + '.');
+  if (incarceration) parts.push('Current custody status: ' + incarceration + '.');
+  if (facts) parts.push(facts.length > 200 ? facts.slice(0, 200) + '...' : facts);
+
+  sections.push({ type: 'overview', title: 'CASE OVERVIEW', lines: parts.length ? parts : ['Case data is being assembled. Complete the intake fields and wizard questions to build the narrative.'] });
+
+  // ── Grounds for Relief ──
+  if (a['grounds-iac'] === 'yes') groundsFound.push({ icon: '⚖️', text: 'Ineffective Assistance of Counsel — counsel failed to provide reasonably effective representation, and this deficiency prejudiced the outcome. Strickland v. Washington, 466 U.S. 668 (1984).', severity: 'critical' });
+  if (a['grounds-brady'] === 'yes') groundsFound.push({ icon: '📂', text: 'Brady Violation — the prosecution withheld material exculpatory or impeachment evidence. Brady v. Maryland, 373 U.S. 83 (1963).', severity: 'critical' });
+  if (a['grounds-plea'] === 'yes') groundsFound.push({ icon: '🤝', text: 'Involuntary Plea — the plea was not knowing, intelligent, and voluntary. Boykin v. Alabama, 395 U.S. 238 (1969).', severity: 'critical' });
+  if (a['grounds-sentence'] === 'yes') groundsFound.push({ icon: '📏', text: 'Sentencing Error — the sentence was improperly calculated or violates statutory limits.', severity: 'high' });
+  if (a['grounds-new'] === 'yes') groundsFound.push({ icon: '🆕', text: 'Newly Discovered Evidence — evidence exists that was unknown at trial and would probably produce an acquittal on retrial. Jones v. State, 591 So. 2d 911 (Fla. 1991).', severity: 'critical' });
+  if (a['grounds-other'] === 'yes') groundsFound.push({ icon: '📋', text: 'Other Constitutional Violation — additional grounds that may include due process, equal protection, or other fundamental rights.', severity: 'high' });
+  if (a['illegal-basis']) groundsFound.push({ icon: '📜', text: 'Illegal Sentence — the sentence is illegal because: ' + a['illegal-basis'] + '.', severity: 'critical' });
+
+  if (groundsFound.length) {
+    sections.push({ type: 'grounds', title: 'GROUNDS FOR RELIEF', items: groundsFound });
+  } else if (motionId) {
+    sections.push({ type: 'grounds', title: 'GROUNDS FOR RELIEF', lines: ['Select specific grounds in the wizard questions to identify the legal basis for relief.'], placeholder: true });
+  }
+
+  // ── Procedural Timeline ──
+  const timelineItems = [];
+  const arrestDate = a['arrest-date'];
+  const violDate = a['violation-date'];
+  const probType = a['prob-type'];
+  if (arrestDate) timelineItems.push({ date: arrestDate, event: 'Arrest', label: 'Arrest date' });
+  if (convictionDate) timelineItems.push({ date: convictionDate, event: 'Conviction', label: 'Conviction finality' });
+  if (sentenceDate) timelineItems.push({ date: sentenceDate, event: 'Sentencing', label: 'Sentence imposed' });
+  if (a['appeal-filed-date']) timelineItems.push({ date: a['appeal-filed-date'], event: 'Appeal Filed', label: 'Notice of Appeal' });
+  if (a['appeal-opinion-date']) timelineItems.push({ date: a['appeal-opinion-date'], event: 'Appeal Opinion', label: 'Appellate opinion' });
+  if (violDate) timelineItems.push({ date: violDate, event: 'Violation', label: 'Probation violation' });
+  if (a['prob-start']) timelineItems.push({ date: a['prob-start'], event: 'Probation Start', label: probType || 'Probation' });
+  if (a['prob-end']) timelineItems.push({ date: a['prob-end'], event: 'Probation End', label: 'Scheduled termination' });
+  if (motionId) timelineItems.push({ date: 'NOW', event: motionTitle, label: 'Current filing' });
+
+  if (timelineItems.length) {
+    sections.push({ type: 'timeline', title: 'PROCEDURAL TIMELINE', items: timelineItems });
+  }
+
+  // ── Weaknesses (top 5 from scanner) ──
+  const weaks = detectWeaknesses(motionId, a).slice(0, 5);
+  if (weaks.length) {
+    sections.push({ type: 'risks', title: 'IDENTIFIED ISSUES', items: weaks.map(w => ({
+      icon: w.icon, text: w.title + ' — ' + w.desc, severity: w.severity, action: w.action
+    })) });
+  }
+
+  // ── Deadlines ──
+  const state = getCaseState(null, a, motionId, chargeTimeline);
+  const deadlines = getDeadlines(state, a).filter(d => d.severity === 'critical' || d.severity === 'high');
+  if (deadlines.length) {
+    sections.push({ type: 'deadlines', title: 'ACTIVE DEADLINES', items: deadlines.map(d => ({
+      icon: d.icon, text: d.label + ' — ' + d.note, severity: d.severity, statute: d.statute
+    })) });
+  }
+
+  return { motionTitle, defName, charge, county, sections, totalSections: sections.length };
+}
+
+function narrativeToText(narrative) {
+  const lines = [];
+  const border = '═'.repeat(56);
+  lines.push(border);
+  lines.push('  CASE NARRATIVE — ' + (narrative.motionTitle || 'Legal Analysis').toUpperCase());
+  lines.push(border);
+  lines.push('');
+
+  narrative.sections.forEach(s => {
+    lines.push('─── ' + s.title + ' ───');
+    lines.push('');
+    if (s.lines) s.lines.forEach(l => lines.push('  ' + l));
+    if (s.items) s.items.forEach(item => {
+      const sev = item.severity === 'critical' ? '⚠' : item.severity === 'high' ? '⚡' : '•';
+      lines.push('  ' + sev + ' ' + (item.icon || '') + ' ' + item.text);
+    });
+    lines.push('');
+  });
+
+  lines.push(border);
+  return lines.join('\n');
+}
+
+function renderNarrativeView() {
+  const panel = document.getElementById('narrative-panel');
+  if (!panel) return;
+  if (!currentMotion) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+
+  const narrative = buildNarrative(currentMotion, answers);
+  let html = '<div class="narr-header">' +
+    '<div class="narr-title-row">' +
+      '<span class="narr-icon">📋</span>' +
+      '<span class="narr-title">Case Narrative Engine</span>' +
+      '<span class="narr-meta">' + narrative.totalSections + ' sections · ' + narrative.defName + '</span>' +
+    '</div>' +
+    '<div class="narr-actions">' +
+      '<button class="narr-btn" onclick="narrCopy()" title="Copy narrative to clipboard">📋 Copy</button>' +
+      '<button class="narr-btn" onclick="narrDownload()" title="Download narrative as text file">⬇ Export</button>' +
+    '</div>' +
+  '</div>';
+
+  html += '<div class="narr-body">';
+
+  narrative.sections.forEach(s => {
+    html += '<div class="narr-section">' +
+      '<div class="narr-section-header" onclick="this.nextElementSibling.classList.toggle(\'open\');this.classList.toggle(\'open\')">' +
+        '<span class="ns-icon">' + sectionIcon(s.type) + '</span>' +
+        '<span class="ns-title">' + s.title + '</span>' +
+        '<span class="ns-count">' + (s.items ? s.items.length : s.lines ? s.lines.length : 0) + '</span>' +
+        '<span class="ns-toggle">▼</span>' +
+      '</div>' +
+      '<div class="narr-section-body">';
+    if (s.lines) {
+      s.lines.forEach(l => html += '<div class="narr-line">' + esc(l) + '</div>');
+    }
+    if (s.items) {
+      s.items.forEach(item => {
+        const sevClass = 'narr-item--' + (item.severity || 'info');
+        html += '<div class="narr-item ' + sevClass + '">' +
+          '<span class="ni-icon">' + (item.icon || '•') + '</span>' +
+          '<div class="ni-body">' +
+            '<div class="ni-text">' + esc(item.text) + '</div>' +
+            (item.action ? '<div class="ni-action">→ ' + esc(item.action) + '</div>' : '') +
+            (item.statute ? '<div class="ni-statute">' + esc(item.statute) + '</div>' : '') +
+          '</div>' +
+        '</div>';
+      });
+    }
+    if (s.placeholder) {
+      html += '<div class="narr-placeholder">' + s.lines.join(' ') + '</div>';
+    }
+    html += '</div></div>';
+  });
+
+  html += '</div>';
+  panel.innerHTML = html;
+}
+
+function sectionIcon(type) {
+  const icons = { overview: '📋', grounds: '⚖️', timeline: '📅', risks: '🎯', deadlines: '⏰' };
+  return icons[type] || '📄';
+}
+
+// ── Narrative Export ──
+function narrCopy() {
+  if (!currentMotion) return;
+  const narrative = buildNarrative(currentMotion, answers);
+  const text = narrativeToText(narrative);
+  if (navigator.clipboard) { navigator.clipboard.writeText(text); toast('Narrative copied to clipboard'); }
+  else { /* fallback */ toast('Copy not supported — use Export'); }
+}
+
+function narrDownload() {
+  if (!currentMotion) return;
+  const narrative = buildNarrative(currentMotion, answers);
+  const text = narrativeToText(narrative);
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+  a.download = 'case-narrative-' + (narrative.defName || 'unknown').replace(/\s+/g, '-').toLowerCase() + '.txt';
+  a.click();
+  toast('Narrative exported');
 }
 
 function renderCaseSummary() {
