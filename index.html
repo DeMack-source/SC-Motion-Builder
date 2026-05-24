@@ -856,7 +856,49 @@ body::after {
 .tab-panel { display:none; }
 .tab-panel.active { display:block; padding-top:20px; animation:slideUp 0.25s ease; }
 
-/* ── TOAST ── */
+/* ── REENTRY DASHBOARD ── */
+#reentry-content { max-width: 720px; margin: 0 auto; }
+.reentry-hero { padding: 20px; border-radius: var(--radius); background: linear-gradient(135deg, var(--ink-lift), var(--ink-card)); border: 1px solid var(--border); margin-bottom: 16px; position: relative; overflow: hidden; }
+.reentry-hero::before { content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(45,212,191,0.06), transparent 70%); }
+.reentry-hero-greeting { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+.reentry-hero-sub { font-size: 12px; color: var(--muted); }
+.reentry-hero-cta { margin-top: 12px; }
+.reentry-cta-btn { display: inline-block; padding: 8px 16px; background: var(--gold-dim); border: 1px solid rgba(249,178,76,0.3); border-radius: 8px; color: var(--gold); font-size: 12px; font-weight: 600; cursor: pointer; }
+.reentry-cta-btn:hover { background: rgba(249,178,76,0.18); }
+.reentry-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.reentry-grid-4 { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.reentry-card { background: var(--ink-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.reentry-card-sm { padding: 12px; }
+.reentry-card-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--ink-lift); border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 700; color: var(--white); text-transform: uppercase; letter-spacing: 0.3px; }
+.reentry-card-icon { font-size: 16px; flex-shrink: 0; }
+.reentry-card-icon-sm { font-size: 20px; text-align: center; margin-bottom: 6px; }
+.reentry-card-label { font-size: 10px; font-weight: 700; color: var(--white); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; text-align: center; }
+.reentry-card-detail { font-size: 10px; color: var(--muted); line-height: 1.5; text-align: center; }
+.reentry-card-body { padding: 12px 14px; font-size: 12px; }
+.reentry-card-text { font-size: 11px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+.reentry-card-actions { margin-top: 8px; }
+.reentry-action-btn { display: inline-block; padding: 5px 12px; background: rgba(249,178,76,0.1); border: 1px solid rgba(249,178,76,0.25); border-radius: 6px; color: var(--gold); font-size: 10px; font-weight: 600; cursor: pointer; }
+.reentry-action-btn:hover { background: rgba(249,178,76,0.2); }
+.reentry-card-steps { margin-top: 6px; }
+.reentry-step { font-size: 10px; color: var(--white); padding: 3px 0; line-height: 1.5; opacity: 0.85; }
+.reentry-card-fee { font-size: 11px; color: var(--gold); font-weight: 600; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+.reentry-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-bottom: 8px; }
+.reentry-badge.eligible { background: rgba(74,222,128,0.12); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+.reentry-badge.warn { background: rgba(249,178,76,0.12); color: var(--gold); border: 1px solid rgba(249,178,76,0.25); }
+.reentry-badge.blocked { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+.reentry-badge.unknown { background: rgba(107,114,128,0.12); color: var(--muted); border: 1px solid rgba(107,114,128,0.25); }
+.reentry-section { margin-bottom: 20px; }
+.reentry-section-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 12px; }
+.reentry-section-title::before { content: ''; display: block; width: 30px; height: 3px; background: var(--gold); border-radius: 3px; margin-bottom: 8px; }
+.reentry-checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; transition: .15s; margin-bottom: 2px; }
+.reentry-checklist-item:hover { background: rgba(255,255,255,0.03); }
+.reentry-checklist-item.done { opacity: 0.6; }
+.reentry-checklist-item.done .reentry-check-label { text-decoration: line-through; }
+.reentry-checkbox { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.reentry-check-content { flex: 1; }
+.reentry-check-label { font-size: 12px; font-weight: 600; color: var(--white); }
+.reentry-check-desc { font-size: 10px; color: var(--muted); margin-top: 1px; }
+@media(max-width:600px) { .reentry-grid { grid-template-columns: 1fr; } }
 #toast {
   position: fixed;
   bottom: 70px;
@@ -2366,6 +2408,7 @@ body::before {
   <button class="tn" data-tab="courts"  onclick="switchTab('courts')"> <span class="ico">🏛</span>Courts</button>
   <button class="tn" data-tab="federal"  onclick="switchTab('federal')"> <span class="ico">🏛</span>Federal</button>
   <button class="tn" data-tab="rights"  onclick="switchTab('rights')"> <span class="ico">📜</span>Rights</button>
+  <button class="tn" data-tab="reentry" onclick="switchTab('reentry')"><span class="ico">🔄</span>Reentry</button>
   <button class="tn" data-tab="tools" onclick="switchTab('tools')"><span class="ico">🔧</span>Tools</button>
   <button class="tn" data-tab="glossary" onclick="switchTab('glossary')"><span class="ico">📖</span>Glossary</button>
 </div>
@@ -3211,6 +3254,11 @@ body::before {
 </div>
 
 <!-- ═══ TAB: GLOSSARY ═══ -->
+<div class="tab-panel" id="tab-reentry">
+  <div class="section-title">Reentry Dashboard <span style="font-size:11px;color:var(--muted);font-weight:400">— Your Roadmap Back</span></div>
+  <div id="reentry-content"></div>
+</div>
+
 <div class="tab-panel" id="tab-glossary">
   <div class="section-title">Legal Glossary</div>
   <div style="background:var(--teal-dim);border:1px solid rgba(45,212,191,0.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:var(--teal);line-height:1.7">
@@ -4699,6 +4747,7 @@ function switchTab(tab) {
   if(tab==='rights') renderRights();
   if(tab==='courts') { renderClerks(); renderCourts(); }
   if(tab==='federal') renderFederal();
+  if(tab==='reentry') renderReentry();
   if(tab==='glossary') renderGlossary();
 }
 
@@ -4792,6 +4841,230 @@ function renderRights() {
   const list = document.getElementById('rights-list');
   if(!list) return;
   list.innerHTML = RIGHTS.map(r=>`<div class="lib-card" style="margin-bottom:10px"><div class="lib-title">${esc(r.t)}</div><div class="lib-statute">${esc(r.s)}</div><div class="lib-desc">${esc(r.d)}</div></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// REENTRY DASHBOARD
+// ═══════════════════════════════════════════════
+
+const REENTRY_CHECKLIST_KEY = 'fl-reentry-checklist';
+
+function loadReentryChecklist() {
+  try { return JSON.parse(localStorage.getItem(REENTRY_CHECKLIST_KEY)) || {}; } catch(e) { return {}; }
+}
+
+function saveReentryChecklistItem(id, checked) {
+  const state = loadReentryChecklist();
+  state[id] = checked;
+  localStorage.setItem(REENTRY_CHECKLIST_KEY, JSON.stringify(state));
+}
+
+function getFLVoterStatus(charge) {
+  if (!charge) return { eligible: false, note: 'Complete the intake first to check voting eligibility.' };
+  const name = charge.name || '';
+  const degree = charge.degree || '';
+  const isMurder = name.toLowerCase().includes('murder');
+  const isSexual = name.toLowerCase().includes('sexual battery');
+  const isCapital = degree.includes('Capital') || degree.includes('Life');
+  if (isMurder || isSexual) return { eligible: false, note: 'Florida requires executive clemency to restore voting rights for murder or felony sexual battery convictions. Apply through the FL Clemency Board.', steps: ['FL Clemency Application', 'Wait for Board hearing', 'Receive clemency grant'] };
+  if (isCapital) return { eligible: false, note: 'Capital or life felony — voting rights restoration requires clemency. Complete sentencing/incarceration first.', steps: ['Complete sentence', 'Apply for clemency', 'Receive restoration'] };
+  return { eligible: true, note: 'Amendment 4 (2018) restored voting rights for most felons who complete all terms of sentence (incarceration, parole, probation). Excludes murder and sexual battery.', steps: ['Complete all sentence terms', 'Register to vote at RegisterToVoteFlorida.gov', 'Check registration at FL Division of Elections'] };
+}
+
+function getFLDLStatus(charge) {
+  if (!charge) return { eligible: false, note: 'Complete the intake to check driver\'s license reinstatement options.' };
+  const name = charge.name || '';
+  const isDrug = name.toLowerCase().includes('trafficking') || name.toLowerCase().includes('cannabis') || name.toLowerCase().includes('cocaine') || name.toLowerCase().includes('fentanyl');
+  if (isDrug) return { note: 'Drug offenses may trigger mandatory 1-2 year revocation. Reinstatement requires completion of DUI/drug program + payment of reinstatement fee ($130).', requirements: ['Complete substance abuse course (if ordered)', 'Pay $130 reinstatement fee to FL DHSMV', 'Provide proof of insurance (SR-22 if DUI-related)', 'Clear any outstanding suspensions'], fee: '$130' };
+  return { note: 'FL driver\'s license may be suspended upon felony conviction. Check status at FL DHSMV (flhsmv.gov). Reinstatement typically requires fee payment and any court-ordered programs.', requirements: ['Check license status at flhsmv.gov', 'Pay reinstatement fee ($45-$130)', 'Complete any court-ordered programs', 'Provide proof of insurance'], fee: '$45-$130' };
+}
+
+function getFLHousingNote(charge) {
+  if (!charge) return { note: 'Public housing eligibility depends on conviction type.' };
+  const name = charge.name || '';
+  const isDrug = name.toLowerCase().includes('trafficking') || name.toLowerCase().includes('cannabis') || name.toLowerCase().includes('cocaine') || name.toLowerCase().includes('fentanyl');
+  const isSexual = name.toLowerCase().includes('sexual battery');
+  if (isDrug) return { note: 'Drug convictions trigger mandatory 3-year ban from public housing (if first offense). Lifetime ban for subsequent drug convictions. Some local housing authorities have stricter rules.', resources: ['HUD Public Housing — hud.gov', 'Local PHA office (check county resources below)'] };
+  if (isSexual) return { note: 'Sex offense convictions trigger lifetime ban from public housing under federal law (HUD). Look for private housing or reentry transitional housing programs.', resources: ['Reentry transitional housing (check county resources below)'] };
+  return { note: 'Felony convictions may affect public housing eligibility. Many PHAs assess on a case-by-case basis looking at: nature of offense, time since conviction, and rehabilitation evidence.', resources: ['HUD Public Housing — hud.gov', 'Local PHA office (check county resources below)'] };
+}
+
+function getCollateralSummary(charge) {
+  if (!charge || !charge.collateral) return [];
+  const iconMap = { immigration: '🛂', firearm: '🔫', voting: '🗳', employment: '💼', housing: '🏠', professionalLicenses: '📜', civilRights: '⚖️', registration: '📋', publicBenefits: '💵', childCustody: '👶' };
+  return Object.entries(charge.collateral).filter(([k,v]) => v).map(([k,v]) => ({ icon: iconMap[k] || '📌', label: k.replace(/([A-Z])/g,' $1').trim(), detail: v }));
+}
+
+function renderReentry() {
+  const el = document.getElementById('reentry-content');
+  if (!el) return;
+
+  const session = caseSession;
+  const county = session?.county || '';
+  const chargeName = session?.chargeName || '';
+  const chargeStatute = session?.chargeStatute || '';
+  const defendantName = session?.defendantName || '';
+
+  // Find the charge object
+  let charge = null;
+  if (chargeName) {
+    for (const c of CHARGES) {
+      if (c.name === chargeName || c.statute === chargeStatute) { charge = c; break; }
+    }
+  }
+
+  // County profile
+  const profile = getCountyProfile(county);
+  const checklist = loadReentryChecklist();
+
+  // Voter status
+  const voter = getFLVoterStatus(charge);
+  // DL status
+  const dl = getFLDLStatus(charge);
+  // Housing
+  const housing = getFLHousingNote(charge);
+  // Collateral
+  const collateral = getCollateralSummary(charge);
+
+  // Determine seal/expunge eligibility badge
+  let sealStatus = 'unknown', sealLabel = 'Check Eligibility', sealIcon = '❓';
+  if (charge) {
+    const deg = charge.degree || '';
+    const name = charge.name || '';
+    const isCapital = deg.includes('Capital') || deg.includes('Life');
+    const isSexual = name.toLowerCase().includes('sexual battery');
+    if (isCapital) { sealStatus = 'blocked'; sealLabel = 'Not Eligible'; sealIcon = '🚫'; }
+    else if (isSexual) { sealStatus = 'blocked'; sealLabel = 'Not Eligible'; sealIcon = '🚫'; }
+    else if (charge.collateral?.firearm?.includes('Permanent')) { sealStatus = 'warn'; sealLabel = 'May Be Eligible'; sealIcon = '⚠️'; }
+    else { sealStatus = 'eligible'; sealLabel = 'Likely Eligible'; sealIcon = '✅'; }
+  }
+
+  let html = '';
+
+  // ── PERSONALIZED HEADER ──
+  html += '<div class="reentry-hero">' +
+    '<div class="reentry-hero-greeting">' + (defendantName ? esc(defendantName) + ' — ' : '') + 'Your Roadmap Back</div>' +
+    '<div class="reentry-hero-sub">Personalized reentry plan based on your case data' +
+    (county ? ' · ' + esc(county) + ' County' : '') +
+    '</div>' +
+    (!session ? '<div class="reentry-hero-cta"><span class="reentry-cta-btn" onclick="switchTab(\'builder\')">⚡ Start by searching a charge above</span></div>' : '') +
+  '</div>';
+
+  // ── STATUS CARDS ──
+  html += '<div class="reentry-grid">';
+
+  // Card: Record Relief
+  html += '<div class="reentry-card">' +
+    '<div class="reentry-card-header"><span class="reentry-card-icon">🔒</span>Record Relief</div>' +
+    '<div class="reentry-card-body">' +
+    '<div class="reentry-badge ' + sealStatus + '">' + sealIcon + ' ' + sealLabel + '</div>' +
+    '<div class="reentry-card-text">' + (charge ? (sealStatus === 'eligible' ? 'You may qualify for seal or expungement — the first step to clearing your record for employment and housing.' : 'Seal/expunge may not be available for this charge type. Check with an attorney or explore clemency.') : 'Search a charge to see record relief eligibility.') + '</div>' +
+    '<div class="reentry-card-actions"><span class="reentry-action-btn" onclick="switchTab(\'builder\')">⚖️ Open Seal/Expunge Wizard</span></div>' +
+    '</div></div>';
+
+  // Card: Voting Rights
+  html += '<div class="reentry-card">' +
+    '<div class="reentry-card-header"><span class="reentry-card-icon">🗳️</span>Voting Rights</div>' +
+    '<div class="reentry-card-body">' +
+    '<div class="reentry-badge ' + (voter.eligible ? 'eligible' : 'blocked') + '">' + (voter.eligible ? '✅ Eligible' : '🚫 Requires Clemency') + '</div>' +
+    '<div class="reentry-card-text">' + esc(voter.note) + '</div>' +
+    (voter.steps ? '<div class="reentry-card-steps">' + voter.steps.map(s => '<div class="reentry-step">→ ' + esc(s) + '</div>').join('') + '</div>' : '') +
+    '</div></div>';
+
+  // Card: Driver's License
+  html += '<div class="reentry-card">' +
+    '<div class="reentry-card-header"><span class="reentry-card-icon">🚗</span>Driver\'s License</div>' +
+    '<div class="reentry-card-body">' +
+    '<div class="reentry-card-text">' + esc(dl.note) + '</div>' +
+    (dl.requirements ? '<div class="reentry-card-steps">' + dl.requirements.map(r => '<div class="reentry-step">→ ' + esc(r) + '</div>').join('') + '</div>' : '') +
+    (dl.fee ? '<div class="reentry-card-fee">Fee: ' + esc(dl.fee) + '</div>' : '') +
+    '</div></div>';
+
+  // Card: Housing
+  html += '<div class="reentry-card">' +
+    '<div class="reentry-card-header"><span class="reentry-card-icon">🏠</span>Housing</div>' +
+    '<div class="reentry-card-body">' +
+    '<div class="reentry-card-text">' + esc(housing.note) + '</div>' +
+    (housing.resources ? '<div class="reentry-card-steps">' + housing.resources.map(r => '<div class="reentry-step">→ ' + esc(r) + '</div>').join('') + '</div>' : '') +
+    '</div></div>';
+
+  html += '</div>';
+
+  // ── COLLATERAL CONSEQUENCES ──
+  if (collateral.length) {
+    html += '<div class="reentry-section"><div class="reentry-section-title">⚖️ Collateral Consequences for ' + esc(chargeName) + '</div>' +
+      '<div class="reentry-grid reentry-grid-4">' +
+      collateral.map(c => '<div class="reentry-card reentry-card-sm"><div class="reentry-card-icon-sm">' + c.icon + '</div><div class="reentry-card-label">' + esc(c.label) + '</div><div class="reentry-card-detail">' + esc(c.detail.length > 80 ? c.detail.slice(0, 80) + '…' : c.detail) + '</div></div>').join('') +
+    '</div></div>';
+  }
+
+  // ── COUNTY REENTRY RESOURCES ──
+  if (profile) {
+    const d = profile.data;
+    html += '<div class="reentry-section"><div class="reentry-section-title">📍 ' + esc(profile.key) + ' County Resources</div><div class="reentry-grid">';
+
+    if (d.reentryResources && d.reentryResources.length) {
+      html += '<div class="reentry-card">' +
+        '<div class="reentry-card-header"><span class="reentry-card-icon">🤝</span>Reentry Programs</div>' +
+        '<div class="reentry-card-body"><div class="reentry-card-steps">' +
+        d.reentryResources.map(r => '<div class="reentry-step">→ ' + esc(r) + '</div>').join('') +
+        '</div></div></div>';
+    }
+
+    if (d.specialtyCourts && d.specialtyCourts.length) {
+      html += '<div class="reentry-card">' +
+        '<div class="reentry-card-header"><span class="reentry-card-icon">🏛️</span>Specialty Courts</div>' +
+        '<div class="reentry-card-body"><div class="reentry-card-text">These courts may offer alternative sentencing or treatment programs:</div><div class="reentry-card-steps">' +
+        d.specialtyCourts.map(s => '<div class="reentry-step">→ ' + esc(s) + '</div>').join('') +
+        '</div></div></div>';
+    }
+
+    html += '</div></div>';
+  }
+
+  // ── REENTRY CHECKLIST ──
+  const checklistItems = [
+    { id: 'id-fl', label: 'Get Florida ID or State ID', desc: 'FL DHSMV — required for employment, housing, banking' },
+    { id: 'ssn-replace', label: 'Replace Social Security Card (if lost)', desc: 'SSA.gov or local SSA office' },
+    { id: 'birth-cert', label: 'Obtain Certified Birth Certificate', desc: 'FL Bureau of Vital Statistics' },
+    { id: 'medicaid', label: 'Apply for Medicaid / Healthcare', desc: 'FL ACCESS — benefit application portal' },
+    { id: 'snap', label: 'Apply for SNAP (Food Assistance)', desc: 'FL ACCESS — food assistance program' },
+    { id: 'register-vote', label: 'Register to Vote (if eligible)', desc: 'RegisterToVoteFlorida.gov' },
+    { id: 'dl-check', label: 'Check Driver\'s License Status', desc: 'FL DHSMV online portal' },
+    { id: 'fdle-cert', label: 'Get FDLE Certificate of Eligibility', desc: 'Required before filing seal/expunge petition' },
+    { id: 'child-support', label: 'Check Child Support Status', desc: 'FL DOR — avoid license suspension' },
+    { id: 'court-costs', label: 'Verify Court Costs Paid', desc: 'Check with Clerk of Court in county of conviction' },
+    { id: 'probation', label: 'Confirm Probation/Parole Status', desc: 'Contact supervising officer or FL DOC' },
+    { id: 'bank-account', label: 'Open a Bank Account', desc: 'Second chance banking programs available' }
+  ];
+
+  html += '<div class="reentry-section"><div class="reentry-section-title">✅ Reentry Checklist</div><div class="reentry-card">' +
+    '<div class="reentry-card-body">' +
+    '<div class="reentry-card-text" style="margin-bottom:10px">Track your progress — checked items save to this device.</div>' +
+    checklistItems.map(item => {
+      const checked = checklist[item.id] || false;
+      return '<div class="reentry-checklist-item' + (checked ? ' done' : '') + '" onclick="toggleReentryCheck(\'' + item.id + '\')">' +
+        '<span class="reentry-checkbox">' + (checked ? '✅' : '⬜') + '</span>' +
+        '<div class="reentry-check-content"><div class="reentry-check-label">' + esc(item.label) + '</div><div class="reentry-check-desc">' + esc(item.desc) + '</div></div>' +
+      '</div>';
+    }).join('') +
+    '</div></div></div>';
+
+  // ── LANGUAGE RESOURCES ──
+  html += '<div class="reentry-section"><div class="reentry-section-title">📞 Help & Hotlines</div><div class="reentry-grid">' +
+    '<div class="reentry-card"><div class="reentry-card-header"><span class="reentry-card-icon">📞</span>Legal Aid</div><div class="reentry-card-body"><div class="reentry-card-steps"><div class="reentry-step">→ FL Legal Services: 1-866-550-2929</div><div class="reentry-step">→ ACLU FL Know Your Rights</div><div class="reentry-step">→ FL Bar Pro Bono Directory</div></div></div></div>' +
+    '<div class="reentry-card"><div class="reentry-card-header"><span class="reentry-card-icon">🧠</span>Mental Health & Substance Use</div><div class="reentry-card-body"><div class="reentry-card-steps"><div class="reentry-step">→ SAMHSA Helpline: 1-800-662-4357</div><div class="reentry-step">→ FL 211 — community services</div><div class="reentry-step">→ NAMI FL: nami.org</div></div></div></div>' +
+    '<div class="reentry-card"><div class="reentry-card-header"><span class="reentry-card-icon">💼</span>Employment</div><div class="reentry-card-body"><div class="reentry-card-steps"><div class="reentry-step">→ CareerSource FL: careersourcefl.com</div><div class="reentry-step">→ FL Felon-friendly job board</div><div class="reentry-step">→ Second Chance Hiring: checkfairchancehiring.com</div></div></div></div>' +
+  '</div></div>';
+
+  el.innerHTML = html;
+}
+
+function toggleReentryCheck(id) {
+  const state = loadReentryChecklist();
+  state[id] = !state[id];
+  localStorage.setItem(REENTRY_CHECKLIST_KEY, JSON.stringify(state));
+  renderReentry(); // re-render to show updated state
 }
 
 function renderAppeals() {
