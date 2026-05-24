@@ -2138,6 +2138,102 @@ body.low-distraction #tabnav { display: none; }
 
 /* ── HUD STATE BADGE ── */
 .hud-state-badge { font-weight: 700; }
+
+/* ═══ DEADLINE INTELLIGENCE PANEL ═══ */
+.deadline-panel {
+  background: var(--ink-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  animation: fadeSlideIn 0.35s ease;
+}
+.dl-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.dl-count {
+  font-size: 10px; color: var(--muted);
+  font-family: var(--font-mono);
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+}
+.dl-empty {
+  font-size: 12px; color: var(--muted);
+  text-align: center; padding: 16px;
+}
+.dl-list {
+  display: flex; flex-direction: column;
+  gap: 8px;
+}
+.dl-group { margin-bottom: 4px; }
+.dl-group-label {
+  font-size: 10px; font-weight: 700;
+  color: var(--red);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.dl-group-label--muted { color: var(--muted); }
+
+.dl-card {
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.dl-card--critical { border-left: 3px solid var(--red); }
+.dl-card--high { border-left: 3px solid var(--gold); }
+.dl-card--warning { border-left: 3px solid var(--sky); }
+.dl-card--info { border-left: 3px solid rgba(255,255,255,0.1); }
+.dl-card--unknown { border-left: 3px solid var(--muted); }
+
+.dl-card-top {
+  display: flex; align-items: flex-start;
+  gap: 10px; padding: 10px 12px;
+}
+.dl-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.dl-card-body { flex: 1; min-width: 0; }
+.dl-card-title {
+  font-size: 12px; font-weight: 700; color: var(--white);
+  margin-bottom: 1px;
+}
+.dl-card-statute {
+  font-size: 9px; font-family: var(--font-mono);
+  color: var(--muted); margin-bottom: 4px;
+}
+.dl-card-note {
+  font-size: 11px; color: var(--muted);
+  line-height: 1.4;
+}
+.dl-card-remedy {
+  font-size: 10px; color: var(--sky);
+  margin-top: 4px; line-height: 1.3;
+}
+.dl-card-count {
+  font-size: 20px; font-weight: 900;
+  font-family: var(--font-mono);
+  flex-shrink: 0; white-space: nowrap;
+  line-height: 1;
+}
+.dl-card-unit {
+  font-size: 10px; font-weight: 400;
+  color: var(--muted); margin-left: 1px;
+}
+.dl-bar {
+  height: 3px;
+  background: rgba(255,255,255,0.05);
+  margin: 0 12px 8px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.dl-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
 .intake-overlay {
   display: none; position: fixed; inset: 0; z-index: 9999;
   background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
@@ -2815,6 +2911,9 @@ body::before {
     <div class="state-note" id="state-note"></div>
     <div class="state-actions" id="state-actions"></div>
   </div>
+
+  <!-- ═══ DEADLINE INTELLIGENCE PANEL ═══ -->
+  <div class="deadline-panel" id="deadline-panel" style="display:none"></div>
 
   <div class="section-title">Select Your Motion Type</div>
 
@@ -6268,6 +6367,392 @@ function getCurrentState() {
   return getCaseState(caseSession, answers, currentMotion, chargeTimeline);
 }
 
+// ═══════════════════════════════════════════════
+// DEADLINE INTELLIGENCE ENGINE
+// Enterprise-grade deadline tracking & visualization
+// ═══════════════════════════════════════════════
+
+function parseDate(s) {
+  if (!s) return null;
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function daysBetween(a, b) {
+  return Math.round((b - a) / (24 * 60 * 60 * 1000));
+}
+
+function addDays(d, n) {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+}
+
+function computeDeadline(deadlineDate, label) {
+  const today = new Date();
+  const remaining = daysBetween(today, deadlineDate);
+  const total = daysBetween(today, addDays(today, remaining < 0 ? 0 : remaining < 366 ? 365 : 730));
+  if (remaining < 0) {
+    return { status: 'expired', daysRemaining: remaining, pct: 100, expiredDays: Math.abs(remaining), label,
+      severity: 'critical', note: 'DEADLINE EXPIRED ' + Math.abs(remaining) + 'd ago' };
+  }
+  if (remaining <= 7) {
+    const pct = Math.min(100, Math.round(((total - remaining) / total) * 100));
+    return { status: 'imminent', daysRemaining: remaining, pct, label,
+      severity: 'critical', note: remaining + 'd remaining — CRITICAL' };
+  }
+  if (remaining <= 30) {
+    const pct = Math.min(100, Math.round(((total - remaining) / total) * 100));
+    return { status: 'near', daysRemaining: remaining, pct, label,
+      severity: 'high', note: remaining + ' days remaining' };
+  }
+  if (remaining <= 90) {
+    const pct = Math.min(100, Math.round(((total - remaining) / total) * 100));
+    return { status: 'approaching', daysRemaining: remaining, pct, label,
+      severity: 'warning', note: remaining + ' days remaining' };
+  }
+  const pct = Math.min(100, Math.round(((total - remaining) / total) * 100));
+  return { status: 'safe', daysRemaining: remaining, pct, label,
+    severity: 'info', note: remaining + ' days remaining' };
+}
+
+const DEADLINE_DEFS = {
+  'speedy-trial': {
+    label: 'Speedy Trial (Demand)',
+    statute: 'Fla. R. Crim. P. 3.191',
+    states: ['FIRST_APPEARANCE', 'PRETRIAL'],
+    icon: '⏱️',
+    depends: ['arrest-date'],
+    calc: function(a) {
+      const d = parseDate(a['arrest-date']);
+      if (!d) return { status: 'unknown', note: 'Enter arrest date', severity: 'info' };
+      const dl = addDays(d, 175);
+      const c = computeDeadline(dl, 'Speedy Trial Demand');
+      return { ...c, deadlineDate: dl };
+    }
+  },
+  'bond-review': {
+    label: 'Bond / Pretrial Release',
+    statute: 'Fla. Stat. § 903.046',
+    states: ['ARREST', 'FIRST_APPEARANCE', 'PRETRIAL'],
+    icon: '🔓',
+    depends: ['arrest-date'],
+    calc: function(a) {
+      const d = parseDate(a['arrest-date']);
+      if (!d) return { status: 'unknown', note: 'Enter arrest date', severity: 'info' };
+      const dl = addDays(d, 1);
+      const c = computeDeadline(dl, 'Bond Review');
+      if (c.status === 'expired') return { ...c, note: 'Bond typically set at first appearance — confirm status', severity: 'info' };
+      return { ...c, deadlineDate: dl };
+    }
+  },
+  'direct-appeal-notice': {
+    label: 'Direct Appeal Notice',
+    statute: 'Fla. R. App. P. 9.140(b)(3)',
+    states: ['SENTENCED'],
+    icon: '📝',
+    depends: ['sentence-date'],
+    calc: function(a) {
+      const d = parseDate(a['sentence-date']);
+      if (!d) return { status: 'unknown', note: 'Enter sentence date', severity: 'info' };
+      const dl = addDays(d, 30);
+      const c = computeDeadline(dl, 'Notice of Appeal');
+      if (c.status === 'expired') return { ...c, note: 'APPEAL WINDOW CLOSED — belated appeal may be available under Rule 9.141(c)', severity: 'critical', remedy: 'File motion for belated appeal (Fla. R. App. P. 9.141(c)) alleging IAC' };
+      if (c.status === 'imminent') return { ...c, note: '⚠ ONLY ' + c.daysRemaining + ' DAYS — FILE IMMEDIATELY', severity: 'critical' };
+      return { ...c, deadlineDate: dl };
+    }
+  },
+  'direct-appeal-brief': {
+    label: 'Initial Brief Deadline',
+    statute: 'Fla. R. App. P. 9.110(d)',
+    states: ['DIRECT_APPEAL'],
+    icon: '📄',
+    depends: ['appeal-filed-date'],
+    calc: function(a) {
+      const d = parseDate(a['appeal-filed-date']);
+      if (!d) return { status: 'unknown', note: 'Enter appeal filing date', severity: 'info' };
+      const dl = addDays(d, 70);
+      const c = computeDeadline(dl, 'Initial Brief');
+      return { ...c, deadlineDate: dl };
+    }
+  },
+  'appeal-rehearing': {
+    label: 'Rehearing Motion',
+    statute: 'Fla. R. App. P. 9.330',
+    states: ['DIRECT_APPEAL'],
+    icon: '🔄',
+    depends: ['appeal-opinion-date'],
+    calc: function(a) {
+      const d = parseDate(a['appeal-opinion-date']);
+      if (!d) return { status: 'unknown', note: 'Enter opinion date', severity: 'info' };
+      const dl = addDays(d, 15);
+      const c = computeDeadline(dl, 'Rehearing Motion');
+      return { ...c, deadlineDate: dl };
+    }
+  },
+  '3850-deadline': {
+    label: 'Rule 3.850 Postconviction Relief',
+    statute: 'Fla. R. Crim. P. 3.850(b)',
+    states: ['FINALIZED', 'POSTCONVICTION'],
+    icon: '⚖️',
+    depends: ['conviction-date'],
+    calc: function(a) {
+      const d = parseDate(a['conviction-date']);
+      if (!d) return { status: 'unknown', note: 'Enter conviction finality date', severity: 'info' };
+      const dl = addDays(d, 730);
+      const c = computeDeadline(dl, '3.850 Motion');
+      if (c.status === 'expired') return { ...c, note: '3.850 WINDOW EXPIRED — check exceptions (newly discovered evidence, illegal sentence, retroactive right)', severity: 'critical',
+        remedy: 'File under exceptions: newly discovered evidence (1 yr from discovery) or illegal sentence (no limit)' };
+      if (c.status === 'imminent') return { ...c, note: '⚠ ONLY ' + c.daysRemaining + ' DAYS — FILE IMMEDIATELY', severity: 'critical' };
+      if (c.status === 'near') return { ...c, note: c.daysRemaining + ' days — begin preparation now', severity: 'high' };
+      return { ...c, deadlineDate: dl };
+    }
+  },
+  '3800-mitigation': {
+    label: 'Rule 3.800(c) Mitigation',
+    statute: 'Fla. R. Crim. P. 3.800(c)',
+    states: ['SENTENCED'],
+    icon: '📦',
+    depends: ['sentence-date'],
+    calc: function(a) {
+      const d = parseDate(a['sentence-date']);
+      if (!d) return { status: 'unknown', note: 'Enter sentence date', severity: 'info' };
+      const dl = addDays(d, 60);
+      const c = computeDeadline(dl, 'Mitigation Motion');
+      return { ...c, deadlineDate: dl };
+    }
+  },
+  'probation-termination': {
+    label: 'Early Termination Eligibility',
+    statute: 'Fla. Stat. § 948.04',
+    states: ['SENTENCED', 'FINALIZED', 'POSTCONVICTION'],
+    icon: '🗓️',
+    depends: ['probation-term-months', 'sentence-date'],
+    calc: function(a) {
+      const term = parseInt(a['probation-term-months']);
+      const d = parseDate(a['sentence-date']);
+      if (!term || !d) return { status: 'unknown', note: 'Enter probation term + start date', severity: 'info' };
+      const halfPoint = addDays(d, term * 15.2); // ~50% in days
+      const c = computeDeadline(halfPoint, '50% Probation Point');
+      if (c.status === 'expired') return { ...c, note: '✓ Eligible now — more than 50% served', severity: 'info' };
+      if (c.status === 'imminent' || c.status === 'near') return { ...c, note: c.daysRemaining + ' days until 50% — prepare early termination packet', severity: 'warning' };
+      return { ...c, note: c.daysRemaining + ' days until eligible — begin documenting compliance', severity: 'info' };
+    }
+  },
+  'vop-hearing': {
+    label: 'VOP Hearing Timeline',
+    statute: 'Fla. Stat. § 948.06',
+    states: ['SENTENCED', 'FINALIZED', 'POSTCONVICTION'],
+    icon: '🚨',
+    depends: ['violation-date'],
+    calc: function(a) {
+      const d = parseDate(a['violation-date']);
+      if (!d) return { status: 'unknown', note: 'Enter violation date', severity: 'info' };
+      const dl = addDays(d, 60);
+      const c = computeDeadline(dl, 'VOP Hearing Window');
+      if (c.status === 'expired') return { ...c, note: 'Hearing likely scheduled — confirm with court', severity: 'warning' };
+      return { ...c, deadlineDate: dl };
+    }
+  },
+  'aedpa-habeas': {
+    label: 'AEDPA Federal Habeas',
+    statute: '28 U.S.C. § 2244(d)(1)',
+    states: ['FINALIZED', 'FEDERAL_HABEAS'],
+    icon: '⚡',
+    depends: ['conviction-date'],
+    calc: function(a) {
+      const d = parseDate(a['conviction-date']);
+      if (!d) return { status: 'unknown', note: 'Enter conviction finality date', severity: 'info' };
+      const dl = addDays(d, 365);
+      const c = computeDeadline(dl, 'AEDPA 1-Year Clock');
+      if (c.status === 'expired') return { ...c, note: 'AEDPA YEAR EXPIRED — equitable tolling may be available if diligent + extraordinary circumstances', severity: 'critical',
+        remedy: 'State habeas tolls AEDPA — check if state postconviction was pending. If not, file federal habeas with tolling argument.' };
+      return { ...c, deadlineDate: dl };
+    }
+  },
+  'expunge-wait': {
+    label: 'Expunge / Seal Eligibility',
+    statute: 'Fla. Stat. § 943.0585',
+    states: ['REENTRY'],
+    icon: '🔒',
+    depends: ['disposition-date'],
+    calc: function(a) {
+      const d = parseDate(a['disposition-date']);
+      if (!d) return { status: 'unknown', note: 'Enter disposition date', severity: 'info' };
+      // Dismissal: immediate eligibility; otherwise varies
+      const resolution = (a['case-resolution'] || '').toLowerCase();
+      const isDismissal = resolution.includes('dismiss') || resolution.includes('nolle');
+      if (isDismissal) return { status: 'safe', daysRemaining: 0, pct: 100, note: '✓ Eligible now (dismissal/nolle) — FDLE certificate required before filing', severity: 'info' };
+      // Seal: 10 years for most
+      const dl = addDays(d, 3650);
+      const c = computeDeadline(dl, 'Expunge/Seal Window');
+      if (c.status === 'expired' || c.status === 'safe') return { ...c, note: '✓ Eligibility window likely open — request FDLE certificate', severity: 'info' };
+      return { ...c, note: c.daysRemaining + ' days until seal eligibility — track this date', severity: 'info' };
+    }
+  },
+  'clemency-wait': {
+    label: 'Clemency Eligibility',
+    statute: 'Fla. Const. Art. IV, § 8',
+    states: ['FINALIZED', 'POSTCONVICTION', 'REENTRY'],
+    icon: '🕊️',
+    depends: ['sentence-date'],
+    calc: function(a) {
+      const d = parseDate(a['sentence-date']);
+      if (!d) return { status: 'unknown', note: 'Enter sentence date (clemency: 5+ year wait)', severity: 'info' };
+      const dl = addDays(d, 1825);
+      const c = computeDeadline(dl, 'Clemency Window');
+      if (c.status === 'expired') return { ...c, note: '✓ 5+ years elapsed — clemency application may proceed', severity: 'info' };
+      return { ...c, note: c.daysRemaining + ' days until clemency eligibility (5-year minimum)', severity: 'info' };
+    }
+  },
+  'illegal-sentence': {
+    label: 'Illegal Sentence Correction',
+    statute: 'Fla. R. Crim. P. 3.800(a)',
+    states: ['SENTENCED', 'DIRECT_APPEAL', 'FINALIZED', 'POSTCONVICTION'],
+    icon: '📜',
+    depends: ['sentence-imposed', 'max-sentence'],
+    calc: function(a) {
+      const imposed = a['sentence-imposed'] || '';
+      const maxSent = a['max-sentence'] || '';
+      if (!imposed || !maxSent) return { status: 'unknown', note: 'Enter imposed + maximum sentence', severity: 'info' };
+      const imposedNum = parseFloat(imposed.match(/(\d+)/));
+      const maxNum = parseFloat(maxSent.match(/(\d+)/));
+      if (imposedNum && maxNum && imposedNum > maxNum) {
+        return { status: 'imminent', daysRemaining: 0, pct: 100, note: '⚠ SENTENCE EXCEEDS MAXIMUM — file 3.800(a) now (no deadline)', severity: 'critical',
+          remedy: 'File Rule 3.800(a) motion — no statute of limitations for illegal sentences', deadlineDate: null };
+      }
+      return { status: 'safe', note: 'Sentence within statutory range', severity: 'info' };
+    }
+  }
+};
+
+function getDeadlines(state, answers) {
+  const results = [];
+  if (!state || !answers) return results;
+  Object.keys(DEADLINE_DEFS).forEach(key => {
+    const def = DEADLINE_DEFS[key];
+    if (!def.states.includes(state)) return;
+    const result = def.calc(answers);
+    results.push({ key, ...def, ...result });
+  });
+  // Sort: expired/critical first, then by status severity, then by days remaining
+  const severityOrder = { critical: 0, high: 1, warning: 2, info: 3, unknown: 4 };
+  results.sort((a, b) => {
+    const sa = severityOrder[a.severity] || 4;
+    const sb = severityOrder[b.severity] || 4;
+    if (sa !== sb) return sa - sb;
+    return (a.daysRemaining || 999) - (b.daysRemaining || 999);
+  });
+  return results;
+}
+
+function getDeadlineAlerts(state, answers) {
+  const deadlines = getDeadlines(state, answers);
+  return deadlines
+    .filter(d => d.severity === 'critical' || d.severity === 'high')
+    .map(d => ({
+      id: d.key,
+      type: 'deadline',
+      severity: d.severity === 'critical' ? 'critical' : 'warning',
+      icon: d.icon,
+      title: d.severity === 'critical' && d.status === 'expired'
+        ? 'EXPIRED: ' + d.label
+        : d.severity === 'critical'
+        ? 'URGENT: ' + d.label
+        : d.label,
+      badge: 'DEADLINE',
+      desc: d.note,
+      action: d.remedy || 'Address this deadline promptly',
+      deadline: d.status === 'expired' ? 'EXPIRED' : d.daysRemaining + ' days',
+      statute: d.statute
+    }));
+}
+
+function renderDeadlineIntelligence() {
+  const panel = document.getElementById('deadline-panel');
+  if (!panel) return;
+  const state = getCurrentState();
+  const ctx = CASE_STATES[state];
+  if (!caseSession && !currentMotion) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+
+  const deadlines = getDeadlines(state, answers);
+  const critical = deadlines.filter(d => d.severity === 'critical');
+  const high = deadlines.filter(d => d.severity === 'high');
+  const other = deadlines.filter(d => d.severity !== 'critical' && d.severity !== 'high');
+
+  let html = '<div class="dl-header">' +
+    '<span style="font-weight:700;font-size:14px">' + ctx.icon + ' ' + ctx.label + ' Deadlines</span>' +
+    '<span class="dl-count">' + deadlines.length + ' tracked</span>' +
+    '</div>';
+
+  if (!deadlines.length) {
+    html += '<div class="dl-empty">No tracked deadlines for this stage.</div>';
+    panel.innerHTML = html;
+    return;
+  }
+
+  html += '<div class="dl-list">';
+
+  // Critical block
+  if (critical.length) {
+    html += '<div class="dl-group"><div class="dl-group-label">⚠ CRITICAL</div>';
+    critical.forEach(d => html += renderDeadlineCard(d));
+    html += '</div>';
+  }
+
+  // High block
+  if (high.length) {
+    html += '<div class="dl-group"><div class="dl-group-label">⚡ HIGH PRIORITY</div>';
+    high.forEach(d => html += renderDeadlineCard(d));
+    html += '</div>';
+  }
+
+  // Other
+  if (other.length) {
+    html += '<div class="dl-group"><div class="dl-group-label dl-group-label--muted">📋 STATUS</div>';
+    other.forEach(d => html += renderDeadlineCard(d));
+    html += '</div>';
+  }
+
+  html += '</div>';
+  panel.innerHTML = html;
+}
+
+function renderDeadlineCard(d) {
+  const severityColors = { critical: 'var(--red)', high: 'var(--gold)', warning: 'var(--sky)', info: 'var(--muted)', unknown: 'var(--muted)' };
+  const barColor = severityColors[d.severity] || 'var(--muted)';
+  const isPct = d.pct !== undefined && d.pct !== null && d.status !== 'unknown' && d.status !== 'safe';
+  const barW = isPct ? Math.min(100, Math.max(2, d.pct)) : 0;
+  const isExpired = d.status === 'expired';
+
+  let statusIcon = '🔵';
+  if (d.severity === 'critical' && !isExpired) statusIcon = '🔴';
+  else if (isExpired) statusIcon = '⛔';
+  else if (d.severity === 'high') statusIcon = '🟠';
+  else if (d.severity === 'warning') statusIcon = '🟡';
+  else if (d.severity === 'info') statusIcon = '🟢';
+  else if (d.status === 'unknown') statusIcon = '⚪';
+
+  return '<div class="dl-card dl-card--' + d.severity + '">' +
+    '<div class="dl-card-top">' +
+      '<span class="dl-icon">' + d.icon + '</span>' +
+      '<div class="dl-card-body">' +
+        '<div class="dl-card-title">' + statusIcon + ' ' + d.label + '</div>' +
+        '<div class="dl-card-statute">' + (d.statute || '') + '</div>' +
+        '<div class="dl-card-note">' + d.note + '</div>' +
+        (d.remedy ? '<div class="dl-card-remedy">→ ' + d.remedy + '</div>' : '') +
+      '</div>' +
+      (d.status !== 'unknown' && d.status !== 'safe'
+        ? '<div class="dl-card-count" style="color:' + barColor + '">' +
+          (isExpired ? 'EXPIRED' : d.daysRemaining + '<span class="dl-card-unit">d</span>') +
+        '</div>'
+        : '') +
+    '</div>' +
+    (isPct ? '<div class="dl-bar"><div class="dl-bar-fill" style="width:' + barW + '%;background:' + barColor + '"></div></div>' : '') +
+    '</div>';
+}
+
 function renderStateMachine() {
   const el = document.getElementById('state-machine');
   if (!el) return;
@@ -6310,6 +6795,7 @@ function renderStateMachine() {
   actionsEl.innerHTML = ctx.actions.map(a =>
     '<span class="sm-action-chip">' + a + '</span>'
   ).join('');
+  renderDeadlineIntelligence();
 }
 
 function filterMotionsByState() {
@@ -9891,6 +10377,14 @@ function detectProceduralEmergencies(motionId, a, e) {
       xai:{ statute:'Eighth Amendment · U.S. Const. amend. VIII', rule:'Miller v. Alabama prohibits mandatory life without parole for juvenile offenders — individualized sentencing considering youth and its characteristics is required.', reasoning:'Youth detected with active sentence — Miller protections may apply to challenge excessive sentence.', authority:'Fla. R. Crim. P. 3.800(a)', caseLaw:'Miller v. Alabama (2012) — juvenile LWOP; Graham v. Florida (2010) — non-homicide juveniles; Montgomery v. Louisiana (2016) — retroactivity' },
     });
   }
+
+  // 12. State Machine Deadline Intelligence
+  var dlAlerts = getDeadlineAlerts(getCaseState(null, a, motionId, chargeTimeline), a);
+  dlAlerts.forEach(function(dla) {
+    // Avoid duplicating alerts already added above
+    var existing = alerts.some(function(ex) { return ex.id === dla.id; });
+    if (!existing) alerts.push(dla);
+  });
 
   return alerts;
 }
