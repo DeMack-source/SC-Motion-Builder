@@ -286,6 +286,10 @@ body::after {
   from { opacity:0; transform:translateY(12px); }
   to   { opacity:1; transform:translateY(0); }
 }
+@keyframes fadeSlideIn {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
 
 .wizard-header {
   padding: 18px 20px;
@@ -1981,7 +1985,159 @@ body.low-distraction #tabnav { display: none; }
 }
 .btn-session-clear:hover { color: var(--red); border-color: rgba(248,113,113,0.3); }
 
-/* ═══ INTAKE FORM ═══ */
+/* ── SESSION BAR STATE BADGE ── */
+.session-bar-state {
+  display: flex; align-items: center; gap: 5px;
+  padding: 2px 10px; border-radius: 20px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  font-size: 10px; font-weight: 600;
+  white-space: nowrap;
+}
+.sbs-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.sbs-label { color: var(--white); }
+
+/* ═══ STATE MACHINE WIDGET ═══ */
+.state-machine {
+  background: var(--ink-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 20px;
+  animation: fadeSlideIn 0.35s ease;
+}
+.state-machine-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.sm-header-left {
+  display: flex; align-items: center; gap: 10px;
+}
+.sm-icon { font-size: 22px; }
+.sm-label { font-weight: 700; font-size: 16px; color: var(--white); }
+.sm-progress-text { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.sm-badge {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 700; letter-spacing: 1px;
+  padding: 4px 12px; border-radius: 20px;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.state-timeline {
+  display: flex;
+  align-items: flex-start;
+  overflow-x: auto;
+  gap: 0;
+  padding: 8px 0 4px;
+  margin-bottom: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.state-timeline::-webkit-scrollbar { height: 3px; }
+.state-timeline::-webkit-scrollbar-track { background: transparent; }
+.state-timeline::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.st-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+  width: 72px;
+  cursor: default;
+  transition: transform 0.2s;
+}
+.st-dot {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--ink-lift);
+  border: 2px solid var(--border);
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+.st-past .st-dot {
+  background: var(--ink-lift);
+  border-color: var(--st-color);
+  opacity: 0.6;
+}
+.st-current .st-dot {
+  background: var(--ink-card);
+  border-color: var(--st-color);
+  box-shadow: 0 0 12px var(--st-color), 0 0 24px color-mix(in srgb, var(--st-color) 30%, transparent);
+  transform: scale(1.1);
+}
+.st-future .st-dot {
+  opacity: 0.35;
+}
+.st-label {
+  font-size: 8px;
+  text-align: center;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.2;
+  max-width: 68px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.st-past .st-label { color: var(--muted); }
+.st-current .st-label { color: var(--st-color); font-weight: 700; }
+.st-bar {
+  position: absolute;
+  top: 17px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  z-index: 1;
+  transform: translateX(0);
+}
+.st-past .st-bar { background: var(--st-color); opacity: 0.5; }
+.st-node:last-child .st-bar { display: none; }
+
+.state-note {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sm-action-chip {
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+/* ── EMPTY STATE ── */
+.state-empty-msg {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}
+.sem-icon { font-size: 36px; margin-bottom: 8px; }
+.sem-title { font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+.sem-desc { font-size: 12px; line-height: 1.5; max-width: 400px; margin: 0 auto; }
+
+/* ── HUD STATE BADGE ── */
+.hud-state-badge { font-weight: 700; }
 .intake-overlay {
   display: none; position: fixed; inset: 0; z-index: 9999;
   background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
@@ -2600,6 +2756,10 @@ body::before {
         <span class="sb-county"></span>
         <span class="sb-case-num"></span>
       </div>
+      <div class="session-bar-state" id="session-bar-state">
+        <span class="sbs-dot"></span>
+        <span class="sbs-label"></span>
+      </div>
       <div class="session-bar-actions">
         <button class="btn-session-clear" onclick="clearSession()">✕ Clear Case</button>
       </div>
@@ -2637,6 +2797,23 @@ body::before {
         <button class="btn-intake-save" onclick="saveIntake()">✓ Save Case</button>
       </div>
     </div>
+  </div>
+
+  <!-- ═══ CASE STATE MACHINE ═══ -->
+  <div class="state-machine" id="state-machine" style="display:none">
+    <div class="state-machine-header">
+      <div class="sm-header-left">
+        <span class="sm-icon" id="sm-icon">⚖️</span>
+        <div>
+          <div class="sm-label" id="sm-label">Pre-Trial</div>
+          <div class="sm-progress-text" id="sm-progress-text">Stage 2 of 9</div>
+        </div>
+      </div>
+      <div class="sm-badge" id="sm-badge">PRETRIAL</div>
+    </div>
+    <div class="state-timeline" id="state-timeline"></div>
+    <div class="state-note" id="state-note"></div>
+    <div class="state-actions" id="state-actions"></div>
   </div>
 
   <div class="section-title">Select Your Motion Type</div>
@@ -4875,6 +5052,8 @@ function selectMotion(id, tile) {
   const flow = FLOWS[id];
   btn.disabled = false;
   document.getElementById('start-btn-text').textContent = 'Begin — ' + flow.title;
+  renderStateMachine();
+  filterMotionsByState();
 }
 
 function launchMotion(id) {
@@ -5962,6 +6141,8 @@ function saveSession(data) {
     localStorage.setItem('fl-case-session', JSON.stringify(data));
   } else localStorage.removeItem('fl-case-session');
   renderSessionBar();
+  renderStateMachine();
+  filterMotionsByState();
 }
 
 function clearSession() {
@@ -5981,6 +6162,199 @@ function renderSessionBar() {
   if (sb) sb.textContent = caseSession.chargeName || '';
   if (co) co.textContent = caseSession.county || '';
   if (cn) cn.textContent = caseSession.caseNum || '';
+  // State badge
+  const stateEl = document.getElementById('session-bar-state');
+  if (stateEl) {
+    const state = getCurrentState();
+    const ctx = CASE_STATES[state];
+    stateEl.style.display = ctx ? '' : 'none';
+    if (ctx) {
+      const dot = stateEl.querySelector('.sbs-dot');
+      const label = stateEl.querySelector('.sbs-label');
+      if (dot) dot.style.background = ctx.color;
+      if (label) label.textContent = ctx.label;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+// PROCEDURAL STATE MACHINE
+// Enterprise-grade case state tracking
+// ═══════════════════════════════════════════════
+
+const CASE_STATES = {
+  ARREST:           { label:'Arrest', icon:'🚔', order:0, color:'#F87171',
+    remedies:[], blocked:['3850','3800','2254','expunge','terminate','appeal','appeal-record','appeal-rehearing'],
+    note:'No conviction yet. Focus on pretrial release and defense strategy.',
+    actions:['Secure pretrial release','Retain counsel or confirm PD','Preserve evidence','Do not make statements'] },
+  FIRST_APPEARANCE: { label:'First Appearance', icon:'🏛️', order:1, color:'#F87171',
+    remedies:['bond-review'], blocked:['3850','3800','2254','expunge','terminate','appeal','appeal-record','appeal-rehearing'],
+    note:'First court appearance. Bond is set, charges are formally read.',
+    actions:['Attend first appearance','Address bond conditions','Request appointed counsel if needed'] },
+  PRETRIAL:         { label:'Pre-Trial', icon:'⚖️', order:2, color:'#F9B24C',
+    remedies:['bond-review'], blocked:['3850','3800','2254','expunge','terminate','appeal','appeal-record','appeal-rehearing'],
+    note:'Case is in pretrial phase. Discovery, motions, and plea negotiations.',
+    actions:['File pretrial motions','Review discovery','Evaluate plea offer','Prepare for trial'] },
+  SENTENCED:        { label:'Sentenced', icon:'⚡', order:3, color:'#F9B24C',
+    remedies:['appeal','appeal-record'], blocked:['3850','3800','2254','expunge','terminate'],
+    note:'Sentence imposed. 30-day window for direct appeal is running.',
+    actions:['File notice of appeal (30 days)','Order trial transcript','Begin appellate counsel consultation'] },
+  DIRECT_APPEAL:    { label:'Direct Appeal', icon:'📝', order:4, color:'#60A5FA',
+    remedies:['appeal','appeal-record','appeal-rehearing'], blocked:['3850','3800','2254','expunge','terminate'],
+    note:'Direct appeal pending. Appellate briefing and oral argument.',
+    actions:['File initial brief','Monitor appellate docket','Consider rehearing after opinion'] },
+  FINALIZED:        { label:'Conviction Final', icon:'🔒', order:5, color:'#A78BFA',
+    remedies:['3850','3800','expunge','terminate','mitigation'], blocked:['2254'],
+    note:'Conviction is final. Postconviction remedies are now available.',
+    actions:['Assess 3.850 grounds (2-year window)','Check illegal sentence (3.800)','Evaluate seal/expunge eligibility'] },
+  POSTCONVICTION:   { label:'Post-Conviction', icon:'📋', order:6, color:'#F59E0B',
+    remedies:['3850','3800','expunge','terminate','mitigation'], blocked:['2254'],
+    note:'Active postconviction proceedings. State remedies must be exhausted before federal habeas.',
+    actions:['Exhaust all state remedies','Document all filings and rulings','Build federal habeas record'] },
+  FEDERAL_HABEAS:   { label:'Federal Habeas', icon:'⚡', order:7, color:'#F87171',
+    remedies:['2254'], blocked:['3850','3800','expunge','terminate','appeal','appeal-record','appeal-rehearing'],
+    note:'Federal habeas corpus under 28 U.S.C. § 2254. AEDPA 1-year clock applies.',
+    actions:['File within AEDPA 1-year limit','Cite clearly established federal law','Request COA if denied'] },
+  REENTRY:          { label:'Reentry', icon:'🔄', order:8, color:'#4ADE80',
+    remedies:['expunge','terminate','mitigation'], blocked:['3850','3800','2254','appeal','appeal-record','appeal-rehearing'],
+    note:'Sentence completed. Focus on rights restoration and reentry.',
+    actions:['Seal or expunge record','Restore voting rights','Apply for driver\'s license reinstatement','Explore employment programs','Check public housing eligibility'] }
+};
+
+const STATE_ORDERS = ['ARREST','FIRST_APPEARANCE','PRETRIAL','SENTENCED','DIRECT_APPEAL','FINALIZED','POSTCONVICTION','FEDERAL_HABEAS','REENTRY'];
+const STATE_FLOW_MAP = {
+  'appeal': 'DIRECT_APPEAL', 'appeal-record': 'DIRECT_APPEAL', 'appeal-rehearing': 'DIRECT_APPEAL',
+  '3850': 'POSTCONVICTION', '3800': 'POSTCONVICTION',
+  '2254': 'FEDERAL_HABEAS',
+  'expunge': 'REENTRY', 'terminate': 'REENTRY', 'mitigation': 'REENTRY'
+};
+
+function getCaseState(session, answers, motionId, timeline) {
+  // Determine procedural state from available data
+  const motionState = motionId ? STATE_FLOW_MAP[motionId] : null;
+  if (motionState) return motionState;
+
+  const tl = timeline || session?.timeline || 'pretrial';
+  const isIncarcerated = answers?.['currently-incarcerated'] || '';
+  const resolution = answers?.['case-resolution'] || '';
+  const hasSentence = resolution && resolution !== 'Dismissal';
+  const isComplete = isIncarcerated.includes('completed') || isIncarcerated.includes('No — sentence completed');
+
+  if (isComplete) return 'REENTRY';
+  if (tl === 'postconviction') return 'POSTCONVICTION';
+  if (hasSentence) return 'SENTENCED';
+  if (tl === 'pretrial' && resolution) return 'PRETRIAL';
+  if (tl === 'pretrial') return 'PRETRIAL';
+  return 'PRETRIAL';
+}
+
+function getStateContext(state) {
+  const s = CASE_STATES[state] || CASE_STATES.PRETRIAL;
+  const idx = STATE_ORDERS.indexOf(state);
+  const total = STATE_ORDERS.length;
+  return { ...s, state, progress: Math.round(((idx + 1) / total) * 100), index: idx, total };
+}
+
+function isRemedyBlocked(remedyId, state) {
+  const ctx = getStateContext(state);
+  return ctx.blocked && ctx.blocked.includes(remedyId);
+}
+
+function getStateForMotion(motionId) {
+  return STATE_FLOW_MAP[motionId] || 'PRETRIAL';
+}
+
+function getCurrentState() {
+  return getCaseState(caseSession, answers, currentMotion, chargeTimeline);
+}
+
+function renderStateMachine() {
+  const el = document.getElementById('state-machine');
+  if (!el) return;
+  if (!caseSession && !currentMotion) { el.style.display = 'none'; return; }
+
+  const state = getCurrentState();
+  const ctx = getStateContext(state);
+  el.style.display = 'block';
+
+  document.getElementById('sm-icon').textContent = ctx.icon;
+  document.getElementById('sm-label').textContent = ctx.label;
+  document.getElementById('sm-progress-text').textContent = 'Stage ' + (ctx.index + 1) + ' of ' + STATE_ORDERS.length;
+  const sb = document.getElementById('sm-badge');
+  sb.textContent = state;
+  sb.style.background = ctx.color;
+
+  // Timeline
+  const tl = document.getElementById('state-timeline');
+  tl.innerHTML = STATE_ORDERS.map((key, i) => {
+    const s = CASE_STATES[key];
+    const isPast = i < ctx.index;
+    const isCurrent = i === ctx.index;
+    const isFuture = i > ctx.index;
+    let cls = 'st-node';
+    if (isPast) cls += ' st-past';
+    if (isCurrent) cls += ' st-current';
+    if (isFuture) cls += ' st-future';
+    return '<div class="' + cls + '" style="--st-color:' + s.color + '" title="' + s.label + '">' +
+      '<div class="st-dot"><span class="st-dot-icon">' + s.icon + '</span></div>' +
+      '<div class="st-label">' + s.label + '</div>' +
+      '<div class="st-bar"></div>' +
+      '</div>';
+  }).join('');
+
+  // Note
+  document.getElementById('state-note').textContent = ctx.note;
+
+  // Action buttons
+  const actionsEl = document.getElementById('state-actions');
+  actionsEl.innerHTML = ctx.actions.map(a =>
+    '<span class="sm-action-chip">' + a + '</span>'
+  ).join('');
+}
+
+function filterMotionsByState() {
+  const tiles = document.querySelectorAll('.motion-tile');
+  const grid = document.getElementById('motion-grid');
+  if (!grid) return;
+
+  // No case data → show all remedies
+  if (!caseSession && !currentMotion) {
+    tiles.forEach(tile => { tile.style.display = ''; tile.classList.remove('tile-blocked'); });
+    const existingMsg = grid.querySelector('.state-empty-msg');
+    if (existingMsg) existingMsg.style.display = 'none';
+    return;
+  }
+
+  const state = getCurrentState();
+  const ctx = getStateContext(state);
+  const blockedIds = ctx.blocked || [];
+  let visibleCount = 0;
+
+  tiles.forEach(tile => {
+    const mid = tile.getAttribute('data-motion');
+    if (blockedIds.includes(mid)) {
+      tile.classList.add('tile-blocked');
+      tile.style.display = 'none';
+    } else {
+      tile.classList.remove('tile-blocked');
+      tile.style.display = '';
+      visibleCount++;
+    }
+  });
+
+  // Add "no remedies" message
+  let msg = grid.querySelector('.state-empty-msg');
+  if (visibleCount === 0) {
+    if (!msg) {
+      msg = document.createElement('div');
+      msg.className = 'state-empty-msg';
+      msg.innerHTML = '<div class="sem-icon">🚫</div><div class="sem-title">No remedies available at this stage</div><div class="sem-desc">The current case stage (' + ctx.label + ') does not support any of the available motion types. Update your case timeline or complete the current stage first.</div>';
+      grid.appendChild(msg);
+    }
+    msg.style.display = '';
+  } else {
+    if (msg) msg.style.display = 'none';
+  }
 }
 
 function openIntake(chargeName) {
@@ -6178,6 +6552,8 @@ function setTimeline(tl) {
   document.getElementById('tl-pretrial').classList.toggle('active', tl === 'pretrial');
   document.getElementById('tl-postconviction').classList.toggle('active', tl === 'postconviction');
   if (chargeSelected) renderChargeIntel(chargeSelected);
+  renderStateMachine();
+  filterMotionsByState();
 }
 
 function togglePlainEnglish() {
@@ -6506,7 +6882,7 @@ function renderCollateral(c) {
 }
 
 initChargeSearch();
-if (caseSession) renderSessionBar();
+if (caseSession) { renderSessionBar(); renderStateMachine(); filterMotionsByState(); }
 // ═══════════════════════════════════════════════
 // NEW ARCHITECTURE: Single-Question Wizard
 // ═══════════════════════════════════════════════
@@ -7230,9 +7606,6 @@ function renderStatusBar() {
   if (!flow) { bar.style.display = 'none'; return; }
   bar.style.display = 'flex';
 
-  // Stage
-  var stage = chargeTimeline === 'postconviction' ? 'Post-Conviction' : 'Pre-Trial';
-
   // Relief window assessment
   var s = calcStrength();
   var eligResults = currentMotion && ELIGIBILITY_INTELLIGENCE[currentMotion]
@@ -7263,12 +7636,16 @@ function renderStatusBar() {
   else if (blocks > 0) { risk = 'HIGH'; riskColor = 'var(--gold)'; }
   else if (warns > 2) { risk = 'MODERATE'; riskColor = 'var(--gold)'; }
 
+  // State Machine
+  var smState = getCurrentState();
+  var smCtx = CASE_STATES[smState] || { label:'Unknown', icon:'⚖️', color:'var(--muted)' };
+
   var answerCount = Object.keys(answers).filter(function(k){return answers[k]&&answers[k]!=='';}).length;
 
   bar.innerHTML = '<div class="hud-label">CASE STATUS</div>' +
     '<div class="hud-divider"></div>' +
     '<div class="hud-metric"><span class="hud-key">Jurisdiction</span><span class="hud-val">Florida</span></div>' +
-    '<div class="hud-metric"><span class="hud-key">Stage</span><span class="hud-val">' + stage + '</span></div>' +
+    '<div class="hud-metric"><span class="hud-key">State</span><span class="hud-val hud-state-badge" style="color:' + smCtx.color + '">' + smCtx.icon + ' ' + smCtx.label + '</span></div>' +
     '<div class="hud-metric"><span class="hud-key">Relief Window</span><span class="hud-val hud-pulse hud-pulse--' + reliefDot + '" style="color:' + reliefColor + '">' + reliefStatus + '</span></div>' +
     '<div class="hud-metric"><span class="hud-key">Urgency</span><span class="hud-val" style="color:' + (urgency === 'CRITICAL' ? 'var(--red)' : urgency === 'HIGH' ? 'var(--red)' : urgency === 'MODERATE' ? 'var(--gold)' : 'var(--green)') + '">' + urgency + '</span></div>' +
     '<div class="hud-metric"><span class="hud-key">Risk</span><span class="hud-val" style="color:' + riskColor + '">' + risk + '</span></div>' +
@@ -7277,6 +7654,11 @@ function renderStatusBar() {
   bar.classList.add('hud-updated');
   clearTimeout(bar._hudTimer);
   bar._hudTimer = setTimeout(function(){ bar.classList.remove('hud-updated'); }, 600);
+
+  // Refresh state-aware UI when answers change
+  renderStateMachine();
+  renderSessionBar();
+  filterMotionsByState();
 }
 
 function renderStrength() {
