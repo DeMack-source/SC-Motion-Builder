@@ -2240,25 +2240,64 @@ body::before {
 .live-dot--blue { background:#60A5FA; }
 .live-dot--blue::after { border:1px solid #60A5FA; }
 
-/* ── Status Bar ── */
+/* ── CASE STATUS HUD ── */
 .cmd-statusbar {
-  display:flex;align-items:center;gap:12px;
-  padding:8px 14px;
-  background:rgba(0,0,0,0.3);
-  border:1px solid var(--border);
-  border-radius:8px;
-  margin-bottom:16px;
-  font-size:9px;
-  font-family:var(--font-mono);
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-  flex-wrap:wrap;
+  display:none; align-items:center; gap:8px;
+  background: linear-gradient(135deg, rgba(5,9,20,0.95), rgba(15,26,46,0.9));
+  border: 1px solid rgba(249,178,76,0.15);
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin-bottom: 14px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(249,178,76,0.04);
 }
-.cmd-statusbar .stat { display:flex;align-items:center;gap:4px; }
-.cmd-statusbar .stat-value { color:var(--white);font-weight:600; }
-.cmd-statusbar .stat-value--critical { color:var(--red); }
-.cmd-statusbar .stat-value--warn { color:var(--gold); }
+.cmd-statusbar::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(249,178,76,0.3), transparent);
+}
+.cmd-statusbar.hud-updated {
+  border-color: rgba(249,178,76,0.4);
+  box-shadow: 0 0 24px rgba(249,178,76,0.1);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.hud-label {
+  font-size: 8px; font-weight: 700; color: var(--gold);
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-right: 4px; flex-shrink: 0;
+}
+.hud-divider {
+  width: 1px; height: 24px; background: rgba(249,178,76,0.2); flex-shrink: 0;
+}
+.hud-metric {
+  display: flex; align-items: center; gap: 4px; white-space: nowrap;
+}
+.hud-metric-right { margin-left: auto; }
+.hud-key {
+  font-size: 8px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.hud-val {
+  font-size: 9px; font-weight: 700; color: var(--white);
+  letter-spacing: 0.3px;
+}
+.hud-pulse {
+  animation: hudPulse 2s ease-in-out infinite;
+}
+.hud-pulse--green { --pulse-color: var(--green); }
+.hud-pulse--amber { --pulse-color: var(--gold); }
+.hud-pulse--red { --pulse-color: var(--red); }
+@keyframes hudPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; text-shadow: 0 0 8px var(--pulse-color); }
+}
+@media(max-width:600px) {
+  .cmd-statusbar { flex-wrap: wrap; gap: 4px 8px; padding: 6px 10px; }
+  .hud-label { width: 100%; margin-bottom: 2px; }
+  .hud-divider { display: none; }
+}
 
 /* ── Explainable AI (XAI) Layer ── */
 .xai-toggle { display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:4px 10px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:4px;cursor:pointer;color:var(--gold);transition:all 0.2s;font-family:inherit; }
@@ -7059,15 +7098,54 @@ function renderStatusBar() {
   var flow = FLOWS[currentMotion];
   if (!flow) { bar.style.display = 'none'; return; }
   bar.style.display = 'flex';
+
+  // Stage
+  var stage = chargeTimeline === 'postconviction' ? 'Post-Conviction' : 'Pre-Trial';
+
+  // Relief window assessment
+  var s = calcStrength();
+  var eligResults = currentMotion && ELIGIBILITY_INTELLIGENCE[currentMotion]
+    ? getEligibilityIntelligence(currentMotion, answers, eligAnswers) : [];
+  var blocks = eligResults.filter(function(r){return r.status==='block';}).length;
+  var warns = eligResults.filter(function(r){return r.status==='warn';}).length;
+
+  var emergencies = detectProceduralEmergencies(currentMotion, answers, eligAnswers);
+  var criticalAlerts = emergencies.filter(function(a){return a.severity==='critical';}).length;
+  var warningAlerts = emergencies.filter(function(a){return a.severity==='warning';}).length;
+
+  // Relief window
+  var reliefStatus = 'active', reliefColor = 'var(--green)', reliefDot = 'green';
+  if (blocks > 0) { reliefStatus = 'BLOCKED'; reliefColor = 'var(--red)'; reliefDot = 'red'; }
+  else if (criticalAlerts > 0) { reliefStatus = 'THREATENED'; reliefColor = 'var(--red)'; reliefDot = 'red'; }
+  else if (warns > 0 || warningAlerts > 0) { reliefStatus = 'AT RISK'; reliefColor = 'var(--gold)'; reliefDot = 'amber'; }
+  else if (s.pct >= 70) { reliefStatus = 'FAVORABLE'; reliefColor = 'var(--green)'; reliefDot = 'green'; }
+
+  // Urgency
+  var urgency = 'LOW', urgencyColor = 'var(--green)';
+  if (criticalAlerts > 0) { urgency = 'CRITICAL'; urgencyColor = 'var(--red) keyframes pulseUrgent'; }
+  else if (blocks > 0 || warningAlerts > 1) { urgency = 'HIGH'; urgencyColor = 'var(--red)'; }
+  else if (warns > 0 || warningAlerts > 0) { urgency = 'MODERATE'; urgencyColor = 'var(--gold)'; }
+
+  // Procedural risk
+  var risk = 'LOW', riskColor = 'var(--green)';
+  if (blocks > 1) { risk = 'CRITICAL'; riskColor = 'var(--red)'; }
+  else if (blocks > 0) { risk = 'HIGH'; riskColor = 'var(--gold)'; }
+  else if (warns > 2) { risk = 'MODERATE'; riskColor = 'var(--gold)'; }
+
   var answerCount = Object.keys(answers).filter(function(k){return answers[k]&&answers[k]!=='';}).length;
-  var alertCount = detectProceduralEmergencies(currentMotion, answers, eligAnswers).filter(function(a){return a.severity==='critical';}).length;
-  var hasElig = ELIGIBILITY_INTELLIGENCE[currentMotion];
-  var eligWarn = 0;
-  if (hasElig) {
-    var ei = getEligibilityIntelligence(currentMotion, answers, eligAnswers);
-    if (ei) eligWarn = ei.filter(function(r){return r.status==='block';}).length;
-  }
-  bar.innerHTML = '<span class="stat"><span class="live-dot live-dot--green"></span> System Online</span><span class="stat">Motion: <span class="stat-value">' + esc(flow.title || currentMotion) + '</span></span><span class="stat">Fields: <span class="stat-value">' + answerCount + '</span></span>' + (eligWarn > 0 ? '<span class="stat">Blocks: <span class="stat-value stat-value--critical">' + eligWarn + '</span></span>' : '') + (alertCount > 0 ? '<span class="stat">Alerts: <span class="stat-value stat-value--critical">' + alertCount + '</span></span>' : '');
+
+  bar.innerHTML = '<div class="hud-label">CASE STATUS</div>' +
+    '<div class="hud-divider"></div>' +
+    '<div class="hud-metric"><span class="hud-key">Jurisdiction</span><span class="hud-val">Florida</span></div>' +
+    '<div class="hud-metric"><span class="hud-key">Stage</span><span class="hud-val">' + stage + '</span></div>' +
+    '<div class="hud-metric"><span class="hud-key">Relief Window</span><span class="hud-val hud-pulse hud-pulse--' + reliefDot + '" style="color:' + reliefColor + '">' + reliefStatus + '</span></div>' +
+    '<div class="hud-metric"><span class="hud-key">Urgency</span><span class="hud-val" style="color:' + (urgency === 'CRITICAL' ? 'var(--red)' : urgency === 'HIGH' ? 'var(--red)' : urgency === 'MODERATE' ? 'var(--gold)' : 'var(--green)') + '">' + urgency + '</span></div>' +
+    '<div class="hud-metric"><span class="hud-key">Risk</span><span class="hud-val" style="color:' + riskColor + '">' + risk + '</span></div>' +
+    '<div class="hud-metric hud-metric-right"><span class="hud-key">Fields</span><span class="hud-val">' + answerCount + '</span></div>';
+
+  bar.classList.add('hud-updated');
+  clearTimeout(bar._hudTimer);
+  bar._hudTimer = setTimeout(function(){ bar.classList.remove('hud-updated'); }, 600);
 }
 
 function renderStrength() {
