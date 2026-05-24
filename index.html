@@ -995,6 +995,43 @@ body::after {
 .q-why-content { display: none; margin-top: 10px; padding: 12px 14px; background: var(--gold-dim); border-left: 3px solid var(--gold); border-radius: 8px; font-size: 12px; color: rgba(249,178,76,0.9); line-height: 1.7; }
 .q-why-content.open { display: block; }
 .q-reassurance { font-size: 11px; color: var(--muted); margin-top: 16px; font-style: italic; text-align: center; }
+
+/* ── Decision Tree ── */
+.decision-grid { display: flex; flex-direction: column; gap: 8px; margin: 6px 0; }
+.decision-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--ink-mid); border: 1px solid var(--border);
+  border-radius: 10px; cursor: pointer;
+  font-size: 14px; font-weight: 500; color: var(--white);
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.decision-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(249,178,76,0.08), transparent);
+  opacity: 0; transition: opacity 0.2s;
+}
+.decision-btn:hover { border-color: rgba(249,178,76,0.3); transform: translateX(4px); }
+.decision-btn:hover::before { opacity: 1; }
+.decision-btn.selected {
+  border-color: var(--gold); background: rgba(249,178,76,0.1);
+  box-shadow: 0 0 16px rgba(249,178,76,0.12);
+}
+.decision-btn.selected::before { opacity: 1; }
+.decision-btn-text { position: relative; z-index: 1; }
+.decision-btn-check {
+  display: flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold); color: var(--ink);
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+  position: relative; z-index: 1;
+}
+.q-cond-badge {
+  font-size: 10px; color: var(--teal); margin-bottom: 10px;
+  padding: 5px 10px; background: rgba(45,212,191,0.06);
+  border: 1px solid rgba(45,212,191,0.15); border-radius: 6px;
+  display: inline-block;
+}
 .q-progress-mini { font-family: var(--font-mono); font-size: 10px; color: var(--muted); text-align: center; margin-bottom: 16px; letter-spacing: 0.5px; }
 .q-progress-mini span { color: var(--gold); font-weight: 700; }
 
@@ -3358,15 +3395,35 @@ const FLOWS = {
       {
         id:"conviction",
         title:"Conviction & Sentence Details",
-        sub:"Enter the offense, conviction date, and sentence as recorded by the court.",
+        sub:"Tell us how this case was resolved so we can ask the right follow-ups.",
         tip:{label:"WHY THIS MATTERS", text:"The 2-year filing deadline under Rule 3.850 begins when your conviction becomes 'final'."},
         fields:[
-          {id:"offense",       label:"Primary Offense Convicted Of",type:"text",  required:true, placeholder:"e.g., Robbery with a Firearm"},
+          {id:"case-resolution", label:"Was this case resolved by:", type:"decision", required:true,
+            options:["Plea","Trial","Violation of Probation","Dismissal"],
+            cite:""},
+          {id:"plea-type", label:"What type of plea?", type:"decision", required:true, condition:{field:"case-resolution",equals:"Plea"},
+            options:["Guilty Plea","No Contest / Nolo Contendere","Alford Plea","Open Plea (no agreement)"]},
+          {id:"plea-counsel", label:"Did you have a lawyer at the plea?", type:"decision", required:true, condition:{field:"case-resolution",equals:"Plea"},
+            options:["Yes — retained private attorney","Yes — public defender","Yes — court-appointed counsel","No — I represented myself (pro se)"]},
+          {id:"plea-date", label:"Date of plea:", type:"date", required:true, condition:{field:"case-resolution",equals:"Plea"}},
+          {id:"trial-type", label:"What type of trial?", type:"decision", required:true, condition:{field:"case-resolution",equals:"Trial"},
+            options:["Jury Trial","Bench Trial (judge only)"], cite:""},
+          {id:"trial-outcome", label:"Trial outcome:", type:"decision", required:true, condition:{field:"case-resolution",equals:"Trial"},
+            options:["Convicted as charged","Convicted of lesser offense","Mistrial / Hung jury","Convicted after appeal / retrial"]},
+          {id:"trial-date", label:"Date of trial:", type:"date", required:true, condition:{field:"case-resolution",equals:"Trial"}},
+          {id:"vop-basis", label:"Basis of violation:", type:"decision", required:true, condition:{field:"case-resolution",equals:"Violation of Probation"},
+            options:["New law violation","Technical violation (missed appointment, failed drug test)","Absconding","Multiple violations"]},
+          {id:"vop-date", label:"Date of violation / VOP filing:", type:"date", required:true, condition:{field:"case-resolution",equals:"Violation of Probation"}},
+          {id:"dismissal-reason", label:"Reason for dismissal:", type:"decision", required:true, condition:{field:"case-resolution",equals:"Dismissal"},
+            options:["No information filed","Nolle prosequi (prosecution dropped)","Directed verdict","Successful motion to suppress","Other"]},
+          {id:"dismissal-date", label:"Date of dismissal:", type:"date", required:true, condition:{field:"case-resolution",equals:"Dismissal"}},
+          {id:"offense",       label:"Primary Offense",type:"text",  required:true, placeholder:"e.g., Robbery with a Firearm"},
           {id:"offense-statute",label:"Florida Statute",            type:"text",  required:false,placeholder:"e.g., F.S. § 812.13(2)(a)"},
-          {id:"conviction-date",label:"Date of Conviction / Plea",  type:"date",  required:true},
+          {id:"conviction-date",label:"Date of Conviction / Judgment",  type:"date",  required:true},
           {id:"sentence-date",  label:"Date of Sentencing",         type:"date",  required:true},
           {id:"sentence-terms", label:"Sentence Imposed",           type:"text",  required:true, placeholder:"e.g., 15 years DOC + 5 years probation"},
-          {id:"currently-incarcerated", label:"Currently incarcerated?", type:"select", options:["Yes — in DOC custody","No — on probation / supervision","No — sentence completed"], required:true},
+          {id:"currently-incarcerated", label:"Are you currently incarcerated?", type:"decision", required:true,
+            options:["Yes — in DOC custody","No — on probation / supervision","No — sentence completed"]},
         ]
       },
       {
@@ -6468,10 +6525,34 @@ function buildQuestions() {
         _stepSub: step.sub,
         _tip: step.tip,
         _fi: fi,
-        _totalSteps: flow.steps.length
+        _totalSteps: flow.steps.length,
+        _condition: f.condition || null
       });
     });
   });
+}
+
+// Decision tree helpers — find next/prev relevant question skipping conditioned-out nodes
+function isQuestionRelevant(idx) {
+  const q = questions[idx];
+  if (!q) return false;
+  if (!q._condition) return true;
+  const depVal = answers[q._condition.field];
+  return depVal === q._condition.equals || depVal === q._condition.is;
+}
+
+function getNextRelevantQ(fromIdx) {
+  for (let i = fromIdx + 1; i < questions.length; i++) {
+    if (isQuestionRelevant(i)) return i;
+  }
+  return questions.length; // past end = done
+}
+
+function getPrevRelevantQ(fromIdx) {
+  for (let i = fromIdx - 1; i >= 0; i--) {
+    if (isQuestionRelevant(i)) return i;
+  }
+  return -1; // before start
 }
 
 // ── ELIGIBILITY ──
@@ -6600,34 +6681,58 @@ function renderQuestion(dir) {
   if(!questions.length) return;
   const q = questions[currentQ];
   const total = questions.length;
-  const pct = total > 0 ? Math.round(((currentQ + 1) / total) * 100) : 0;
+  // Count visible questions for accurate progress
+  let visibleCount = 0, visibleIdx = -1;
+  for (let i = 0; i < total; i++) {
+    if (isQuestionRelevant(i)) { visibleCount++; if (i === currentQ) visibleIdx = visibleCount; }
+  }
+  const pct = visibleCount > 0 ? Math.round((visibleIdx / visibleCount) * 100) : 0;
   const flow = FLOWS[currentMotion];
-  
+
   // Progress bar
-  document.getElementById('q-progress-label').textContent = 'Question '+(currentQ+1)+' of '+total+' — '+(flow ? flow.tag : '');
+  document.getElementById('q-progress-label').textContent = 'Question '+(visibleIdx)+' of '+visibleCount+' — '+(flow ? flow.tag : '');
   document.getElementById('q-progress-pct').textContent = pct + '%';
   document.getElementById('q-progress-fill').style.width = pct + '%';
-  
+
   // Mini progress
-  document.getElementById('q-progress-mini').innerHTML = 'Question <span>'+(currentQ+1)+'</span> of <span>'+total+'</span> · You\'re <span>'+pct+'%</span> done';
-  document.getElementById('q-total').textContent = total;
+  document.getElementById('q-progress-mini').innerHTML = 'Question <span>'+(visibleIdx)+'</span> of <span>'+visibleCount+'</span> · You\'re <span>'+pct+'%</span> done';
+  document.getElementById('q-total').textContent = visibleCount;
   document.getElementById('q-pct').textContent = pct + '%';
-  
+
   // Back/Next buttons
-  document.getElementById('btn-back').disabled = currentQ === 0;
-  const isLast = currentQ === total - 1;
+  const hasPrev = getPrevRelevantQ(currentQ) >= 0;
+  const isLast = getNextRelevantQ(currentQ) >= questions.length;
+  document.getElementById('btn-back').disabled = !hasPrev;
   document.getElementById('btn-next').textContent = isLast ? '💾 Save Draft' : 'Next →';
-  
+
   // Build question card
   const card = document.getElementById('q-card');
   const animClass = dir === 'backward' ? 'animate-left' : 'animate-right';
   card.className = 'q-card ' + animClass;
-  
+
   const saved = answers[q.id] || '';
   const sectionTag = '<div class="q-section-tag">Step '+(q._stepIndex+1)+': '+esc(q._stepTitle)+'</div>';
-  
+
+  // Condition badge — show what triggered this question
+  let condBadge = '';
+  if (q._condition) {
+    const depVal = answers[q._condition.field] || 'answered';
+    condBadge = '<div class="q-cond-badge">Based on your answer: <strong>'+esc(depVal)+'</strong></div>';
+  }
+
   let inputHtml = '';
-  if(q.type === 'checkbox') {
+  if(q.type === 'decision') {
+    const opts = q.options || [];
+    inputHtml = '<div class="decision-grid">' +
+      opts.map(function(o) {
+        const isSelected = saved === o;
+        return '<div class="decision-btn' + (isSelected ? ' selected' : '') + '" onclick="selectDecision(\'' + esc(q.id) + '\',\'' + esc(o) + '\')">' +
+          '<span class="decision-btn-text">' + esc(o) + '</span>' +
+          (isSelected ? '<span class="decision-btn-check">✓</span>' : '') +
+        '</div>';
+      }).join('') +
+    '</div>';
+  } else if(q.type === 'checkbox') {
     inputHtml = '<div class="checkbox-item"><input type="checkbox" id="q-field" '+(saved==='true'?'checked':'')+' onchange="saveCurrentAnswer()"><label for="q-field">'+esc(q.label)+(q.detail?' <small>'+esc(q.detail)+'</small>':'')+'</label></div>';
   } else if(q.type === 'select') {
     inputHtml = '<select id="q-field" class="field-select" onchange="saveCurrentAnswer()">';
@@ -6642,26 +6747,51 @@ function renderQuestion(dir) {
   } else {
     inputHtml = '<input type="'+(q.type||'text')+'" id="q-field" class="field-input" placeholder="'+esc(q.placeholder||'')+'" value="'+esc(saved)+'" oninput="saveCurrentAnswer()">';
   }
-  
+
   // Why this matters
   let whyHtml = '';
   if(q._tip && q._tip.text) {
     whyHtml = '<div class="q-why"><div class="q-why-toggle" onclick="toggleWhy(this)">ⓘ Why this matters</div><div class="q-why-content">'+esc(q._tip.text)+'</div></div>';
   }
-  
+
   // Reassurance
   let reassurance = 'This helps the court understand your case better.';
-  if((currentQ + 1) % 5 === 0 && currentQ > 0) {
+  if(visibleIdx % 5 === 0 && visibleIdx > 0) {
     reassurance = 'You\'re doing great — just a few more questions.';
   }
-  
-  card.innerHTML = sectionTag + '<div class="q-question">'+esc(q.label)+'</div>' + inputHtml + whyHtml + '<div class="q-reassurance">'+reassurance+'</div>';
-  
+
+  card.innerHTML = sectionTag + condBadge + '<div class="q-question">'+esc(q.label)+'</div>' + inputHtml + whyHtml + '<div class="q-reassurance">'+reassurance+'</div>';
+
   // Focus input
   setTimeout(() => {
     const el = document.getElementById('q-field');
     if(el && (el.tagName==='INPUT'||el.tagName==='TEXTAREA') && el.type!=='checkbox' && el.type!=='date') el.focus();
   }, 350);
+}
+
+// Decision selection — stores answer and auto-advances
+function selectDecision(id, val) {
+  answers[id] = val;
+  saveToSession(id, val);
+  schedulePreviewUpdate();
+  scheduleAutoSave();
+  renderStrength();
+  // Re-render to show selected state
+  renderQuestion(qAnimDir || 'forward');
+  // Auto-advance after brief pause
+  setTimeout(function() {
+    const nextIdx = getNextRelevantQ(currentQ);
+    if (nextIdx >= questions.length) {
+      saveDraft();
+    } else {
+      currentQ = nextIdx;
+      qAnimDir = 'forward';
+      renderQuestion('forward');
+      document.getElementById('q-card').scrollIntoView({behavior:'smooth',block:'start'});
+      schedulePreviewUpdate();
+      renderStrength();
+    }
+  }, 300);
 }
 
 function toggleWhy(el) {
@@ -6717,12 +6847,12 @@ function synthesizeLegal(id, plainVal) {
 function nextQ() {
   if(!validateCurrent()) return;
   saveCurrentAnswer();
-  const total = questions.length;
-  if(currentQ === total - 1) {
+  const nextIdx = getNextRelevantQ(currentQ);
+  if(nextIdx >= questions.length) {
     saveDraft();
     return;
   }
-  currentQ++;
+  currentQ = nextIdx;
   qAnimDir = 'forward';
   renderQuestion('forward');
   document.getElementById('q-card').scrollIntoView({behavior:'smooth',block:'start'});
@@ -6731,9 +6861,10 @@ function nextQ() {
 }
 
 function prevQ() {
-  if(currentQ === 0) return;
+  const prevIdx = getPrevRelevantQ(currentQ);
+  if(prevIdx < 0) return;
   saveCurrentAnswer();
-  currentQ--;
+  currentQ = prevIdx;
   qAnimDir = 'backward';
   renderQuestion('backward');
   schedulePreviewUpdate();
