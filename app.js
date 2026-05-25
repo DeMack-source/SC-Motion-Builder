@@ -1495,8 +1495,7 @@ function switchTab(tab) {
   document.getElementById('tab-'+tab).classList.add('active');
   const tb = document.querySelector('.tn[data-tab="'+tab+'"]');
   if(tb) tb.classList.add('active');
-  const mobileSelect = document.getElementById('mobile-tab-select');
-  if (mobileSelect && mobileSelect.value !== tab) mobileSelect.value = tab;
+  syncMobileTabNav(tab);
   if(tab==='drafts') renderDrafts();
   if(tab==='builder') { renderMsDrafts(); renderConstitutionalIntel(); renderEmotionalIntel(); }
   if(tab==='appeals') renderAppeals();
@@ -1507,6 +1506,62 @@ function switchTab(tab) {
   if(tab==='glossary') renderGlossary();
 }
 
+function syncMobileTabNav(tab) {
+  const menu = document.getElementById('mobile-tab-menu');
+  const moreBtn = document.getElementById('mobile-tab-more');
+  const visible = new Set(['builder', 'drafts', 'preview']);
+  const activeLabel = tab.charAt(0).toUpperCase() + tab.slice(1);
+
+  if (menu) menu.hidden = true;
+  if (moreBtn) {
+    moreBtn.classList.toggle('active', !visible.has(tab));
+    moreBtn.setAttribute('aria-expanded', 'false');
+    moreBtn.textContent = visible.has(tab) ? 'More' : activeLabel;
+  }
+
+  document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  document.querySelectorAll('.mobile-tab-menu-item').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+}
+
+function toggleMobileTabMenu() {
+  const menu = document.getElementById('mobile-tab-menu');
+  const moreBtn = document.getElementById('mobile-tab-more');
+  if (!menu || !moreBtn) return;
+  const willOpen = menu.hidden;
+  menu.hidden = !willOpen;
+  moreBtn.setAttribute('aria-expanded', String(willOpen));
+  moreBtn.classList.toggle('active', willOpen);
+  moreBtn.textContent = willOpen ? 'Close' : 'More';
+}
+
+function closeMobileTabMenu() {
+  const menu = document.getElementById('mobile-tab-menu');
+  const moreBtn = document.getElementById('mobile-tab-more');
+  if (!menu || !moreBtn) return;
+  const activeHiddenTab = document.querySelector('.mobile-tab-menu-item.active');
+  menu.hidden = true;
+  moreBtn.setAttribute('aria-expanded', 'false');
+  moreBtn.classList.remove('active');
+  moreBtn.textContent = activeHiddenTab ? activeHiddenTab.textContent : 'More';
+}
+
+document.addEventListener('click', (event) => {
+  const nav = document.getElementById('tabnav');
+  const menu = document.getElementById('mobile-tab-menu');
+  if (!nav || !menu || menu.hidden) return;
+  if (nav.contains(event.target)) return;
+  closeMobileTabMenu();
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  closeMobileTabMenu();
+});
+
 // ── MOTION SELECTION ──
 function selectMotion(id, tile) {
   document.querySelectorAll('.motion-tile').forEach(t=>t.classList.remove('selected'));
@@ -1516,6 +1571,7 @@ function selectMotion(id, tile) {
   const flow = FLOWS[id];
   btn.disabled = false;
   document.getElementById('start-btn-text').textContent = 'Begin — ' + flow.title;
+  setQuestionIdleState();
   renderStateMachine();
   filterMotionsByState();
   renderEmotionalIntel();
@@ -3930,9 +3986,27 @@ function syncQuestionProgressFallback() {
   if (pctEl) pctEl.textContent = pct + '%';
 }
 
+function setQuestionIdleState() {
+  const label = document.getElementById('q-progress-label');
+  const mini = document.getElementById('q-progress-mini');
+  const pct = document.getElementById('q-progress-pct');
+  const fill = document.getElementById('q-progress-fill');
+  const total = document.getElementById('q-total');
+  const pctInline = document.getElementById('q-pct');
+  if (label) label.textContent = 'Getting Started';
+  if (mini) mini.textContent = 'Select a motion type above to begin';
+  if (pct) pct.textContent = '0%';
+  if (fill) fill.style.width = '0%';
+  if (total) total.textContent = '0';
+  if (pctInline) pctInline.textContent = '0%';
+}
+
 // ── RENDER SINGLE QUESTION ──
 function renderQuestion(dir) {
-  if(!questions.length) return;
+  if(!currentMotion || !FLOWS[currentMotion] || !questions.length) {
+    setQuestionIdleState();
+    return;
+  }
   const q = questions[currentQ];
   const total = questions.length;
   // Count visible questions for accurate progress
@@ -4768,6 +4842,7 @@ function resetBuilder() {
   currentQ = 0;
   document.getElementById('start-btn').disabled = true;
   document.getElementById('start-btn-text').textContent = 'Select a Motion Type Above';
+  setQuestionIdleState();
   document.getElementById('completion').classList.remove('show');
   document.getElementById('live-preview').style.display = 'none';
   document.getElementById('risk-section').style.display = 'none';
@@ -7747,6 +7822,7 @@ async function bootstrapApp() {
   updateTacSysbar();
   renderGlossary();
   document.getElementById('glossarySearch')?.addEventListener('input', function(){filterGlossary(this.value);});
+  setQuestionIdleState();
   window.addEventListener('offline', ()=>{ document.getElementById('offline-banner')?.classList.add('show'); });
   window.addEventListener('online', ()=>{ document.getElementById('offline-banner')?.classList.remove('show'); });
   if(!navigator.onLine) document.getElementById('offline-banner')?.classList.add('show');

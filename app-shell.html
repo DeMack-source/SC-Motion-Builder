@@ -2,20 +2,22 @@
      This shell is loaded by app.js via fetch(), so run the app from a local web server during development. -->
 <div id="tabnav">
   <div class="mobile-tabnav">
-    <label class="mobile-tabnav-label" for="mobile-tab-select">Navigate</label>
-    <select id="mobile-tab-select" class="mobile-tab-select" onchange="switchTab(this.value)">
-      <option value="builder">Builder</option>
-      <option value="appeals">Appeals</option>
-      <option value="drafts">Drafts</option>
-      <option value="preview">Preview</option>
-      <option value="library">Library</option>
-      <option value="courts">Courts</option>
-      <option value="federal">Federal</option>
-      <option value="rights">Rights</option>
-      <option value="reentry">Reentry</option>
-      <option value="tools">Tools</option>
-      <option value="glossary">Glossary</option>
-    </select>
+    <div class="mobile-tabnav-top">
+      <button class="mobile-tab-btn active" data-tab="builder" onclick="switchTab('builder')">Builder</button>
+      <button class="mobile-tab-btn" data-tab="drafts" onclick="switchTab('drafts')">Drafts</button>
+      <button class="mobile-tab-btn" data-tab="preview" onclick="switchTab('preview')">Preview</button>
+      <button class="mobile-tab-more" id="mobile-tab-more" type="button" onclick="toggleMobileTabMenu()" aria-expanded="false" aria-controls="mobile-tab-menu">More</button>
+    </div>
+    <div class="mobile-tab-menu" id="mobile-tab-menu" hidden>
+      <button class="mobile-tab-menu-item" data-tab="appeals" onclick="switchTab('appeals')">Appeals</button>
+      <button class="mobile-tab-menu-item" data-tab="library" onclick="switchTab('library')">Library</button>
+      <button class="mobile-tab-menu-item" data-tab="courts" onclick="switchTab('courts')">Courts</button>
+      <button class="mobile-tab-menu-item" data-tab="federal" onclick="switchTab('federal')">Federal</button>
+      <button class="mobile-tab-menu-item" data-tab="rights" onclick="switchTab('rights')">Rights</button>
+      <button class="mobile-tab-menu-item" data-tab="reentry" onclick="switchTab('reentry')">Reentry</button>
+      <button class="mobile-tab-menu-item" data-tab="tools" onclick="switchTab('tools')">Tools</button>
+      <button class="mobile-tab-menu-item" data-tab="glossary" onclick="switchTab('glossary')">Glossary</button>
+    </div>
   </div>
   <button class="tn active" data-tab="builder" onclick="switchTab('builder')"><span class="ico">⚖️</span>Builder</button>
   <button class="tn" data-tab="appeals" onclick="switchTab('appeals')"><span class="ico">📝</span>Appeals</button>
@@ -284,7 +286,7 @@
 
       <div class="wizard-body">
         <div class="q-container" id="q-container">
-          <div class="q-progress-mini" id="q-progress-mini">Question <span>1</span> of <span id="q-total">1</span> · You're <span id="q-pct">0%</span> done</div>
+          <div class="q-progress-mini" id="q-progress-mini">Select a motion type above to begin</div>
           <div class="q-card" id="q-card"></div>
         </div>
       </div>
