@@ -2254,12 +2254,18 @@ function computeFloridaDeadline(startDate, rule) {
   if (rule.kind === 'none') return null;
 
   if (rule.kind === 'years') {
-    const due = nextBusinessDay(addYearsPreservingMonthDay(startDate, rule.amount));
-    return due;
+    const original = addYearsPreservingMonthDay(startDate, rule.amount);
+    return {
+      original,
+      adjusted: nextBusinessDay(original)
+    };
   }
 
-  const due = addCalendarDays(startDate, rule.amount);
-  return nextBusinessDay(due);
+  const original = addCalendarDays(startDate, rule.amount);
+  return {
+    original,
+    adjusted: nextBusinessDay(original)
+  };
 }
 
 function calcDeadline() {
@@ -2283,8 +2289,9 @@ function calcDeadline() {
     res.innerHTML = `<div class="calc-result highlight"><div class="label">${esc(rule.label)}</div><div class="value" style="color:var(--teal)">No time limit</div><div class="note">A Rule 3.800(a) motion to correct an illegal sentence can be filed at any time. There is no statutory deadline.</div></div>`;
     return;
   }
-  const due = computeFloridaDeadline(start, rule);
+  const deadline = computeFloridaDeadline(start, rule);
   const options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  const shifted = deadline.original.toDateString() !== deadline.adjusted.toDateString();
   res.innerHTML = `
     <div class="calc-result highlight">
       <div class="label">Trigger Date</div>
@@ -2292,8 +2299,8 @@ function calcDeadline() {
     </div>
     <div class="calc-result highlight">
       <div class="label">${esc(rule.label)}</div>
-      <div class="value">${due.toLocaleDateString('en-US',options)}</div>
-      <div class="note">${rule.kind === 'years' ? '2 calendar years' : `${rule.amount} calendar days`} under Florida Rule 2.514. Local clerk or chief-judge closure days can still move the deadline. ${due<new Date()?'⚠ This deadline may have passed.':'This deadline is in the future.'}</div>
+      <div class="value">${deadline.adjusted.toLocaleDateString('en-US',options)}</div>
+      <div class="note">${rule.kind === 'years' ? '2 calendar years' : `${rule.amount} calendar days`} under Florida Rule 2.514. ${shifted ? `Extended from ${deadline.original.toLocaleDateString('en-US',options)} because the last day fell on a weekend or legal holiday. ` : ''}Local clerk or chief-judge closure days can still move the deadline. ${deadline.adjusted<new Date()?'⚠ This deadline may have passed.':'This deadline is in the future.'}</div>
     </div>`;
 }
 
