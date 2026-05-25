@@ -1495,6 +1495,8 @@ function switchTab(tab) {
   document.getElementById('tab-'+tab).classList.add('active');
   const tb = document.querySelector('.tn[data-tab="'+tab+'"]');
   if(tb) tb.classList.add('active');
+  const mobileSelect = document.getElementById('mobile-tab-select');
+  if (mobileSelect && mobileSelect.value !== tab) mobileSelect.value = tab;
   if(tab==='drafts') renderDrafts();
   if(tab==='builder') { renderMsDrafts(); renderConstitutionalIntel(); renderEmotionalIntel(); }
   if(tab==='appeals') renderAppeals();
@@ -3896,6 +3898,7 @@ function startWizardAfterElig() {
   document.getElementById('completion').classList.remove('show');
   document.getElementById('wizard').classList.add('open');
   document.getElementById('live-preview').style.display = 'block';
+  syncQuestionProgressFallback();
   renderRiskGrid(currentMotion, answers);
   renderTimeline(currentMotion, answers);
   renderCaseScanner(currentMotion, answers);
@@ -3912,6 +3915,21 @@ function startWizardAfterElig() {
   renderEmotionalIntel();
 }
 
+function syncQuestionProgressFallback() {
+  const total = Math.max(questions.length || 1, 1);
+  const pct = 0;
+  const mini = document.getElementById('q-progress-mini');
+  if (mini) mini.innerHTML = 'Question <span>1</span> of <span id="q-total">' + total + '</span> · You\'re <span id="q-pct">' + pct + '%</span> done';
+  const label = document.getElementById('q-progress-label');
+  if (label) label.textContent = 'Question 1 of ' + total + (FLOWS[currentMotion] ? ' — ' + FLOWS[currentMotion].tag : '');
+  const fill = document.getElementById('q-progress-fill');
+  if (fill) fill.style.width = pct + '%';
+  const totalEl = document.getElementById('q-total');
+  if (totalEl) totalEl.textContent = total;
+  const pctEl = document.getElementById('q-pct');
+  if (pctEl) pctEl.textContent = pct + '%';
+}
+
 // ── RENDER SINGLE QUESTION ──
 function renderQuestion(dir) {
   if(!questions.length) return;
@@ -3921,6 +3939,11 @@ function renderQuestion(dir) {
   let visibleCount = 0, visibleIdx = -1;
   for (let i = 0; i < total; i++) {
     if (isQuestionRelevant(i)) { visibleCount++; if (i === currentQ) visibleIdx = visibleCount; }
+  }
+  if (visibleCount === 0) {
+    visibleCount = total;
+    visibleIdx = Math.min(currentQ + 1, total);
+    if (visibleIdx <= 0) visibleIdx = 1;
   }
   const pct = visibleCount > 0 ? Math.round((visibleIdx / visibleCount) * 100) : 0;
   const flow = FLOWS[currentMotion];

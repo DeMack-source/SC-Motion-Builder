@@ -1,6 +1,22 @@
 <!-- SOURCE OF TRUTH: Edit this file directly.
      This shell is loaded by app.js via fetch(), so run the app from a local web server during development. -->
 <div id="tabnav">
+  <div class="mobile-tabnav">
+    <label class="mobile-tabnav-label" for="mobile-tab-select">Navigate</label>
+    <select id="mobile-tab-select" class="mobile-tab-select" onchange="switchTab(this.value)">
+      <option value="builder">Builder</option>
+      <option value="appeals">Appeals</option>
+      <option value="drafts">Drafts</option>
+      <option value="preview">Preview</option>
+      <option value="library">Library</option>
+      <option value="courts">Courts</option>
+      <option value="federal">Federal</option>
+      <option value="rights">Rights</option>
+      <option value="reentry">Reentry</option>
+      <option value="tools">Tools</option>
+      <option value="glossary">Glossary</option>
+    </select>
+  </div>
   <button class="tn active" data-tab="builder" onclick="switchTab('builder')"><span class="ico">⚖️</span>Builder</button>
   <button class="tn" data-tab="appeals" onclick="switchTab('appeals')"><span class="ico">📝</span>Appeals</button>
   <button class="tn" data-tab="drafts"  onclick="switchTab('drafts')"> <span class="ico">📁</span>Drafts</button>
@@ -268,7 +284,7 @@
 
       <div class="wizard-body">
         <div class="q-container" id="q-container">
-          <div class="q-progress-mini" id="q-progress-mini">Question <span>1</span> of <span id="q-total">0</span> · You're <span id="q-pct">0%</span> done</div>
+          <div class="q-progress-mini" id="q-progress-mini">Question <span>1</span> of <span id="q-total">1</span> · You're <span id="q-pct">0%</span> done</div>
           <div class="q-card" id="q-card"></div>
         </div>
       </div>
