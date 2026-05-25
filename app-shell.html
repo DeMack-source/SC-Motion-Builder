@@ -1,0 +1,917 @@
+<!-- SOURCE OF TRUTH: Edit this file directly.
+     This shell is loaded by app.js via fetch(), so run the app from a local web server during development. -->
+<div id="tabnav">
+  <button class="tn active" data-tab="builder" onclick="switchTab('builder')"><span class="ico">⚖️</span>Builder</button>
+  <button class="tn" data-tab="appeals" onclick="switchTab('appeals')"><span class="ico">📝</span>Appeals</button>
+  <button class="tn" data-tab="drafts"  onclick="switchTab('drafts')"> <span class="ico">📁</span>Drafts</button>
+  <button class="tn" data-tab="preview" onclick="switchTab('preview')"><span class="ico">📄</span>Preview</button>
+  <button class="tn" data-tab="library" onclick="switchTab('library')"><span class="ico">📚</span>Library</button>
+  <button class="tn" data-tab="courts"  onclick="switchTab('courts')"> <span class="ico">🏛</span>Courts</button>
+  <button class="tn" data-tab="federal"  onclick="switchTab('federal')"> <span class="ico">🏛</span>Federal</button>
+  <button class="tn" data-tab="rights"  onclick="switchTab('rights')"> <span class="ico">📜</span>Rights</button>
+  <button class="tn" data-tab="reentry" onclick="switchTab('reentry')"><span class="ico">🔄</span>Reentry</button>
+  <button class="tn" data-tab="tools" onclick="switchTab('tools')"><span class="ico">🔧</span>Tools</button>
+  <button class="tn" data-tab="glossary" onclick="switchTab('glossary')"><span class="ico">📖</span>Glossary</button>
+</div>
+
+<div class="app">
+
+<!-- TACTICAL OVERLAYS -->
+<div class="tac-overlay" id="tac-overlay">
+  <div class="tac-radar-line"></div>
+</div>
+<div class="tac-grid-overlay"></div>
+
+<!-- ═══ TAB: BUILDER ═══ -->
+<div class="tab-panel active" id="tab-builder">
+
+  <div class="site-header">
+    <div class="brand">
+      <div class="brand-seal">⚖️</div>
+      <div class="brand-text">
+        <h1>Second Chance Legal Tools</h1>
+        <div class="sub">Motion Builder · Deadline Calculator · Glossary</div>
+      </div>
+    </div>
+    <div class="tac-sysbar">
+      <div class="tac-sys-stat"><span class="tac-dot"></span>SYS ONLINE</div>
+      <div class="tac-sys-stat"><span class="tac-val" id="tac-case-count">0</span> CASES</div>
+      <div class="tac-sys-stat"><span class="tac-val" id="tac-motion-count">0</span> MOTIONS</div>
+      <div class="tac-sys-stat"><span class="tac-val" id="tac-draft-count">0</span> DRAFTS</div>
+    </div>
+  </div>
+
+  <!-- ── GLOBAL QUICK-SEARCH ── -->
+  <div class="quick-search-wrap">
+    <div class="quick-search-icon">🔍</div>
+    <input id="quick-search" type="search" placeholder="Search motions, statutes, legal terms, courts..." autocomplete="off" spellcheck="false">
+    <div class="quick-search-hint" id="qs-hint"></div>
+    <div class="quick-search-results" id="qs-results"></div>
+  </div>
+
+  <div class="notice-banner">
+    <div class="icon">🛡</div>
+    <p><strong>Not legal advice.</strong> This tool helps you organize your information and understand Florida motion procedures. Always consult a licensed Florida attorney when possible. Florida Legal Services: <strong>1-800-747-0502</strong>. Florida Justice Center: <strong>954-758-7555</strong>.</p>
+  </div>
+
+  <!-- ═══ CHARGE LEGAL INTELLIGENCE ENGINE ═══ -->
+  <div class="charge-search-section">
+    <div class="charge-search-wrap">
+      <span class="charge-search-icon">🔍</span>
+      <input class="charge-search-bar" id="charge-search" type="search" placeholder="Search a charge — e.g. murder, 893.135, trafficking, fentanyl, armed robbery..." autocomplete="off" spellcheck="false">
+      <div class="charge-autocomplete" id="charge-ac"></div>
+    </div>
+    <div class="timeline-toggle-wrap">
+      <button class="timeline-toggle-btn active" id="tl-pretrial" onclick="setTimeline('pretrial')">⚖️ Pre-Trial</button>
+      <button class="timeline-toggle-btn" id="tl-postconviction" onclick="setTimeline('postconviction')">📜 Post-Conviction</button>
+    </div>
+  </div>
+
+  <!-- ═══ CHARGE INTEL CARD ═══ -->
+  <div class="charge-intel" id="charge-intel">
+    <div class="charge-intel-header">
+      <div>
+        <div class="charge-intel-title" id="ci-name"></div>
+        <div class="charge-intel-statute" id="ci-statute"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px" id="ci-plain"></div>
+      </div>
+      <div class="charge-intel-degree" id="ci-degree"></div>
+    </div>
+    <div class="charge-plain-toggle" id="ci-plain-toggle" onclick="togglePlainEnglish()">
+      <div class="toggle-indicator">✓</div>
+      <span>Plain English view — shows legal terms in everyday language</span>
+    </div>
+    <div class="risk-grid" id="ci-risks"></div>
+    <div class="charge-alerts" id="ci-alerts"></div>
+    <div class="charge-intel-body">
+      <div class="charge-section-label">Procedural Timeline</div>
+      <div class="charge-timeline" id="ci-timeline"></div>
+      <div class="charge-countdown-wrap" id="ci-countdown"></div>
+      <div class="charge-section-label">Critical Motions</div>
+      <div class="charge-motion-chips" id="ci-motions"></div>
+      <div class="charge-section-label">Strategic Analysis</div>
+      <div class="charge-strategic-grid" id="ci-strategic"></div>
+      <div class="charge-section-label">Constitutional Issues</div>
+      <div class="charge-detail-list" id="ci-constitutional"></div>
+      <div class="charge-section-label">Collateral Consequences</div>
+      <div class="charge-collateral-grid" id="ci-collateral"></div>
+      <div class="charge-section-label county-label">County Intelligence <span class="ci-county-name" id="ci-county-name"></span></div>
+      <div id="ci-county"></div>
+    </div>
+  </div>
+
+  <div class="charge-empty" id="charge-empty">
+    <span class="ce-icon">🔍</span>
+    Search any Florida felony above to see legal intelligence, strategic analysis, risk assessment, and applicable motions.
+  </div>
+
+  <!-- ═══ CASE SESSION BAR ═══ -->
+  <div class="session-bar" id="session-bar">
+    <div class="session-bar-inner">
+      <div class="session-bar-icon">📋</div>
+      <div class="session-bar-info">
+        <span class="sb-charge"></span>
+        <span class="sb-county"></span>
+        <span class="sb-case-num"></span>
+      </div>
+      <div class="session-bar-state" id="session-bar-state">
+        <span class="sbs-dot"></span>
+        <span class="sbs-label"></span>
+      </div>
+      <div class="session-bar-actions">
+        <button class="btn-session-clear" onclick="clearSession()">✕ Clear Case</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ INTAKE FORM (shown after charge selection) ═══ -->
+  <div class="intake-overlay" id="intake-form">
+    <div class="intake-modal">
+      <div class="intake-modal-header">
+        <span style="font-size:20px">📋</span>
+        <h3>Set Up Your Case</h3>
+      </div>
+      <div class="intake-modal-body">
+        <div class="intake-charge-badge" id="intake-charge-badge"></div>
+        <div class="field-group">
+          <label class="field-label">County of Court</label>
+          <input class="field-input" id="intake-county" placeholder="e.g. Broward, Miami-Dade, Duval" oninput="intakeDirty=true">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Case Number <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input class="field-input" id="intake-case-num" placeholder="e.g. 2019-CF-012345" oninput="intakeDirty=true">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Defendant Name <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input class="field-input" id="intake-def-name" placeholder="Full legal name" oninput="intakeDirty=true">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Date of Birth <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input class="field-input" id="intake-dob" type="date">
+        </div>
+      </div>
+      <div class="intake-modal-footer">
+        <button class="btn-intake-skip" onclick="closeIntake()">Skip for Now</button>
+        <button class="btn-intake-save" onclick="saveIntake()">✓ Save Case</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CASE STATE MACHINE ═══ -->
+  <div class="state-machine" id="state-machine" style="display:none">
+    <div class="state-machine-header">
+      <div class="sm-header-left">
+        <span class="sm-icon" id="sm-icon">⚖️</span>
+        <div>
+          <div class="sm-label" id="sm-label">Pre-Trial</div>
+          <div class="sm-progress-text" id="sm-progress-text">Stage 2 of 9</div>
+        </div>
+      </div>
+      <div class="sm-badge" id="sm-badge">PRETRIAL</div>
+    </div>
+    <div class="state-timeline" id="state-timeline"></div>
+    <div class="state-note" id="state-note"></div>
+    <div class="state-actions" id="state-actions"></div>
+  </div>
+
+  <!-- ═══ DEADLINE INTELLIGENCE PANEL ═══ -->
+  <div class="deadline-panel" id="deadline-panel" style="display:none"></div>
+
+  <!-- ═══ CASE WEAKNESS SCANNER (Dashboard) ═══ -->
+  <div class="scanner-dashboard" id="scanner-dashboard" style="display:none">
+    <div class="scanner-dash-inner" id="scanner-dash-inner"></div>
+  </div>
+
+  <!-- ═══ CASE NARRATIVE ENGINE ═══ -->
+  <div class="narrative-panel" id="narrative-panel" style="display:none"></div>
+
+  <div class="section-title">Select Your Motion Type</div>
+
+  <div class="motion-grid" id="motion-grid">
+    <div class="motion-tile" data-motion="3850" style="--tile-color:#F87171" onclick="selectMotion('3850',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">⚖️</div>
+      <div class="tile-code">Rule 3.850</div>
+      <div class="tile-title">Postconviction Relief</div>
+      <div class="tile-desc">Challenge convictions due to ineffective counsel, newly discovered evidence, or constitutional violations.</div>
+    </div>
+    <div class="motion-tile" data-motion="3800" style="--tile-color:#60A5FA" onclick="selectMotion('3800',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">📋</div>
+      <div class="tile-code">Rule 3.800</div>
+      <div class="tile-title">Illegal Sentence Correction</div>
+      <div class="tile-desc">Correct a sentence that exceeds the maximum, falls below the minimum, or was improperly structured.</div>
+    </div>
+    <div class="motion-tile" data-motion="expunge" style="--tile-color:#4ADE80" onclick="selectMotion('expunge',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">🔒</div>
+      <div class="tile-code">F.S. 943.0585 / 943.059</div>
+      <div class="tile-title">Seal / Expunge Record</div>
+      <div class="tile-desc">Remove or seal criminal records from public access. Strict eligibility — one chance per lifetime.</div>
+    </div>
+    <div class="motion-tile" data-motion="terminate" style="--tile-color:#F9B24C" onclick="selectMotion('terminate',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">🗓</div>
+      <div class="tile-code">F.S. 948.04</div>
+      <div class="tile-title">Early Termination</div>
+      <div class="tile-desc">Petition for early termination of probation after completing 50% of the term and all special conditions.</div>
+    </div>
+    <div class="motion-tile" data-motion="restitution" style="--tile-color:#A78BFA" onclick="selectMotion('restitution',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">💰</div>
+      <div class="tile-code">F.S. 775.089</div>
+      <div class="tile-title">Restitution Modification</div>
+      <div class="tile-desc">Reduce payments when inability to pay is documented. Bearden v. Georgia protection applies.</div>
+    </div>
+    <div class="motion-tile" data-motion="mitigation" style="--tile-color:#2DD4BF" onclick="selectMotion('mitigation',this)">
+      <div class="tile-check">✓</div>
+      <div class="tile-icon">📦</div>
+      <div class="tile-code">F.R.Crim.P. 3.800(c)</div>
+      <div class="tile-title">Mitigation Packet</div>
+      <div class="tile-desc">Build a comprehensive mitigation package for sentencing hearings, parole hearings, or clemency applications.</div>
+    </div>
+  </div>
+
+  <button class="start-btn" id="start-btn" disabled onclick="startWizard()">
+    <span>⚡</span>
+    <span id="start-btn-text">Select a Motion Type Above</span>
+  </button>
+
+  <!-- WIZARD -->
+  <div class="wizard" id="wizard">
+    <div class="wizard-header">
+      <div>
+        <div class="wizard-motion-label" id="wizard-title">Motion Builder</div>
+        <div class="wizard-statute" id="wizard-statute"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <button class="distraction-toggle" onclick="toggleDistraction()" title="Toggle low-distraction mode">🎯 Focus</button>
+        <button class="close-btn" onclick="closeWizard()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px">✕</button>
+      </div>
+    </div>
+
+    <!-- Emotional Intelligence Banner -->
+    <div id="emotional-intel" style="display:none"></div>
+
+    <!-- Eligibility screen -->
+    <div id="elig-screen" style="display:none"></div>
+
+    <!-- Single-question wizard -->
+    <div id="q-wizard" style="display:none">
+      <div class="wizard-progress">
+        <div class="progress-header">
+          <span class="progress-step-label" id="q-progress-label">Getting Started</span>
+          <span class="progress-pct" id="q-progress-pct">0%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="q-progress-fill" style="width:0%"></div></div>
+      </div>
+
+      <div class="wizard-body">
+        <div class="q-container" id="q-container">
+          <div class="q-progress-mini" id="q-progress-mini">Question <span>1</span> of <span id="q-total">0</span> · You're <span id="q-pct">0%</span> done</div>
+          <div class="q-card" id="q-card"></div>
+        </div>
+      </div>
+
+      <div class="wizard-controls">
+        <button class="btn-back" id="btn-back" onclick="prevQ()" disabled>← Back</button>
+        <button class="btn-continue-later" onclick="saveAndClose()">Save & Continue Later</button>
+        <button class="btn-next" id="btn-next" onclick="nextQ()">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCEDURAL EMERGENCY ALERTS -->
+  <div class="alert-bar" id="alert-bar" style="display:none"></div>
+
+  <!-- STATUS BAR -->
+  <div class="cmd-statusbar" id="status-bar" style="display:none"></div>
+
+  <!-- CASE THREAT LEVEL -->
+  <div class="cmd-card" id="risk-section" style="display:none">
+    <div class="cmd-card-header" onclick="cmdToggle('risk-h')">
+      <span class="cmd-card-icon">🛡</span>
+      <span class="cmd-card-title">Case Threat Level <span class="cmd-card-sub">risk assessment</span></span>
+      <span class="risk-badge risk-badge--low" id="risk-badge" style="margin-left:auto">LOW</span>
+      <span class="cmd-card-toggle" id="risk-h">▼</span>
+    </div>
+    <div class="cmd-card-body" id="risk-body">
+      <div class="risk-grid" id="risk-grid"></div>
+      <div class="risk-summary" id="risk-summary"></div>
+    </div>
+  </div>
+
+  <!-- PROCEDURAL TIMELINE -->
+  <div class="cmd-card" id="timeline-procedural" style="display:none">
+    <div class="cmd-card-header" onclick="cmdToggle('tl-h')">
+      <span class="cmd-card-icon">⏳</span>
+      <span class="cmd-card-title">Procedural Timeline <span class="cmd-card-sub">case stage tracking</span></span>
+      <span class="cmd-card-toggle" id="tl-h">▼</span>
+    </div>
+    <div class="cmd-card-body" id="tl-body">
+      <div class="timeline-legend" style="margin-bottom:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <span style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)"><span class="live-dot live-dot--amber" style="width:5px;height:5px"></span> Current</span>
+        <span style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)"><span class="live-dot live-dot--blue" style="width:5px;height:5px"></span> Available</span>
+        <span style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)"><span class="live-dot live-dot--red" style="width:5px;height:5px"></span> Deadline</span>
+        <span style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)"><span class="live-dot live-dot--amber" style="width:5px;height:5px;opacity:0.4"></span> Bar Near</span>
+        <span style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)"><span class="live-dot" style="width:5px;height:5px;background:transparent;border:1px solid var(--muted)"></span> Forfeited</span>
+      </div>
+      <div id="timeline-stack"></div>
+    </div>
+  </div>
+
+  <!-- STRATEGIC WEAKNESS DETECTION -->
+  <div class="cmd-card" id="weakness-section" style="display:none">
+    <div class="cmd-card-header" onclick="cmdToggle('weak-h')">
+      <span class="cmd-card-icon">🎯</span>
+      <span class="cmd-card-title">Strategic Weakness Detection <span class="cmd-card-sub">auto-surfaced defenses & procedural attacks</span></span>
+      <span class="cmd-card-toggle" id="weak-h">▼</span>
+    </div>
+    <div class="cmd-card-body" id="weak-body">
+      <div class="weakness-stack" id="weakness-stack"></div>
+    </div>
+  </div>
+
+  <!-- ELIGIBILITY INTELLIGENCE -->
+  <div class="cmd-card" id="elig-panel" style="display:none">
+    <div class="cmd-card-header" onclick="cmdToggle('elig-h')">
+      <span class="cmd-card-icon">🔐</span>
+      <span class="cmd-card-title">Eligibility Intelligence <span class="cmd-card-sub">factor analysis & qualification logic</span></span>
+      <span class="cmd-card-toggle" id="elig-h">▼</span>
+    </div>
+    <div class="cmd-card-body" id="elig-body">
+      <div id="elig-overall-badge"></div>
+      <div class="elig-stack" id="elig-stack"></div>
+    </div>
+  </div>
+
+  <!-- CASE INTELLIGENCE ENGINE -->
+  <div class="cmd-card" id="intel-section" style="display:none">
+    <div class="cmd-card-header" onclick="cmdToggle('intel-h')">
+      <span class="cmd-card-icon">🧠</span>
+      <span class="cmd-card-title">Case Intelligence Engine <span class="cmd-card-sub">risk score · strategic motions · deadlines · sentencing exposure</span></span>
+      <span class="cmd-card-toggle" id="intel-h">▼</span>
+    </div>
+    <div class="cmd-card-body" id="intel-body">
+      <div class="intel-risk-bar"><div class="intel-risk-fill" id="intel-risk-fill" style="width:0%"></div></div>
+      <div class="intel-risk-label" id="intel-risk-label"></div>
+      <div class="intel-row" id="intel-row">
+        <div class="intel-card"><div class="intel-card-title">⚔️ Strategic Motions <span class="intel-card-count" id="intel-motion-count">0</span></div><div class="intel-card-list" id="intel-motions"></div></div>
+        <div class="intel-card"><div class="intel-card-title">⏰ Filing Deadlines <span class="intel-card-count" id="intel-deadline-count">0</span></div><div class="intel-card-list" id="intel-deadlines"></div></div>
+        <div class="intel-card"><div class="intel-card-title">⚠️ Sentencing Exposure <span class="intel-card-count" id="intel-sentencing-count">0</span></div><div class="intel-card-list" id="intel-sentencing"></div></div>
+        <div class="intel-card"><div class="intel-card-title">🚧 Procedural Obstacles <span class="intel-card-count" id="intel-obstacle-count">0</span></div><div class="intel-card-list" id="intel-obstacles"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASE FILE SESSION MEMORY -->
+  <div class="cmd-card" id="casefile-section" style="display:none">
+    <div class="cmd-card-header" onclick="cmdToggle('cf-h')">
+      <span class="cmd-card-icon">📁</span>
+      <span class="cmd-card-title">Case File <span class="cmd-card-sub">persistent session memory — all case data stored across modules</span></span>
+      <span class="cmd-card-toggle" id="cf-h">▼</span>
+    </div>
+    <div class="cmd-card-body" id="casefile-body">
+      <div class="casefile-actions" style="margin-bottom:12px">
+        <button class="btn-tactical" onclick="saveCaseToFile()">💾 Export Case File</button>
+        <button class="btn-tactical" style="background:var(--danger)" onclick="clearCaseSession()">🗑 Clear Session</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE PREVIEW -->
+  <div class="live-preview" id="live-preview" style="display:none">
+    <div class="live-preview-header" onclick="togglePreview()">
+      <span>📄 Live Document Preview</span>
+      <span class="live-preview-toggle" id="preview-toggle">▼</span>
+    </div>
+    <div id="strength-meter"></div>
+    <div class="live-preview-body" id="live-preview-body"></div>
+  </div>
+
+  <!-- COMPLETION -->
+  <div class="completion" id="completion">
+    <div class="completion-icon">✅</div>
+    <h2>Draft Complete</h2>
+    <p>Your motion draft has been saved to this device. Review the generated document in the Preview tab, then copy or print it.</p>
+    <button class="btn-view-doc" onclick="switchTab('preview')">📄 View Document</button>
+    <button class="btn-start-new" onclick="resetBuilder()">Start Another Motion</button>
+  </div>
+
+  <!-- ═══ CONSTITUTIONAL INTELLIGENCE ═══ -->
+  <div id="constitutional-intel" class="ci-panel" style="display:none"></div>
+
+  <!-- ═══ DRAFT SIDEBAR ═══ -->
+  <div id="ms-draft-panel" class="ms-draft-panel" style="display:none"></div>
+
+</div><!-- /tab-builder -->
+
+<!-- ═══ TAB: DRAFTS (CASE LOCKER) ═══ -->
+<div class="tab-panel" id="tab-drafts">
+  <div class="section-title">Case Locker <span style="font-family:var(--font-mono);font-size:8px;color:var(--muted);font-weight:400;letter-spacing:0"> — Saved Drafts</span></div>
+  <div class="draft-card">
+    <p style="font-size:11px;color:var(--muted);margin-bottom:14px">Drafts are stored only on this device. No account required. No data transmitted.</p>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <input id="draft-search" type="search" placeholder="Search drafts..." style="flex:1;min-width:120px;background:var(--ink-mid);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--white);font-size:12px;outline:none">
+      <select id="draft-filter" style="background:var(--ink-mid);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--white);font-size:12px;outline:none;min-width:100px">
+        <option value="all">All Types</option>
+        <option value="3850">Rule 3.850</option>
+        <option value="3800">Rule 3.800</option>
+        <option value="expunge">Seal/Expunge</option>
+        <option value="terminate">Early Termination</option>
+        <option value="restitution">Restitution</option>
+        <option value="mitigation">Mitigation</option>
+        <option value="appeal">Appeal</option>
+        <option value="appeal-record">Record Prep</option>
+        <option value="appeal-rehearing">Rehearing</option>
+        <option value="2254">Federal 2254</option>
+      </select>
+    </div>
+    <div id="draft-stats" style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-bottom:10px"></div>
+    <div id="draft-list"></div>
+  </div>
+</div>
+
+<!-- ═══ TAB: APPEALS ═══ -->
+<div class="tab-panel" id="tab-appeals">
+  <div class="section-title">Appellate Manual</div>
+  <div class="draft-card" style="margin-bottom:14px">
+    <p style="font-size:11px;color:var(--muted);line-height:1.7">This section separates appellate work from the motion builder. Use it as a checklist, timeline, and court-reference hub for notices of appeal, record designation, briefing, rehearing, and mandate preservation.</p>
+    <p style="font-size:11px;color:var(--white);line-height:1.8;margin-top:10px">The appellate process is not one filing. It is a sequence of gates. Each gate answers a different question: is the appeal timely, is the record complete, is the legal issue preserved, and is there anything left to do after the opinion. The goal here is to make the path visible so a user and family member can understand what happens next, why it matters, and what documents usually unlock the next step.</p>
+  </div>
+  <div class="draft-card" style="margin-bottom:14px">
+    <div class="section-title" style="margin-top:0">How the Appellate Labyrinth Works</div>
+    <div class="flow-stack">
+      <div class="flow-box">
+        <div class="flow-kicker" style="color:var(--muted)">START</div>
+        <div class="flow-title">What judgment or order is being challenged?</div>
+        <div class="flow-copy">Find the entered order, the docket date, and the deadline. Appellate time usually starts with entry, not with the hearing.</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box flow-box--teal">
+        <div class="flow-kicker" style="color:#6ee7d8">BRANCH 1</div>
+        <div class="flow-title">Build the record first</div>
+        <div class="flow-copy">Orders, transcripts, exhibits, motions, verdict forms, and sentencing materials are what the appellate court actually reads.</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box flow-box--gold">
+        <div class="flow-kicker" style="color:#fcd34d">BRANCH 2</div>
+        <div class="flow-title">Translate the record into a brief</div>
+        <div class="flow-copy">State the issue, standard of review, record citation, law, and requested relief. The brief should match the record, not replace it.</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box flow-box--gold">
+        <div class="flow-kicker" style="color:#fcd34d">BRANCH 3</div>
+        <div class="flow-title">Watch the rehearing and mandate window</div>
+        <div class="flow-copy">After the opinion, short deadlines may open for rehearing, clarification, certification, or a stay of mandate.</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box flow-box--blue">
+        <div class="flow-kicker" style="color:#93c5fd">NEXT QUESTION</div>
+        <div class="flow-title">Does the file continue after the opinion?</div>
+        <div class="flow-copy">If the appeal is over, the next layer may be a postconviction motion, a further state filing, or eventually a federal claim after exhaustion.</div>
+      </div>
+    </div>
+  </div>
+  <div class="draft-card" style="margin-bottom:14px">
+    <div class="section-title" style="margin-top:0">Where Post-Conviction Motions Fit</div>
+    <div style="font-size:11px;line-height:1.8;color:var(--muted);margin-bottom:12px">
+      The Florida path usually branches after direct appeal. Rule 3.850 and Rule 3.800 are state collateral tools that can correct different kinds of problems in the state judgment. If the state courts are given a fair chance to fix a federal constitutional error and the issue remains unresolved, the next layer may be federal habeas under <code>28 U.S.C. § 2254</code>.
+    </div>
+    <div class="library-grid">
+      <div class="lib-card">
+        <div class="lib-icon">⚖️</div>
+        <div class="lib-title">Rule 3.850</div>
+        <div class="lib-statute">Collateral postconviction relief</div>
+        <div class="lib-desc">Use for claims like ineffective assistance, newly discovered evidence, involuntary plea, Brady issues, and some constitutional sentencing problems after the direct appeal path.</div>
+        <div class="lib-tip">This is the motion most closely tied to later federal exhaustion because it gives the state courts a full chance to rule on the federal issue.</div>
+      </div>
+      <div class="lib-card">
+        <div class="lib-icon">📋</div>
+        <div class="lib-title">Rule 3.800</div>
+        <div class="lib-statute">Illegal sentence correction</div>
+        <div class="lib-desc">Use for sentences that are illegal on their face, exceed the statutory maximum, or otherwise fit the narrow rule. Some sentencing issues are preserved here even while direct appeal is pending or after it ends.</div>
+        <div class="lib-tip">This tool is different from 3.850. The goal is to correct a sentence problem, not relitigate the whole case.</div>
+      </div>
+      <div class="lib-card">
+        <div class="lib-icon">🏛</div>
+        <div class="lib-title">Federal 2254</div>
+        <div class="lib-statute">Federal collateral review</div>
+        <div class="lib-desc">Use after state remedies are exhausted or fairly presented. The federal court reviews custody through a constitutional lens, not as a new trial court for the state case.</div>
+        <div class="lib-tip">If the state courts never got the first full chance, the federal petition may not be ready yet.</div>
+      </div>
+    </div>
+  </div>
+  <div class="library-grid">
+    <div class="lib-card">
+      <div class="lib-icon">📝</div>
+      <div class="lib-title">Direct Appeal</div>
+      <div class="lib-statute">Fla. R. App. P. 9.110 / 9.140</div>
+      <div class="lib-desc">Start with the notice deadline, the issue list, and the final order or judgment you are challenging. This is the entry point to the appellate maze: if the appeal is not timely, the later steps may never matter.</div>
+      <div class="lib-tip"><button class="btn-view-doc" style="padding:8px 14px;font-size:12px" onclick="launchMotion('appeal')">Open in Builder</button></div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">📚</div>
+      <div class="lib-title">Record & Brief Prep</div>
+      <div class="lib-statute">Fla. R. App. P. 9.200 / 9.210</div>
+      <div class="lib-desc">Track the record designation, transcript orders, brief deadlines, and the outline of the initial brief. This section helps the user understand that the brief is only as good as the record underneath it.</div>
+      <div class="lib-tip"><button class="btn-view-doc" style="padding:8px 14px;font-size:12px" onclick="launchMotion('appeal-record')">Open in Builder</button></div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">⏳</div>
+      <div class="lib-title">Rehearing / Mandate</div>
+      <div class="lib-statute">Fla. R. App. P. 9.330 / 9.340 / 9.350</div>
+      <div class="lib-desc">Preserve the post-decision window, monitor rehearing deadlines, and track when the mandate will issue. This is the short final corridor after the opinion, where timing can preserve or close the next level of review.</div>
+      <div class="lib-tip"><button class="btn-view-doc" style="padding:8px 14px;font-size:12px" onclick="launchMotion('appeal-rehearing')">Open in Builder</button></div>
+    </div>
+  </div>
+  <div class="draft-card">
+    <div class="section-title" style="margin-top:0">Appellate Timeline</div>
+    <div class="lib-desc" style="font-size:12px;line-height:1.8;color:var(--white)">
+      <strong style="color:var(--gold)">1.</strong> Final judgment or order enters.<br>
+      <strong style="color:var(--gold)">2.</strong> Notice of appeal deadline runs.<br>
+      <strong style="color:var(--gold)">3.</strong> Designate the record and order transcripts.<br>
+      <strong style="color:var(--gold)">4.</strong> Draft the brief from the record, not from memory.<br>
+      <strong style="color:var(--gold)">5.</strong> If the opinion is unfavorable, track rehearing and mandate dates immediately.
+    </div>
+    <div style="margin-top:12px;font-size:11px;line-height:1.8;color:var(--muted)">
+      This timeline is intentionally simplified. Real appellate practice may involve extensions, partial records, cross-appeals, post-judgment motions, or remand instructions from the appellate court. The manual should help a user understand the sequence without pretending every case follows the same script.
+    </div>
+  </div>
+  <div class="draft-card" style="margin-top:14px">
+    <div class="section-title" style="margin-top:0">Florida Review Timeline</div>
+    <div class="lib-desc" style="font-size:12px;line-height:1.85;color:var(--white)">
+      <strong style="color:var(--gold)">1.</strong> Judgment or appealable order is entered.<br>
+      <strong style="color:var(--gold)">2.</strong> Notice of appeal deadline runs and the direct appeal begins if filed timely.<br>
+      <strong style="color:var(--gold)">3.</strong> Record designation, transcript requests, and issue framing shape the appellate file.<br>
+      <strong style="color:var(--gold)">4.</strong> Briefing and oral argument, if any, present the preserved issues to the appellate court.<br>
+      <strong style="color:var(--gold)">5.</strong> Rehearing, clarification, certification, or mandate protection may follow the opinion.<br>
+      <strong style="color:var(--gold)">6.</strong> If the judgment still stands, state collateral review may continue through Rule 3.850 or Rule 3.800 depending on the problem.<br>
+      <strong style="color:var(--gold)">7.</strong> Once Florida courts have had the fair chance to resolve the federal claim, a 2254 petition may be considered.
+    </div>
+    <div style="margin-top:12px;font-size:11px;line-height:1.8;color:var(--muted)">
+      This is the sequence, not the strategy. Some issues live only in the direct appeal record, some require collateral fact development, and some must be handled as sentence corrections. The manual should show the path without collapsing every remedy into one bucket.
+    </div>
+  </div>
+  <div class="draft-card" style="margin-top:14px">
+    <div class="section-title" style="margin-top:0">Common Exhaustion Problems</div>
+    <div style="font-size:11px;line-height:1.8;color:var(--muted)">
+      A federal court usually wants the claim to have been fairly presented to the Florida courts before it will review the issue. Common problems include:
+      <br><br>
+      <strong style="color:var(--white)">1.</strong> Raising the wrong legal theory in state court and a different one in federal court.
+      <br>
+      <strong style="color:var(--white)">2.</strong> Skipping a needed state filing, such as a Rule 3.850 motion for a fact-heavy claim.
+      <br>
+      <strong style="color:var(--white)">3.</strong> Failing to give the Florida appellate court a fair chance to review the issue.
+      <br>
+      <strong style="color:var(--white)">4.</strong> Waiting too long and running into deadlines, waiver, or procedural default.
+      <br><br>
+      The practical rule is simple: if the issue was not properly presented in the state process, the federal court may treat it as unexhausted or defaulted.
+    </div>
+  </div>
+  <div class="draft-card" style="margin-top:14px">
+    <div class="section-title" style="margin-top:0">Do Not Skip The Gates</div>
+    <div style="font-size:11px;line-height:1.8;color:var(--muted)">
+      The appellate and postconviction path is not one straight road. Rehearing is not the same as a new appeal. Rule 3.850 is not the same as Rule 3.800. Federal habeas is not the same as either state remedy. Each gate has its own deadline and its own purpose.
+      <br><br>
+      If the case is still in direct review, focus on the appellate record and briefing. If the claim is collateral, determine whether it belongs in 3.850 or 3.800. If the federal claim has not been fairly presented to Florida, the federal court may not be ready for it yet.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: PREVIEW + REVIEW MODE ═══ -->
+<div class="tab-panel" id="tab-preview">
+  <div class="section-title">Document Preview</div>
+  <div class="risk-section" id="risk-section-preview" style="display:none">
+    <div class="risk-header">
+      <div class="risk-header-left">
+        <span style="font-size:18px">🛡</span>
+        <span class="section-title" style="margin:0;flex:1">Case Threat Level</span>
+      </div>
+      <span class="risk-badge risk-badge--low" id="risk-badge-preview">LOW</span>
+    </div>
+    <div class="risk-grid" id="risk-grid-preview"></div>
+    <div class="risk-summary" id="risk-summary-preview"></div>
+  </div>
+
+  <!-- PREVIEW PROCEDURAL TIMELINE -->
+  <div class="timeline-procedural" id="timeline-procedural-preview" style="display:none">
+    <div class="timeline-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">⏳</span>
+        <span class="section-title" style="margin:0;flex:1">Procedural Timeline</span>
+      </div>
+      <div class="timeline-legend">
+        <span><span class="dot current"></span> Current</span>
+        <span><span class="dot available"></span> Available</span>
+        <span><span class="dot deadline"></span> Deadline</span>
+        <span><span class="dot bar"></span> Bar Near</span>
+        <span><span class="dot forfeited"></span> Forfeited</span>
+      </div>
+    </div>
+    <div id="timeline-stack-preview"></div>
+  </div>
+
+  <!-- PREVIEW STRATEGIC WEAKNESS DETECTION -->
+  <div class="scanner-dashboard" id="weakness-section-preview" style="display:none">
+    <div class="scanner-dash-inner" id="weakness-stack-preview"></div>
+  </div>
+
+  <div id="audit-panel" style="display:none;margin-bottom:16px"></div>
+  <div id="preview-wrap">
+    <div style="text-align:center;padding:40px 20px;color:var(--muted)">
+      <div style="font-size:36px;margin-bottom:12px">📄</div>
+      <p style="font-size:13px">Complete a motion in the Builder tab to see your document here.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: LIBRARY ═══ -->
+<div class="tab-panel" id="tab-library">
+  <div class="section-title">Florida Legal Reference Library</div>
+  <div class="library-grid">
+    <div class="lib-card">
+      <div class="lib-icon">⚖️</div>
+      <div class="lib-title">Rule 3.850 — Postconviction Relief</div>
+      <div class="lib-statute">Fla. R. Crim. P. 3.850</div>
+      <div class="lib-desc">Challenge convictions based on: ineffective assistance of counsel, newly discovered evidence, unconstitutional plea, or illegal sentence. Must be filed within 2 years of conviction becoming final.</div>
+      <div class="lib-tip">The 2-year clock starts when direct appeal is exhausted. Newly discovered evidence may extend the deadline.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">📋</div>
+      <div class="lib-title">Rule 3.800 — Illegal Sentence</div>
+      <div class="lib-statute">Fla. R. Crim. P. 3.800(a)</div>
+      <div class="lib-desc">Correct an illegal sentence at any time — no deadline. Sentence must exceed statutory maximum, fall below mandatory minimum, or violate constitutional protections.</div>
+      <div class="lib-tip">No deadline. Can be filed even decades after sentencing if the sentence is truly illegal.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">📝</div>
+      <div class="lib-title">Direct Appeal Process</div>
+      <div class="lib-statute">Fla. R. App. P. 9.110 / 9.140</div>
+      <div class="lib-desc">The appeal starts fast: preserve the deadline, identify reviewable issues, order the record, and brief the errors with record citations.</div>
+      <div class="lib-tip">Confirm the notice-of-appeal deadline immediately after the judgment or order is entered. Missing it can forfeit review.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">📚</div>
+      <div class="lib-title">Record Designation & Briefing</div>
+      <div class="lib-statute">Fla. R. App. P. 9.200 / 9.210</div>
+      <div class="lib-desc">The record on appeal and the brief work together. Designate the right transcripts, preserve the right exhibits, and write the brief to match the record rather than the other way around.</div>
+      <div class="lib-tip">Build the brief outline from the record first, then fill in the legal authorities and citations.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">⏳</div>
+      <div class="lib-title">Rehearing & Mandate</div>
+      <div class="lib-statute">Fla. R. App. P. 9.330 / 9.340 / 9.350</div>
+      <div class="lib-desc">After the opinion, the next deadlines matter. Rehearing, clarification, certification, and stay-of-mandate requests all have separate timing rules that can preserve further review.</div>
+      <div class="lib-tip">Mark the rehearing deadline the day the opinion is released. Once the mandate issues, options narrow quickly.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">🔒</div>
+      <div class="lib-title">Seal / Expunge — Florida</div>
+      <div class="lib-statute">F.S. § 943.0585 / § 943.059</div>
+      <div class="lib-desc">Expungement: destroys records (for charges not resulting in conviction). Sealing: hides from public but record still exists. One opportunity per lifetime. FDLE application required.</div>
+      <div class="lib-tip">After sealing, you may legally deny the arrest on most job applications.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">🗓</div>
+      <div class="lib-title">Early Termination of Probation</div>
+      <div class="lib-statute">Fla. Stat. § 948.04</div>
+      <div class="lib-desc">After completing 50% of probation AND all special conditions, file a petition for early termination. Not a favor — a statutory right. P.O. "no objection" letter dramatically helps approval.</div>
+      <div class="lib-tip">Build an Evidence Box first: payment receipts, employment records, community service, certificates.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">💰</div>
+      <div class="lib-title">Restitution Modification</div>
+      <div class="lib-statute">Fla. Stat. § 775.089</div>
+      <div class="lib-desc">Courts must consider financial resources and dependent obligations. Bearden v. Georgia (1983): you cannot be jailed solely for inability to pay. Document bona fide efforts.</div>
+      <div class="lib-tip">Attach Appendix B budget worksheet as Exhibit B to any modification motion.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">🗳</div>
+      <div class="lib-title">Voting Rights — Amendment 4</div>
+      <div class="lib-statute">Art. VI, § 4, Fla. Const.</div>
+      <div class="lib-desc">Automatic restoration upon completion of ALL terms including LFOs. Not murder or felony sex offenses. Get Safe Harbor Advisory Opinion BEFORE registering. $1 owed = still ineligible.</div>
+      <div class="lib-tip">FRRC: 407-901-3749 — helps clear LFOs blocking voting rights.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">🏛</div>
+      <div class="lib-title">Restoration of Civil Rights</div>
+      <div class="lib-statute">Florida Rules of Executive Clemency</div>
+      <div class="lib-desc">5–7 year wait after end of supervision. Full RCR restores jury service, public office eligibility, professional licensing. Build Clemency Binder now — it's what the Governor reads.</div>
+      <div class="lib-tip">FCOR: 850-488-2952 | FL Justice Center: 954-758-7555</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">💼</div>
+      <div class="lib-title">Employment — No Auto-Denial</div>
+      <div class="lib-statute">Fla. Stat. § 112.011</div>
+      <div class="lib-desc">Most Florida employers and licensing boards CANNOT automatically reject you solely for a felony. The offense must be directly related to the position. Use this to challenge blanket denials.</div>
+      <div class="lib-tip">Request written denial reason. If they cite only the conviction — that's challengeable.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: COURTS ═══ -->
+<div class="tab-panel" id="tab-courts">
+  <div class="section-title">Florida Clerk Directory</div>
+  <div class="draft-card">
+    <p style="font-size:11px;color:var(--muted);margin-bottom:14px">Search Florida county Clerk of Court offices by county name. The addresses below are drawn from the Florida Department of State county-clerk directory and can be used for filing, service, and records requests.</p>
+    <input id="clerk-search" type="search" placeholder="Search county, e.g. Broward or Leon" style="width:100%;background:var(--ink-mid);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--white);font-size:13px;outline:none;margin-bottom:12px">
+    <div id="clerks-count" style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:10px"></div>
+    <div id="clerks-list"></div>
+  </div>
+  <div class="section-title" style="margin-top:20px">Appellate Court Reference</div>
+  <div class="draft-card">
+    <p style="font-size:11px;color:var(--muted);margin-bottom:14px">Use this reference for appellate filing and service addresses.</p>
+    <div id="courts-list"></div>
+  </div>
+</div>
+
+<!-- ═══ TAB: FEDERAL ═══ -->
+<div class="tab-panel" id="tab-federal">
+  <div class="section-title">Federal Habeas Path</div>
+  <div class="draft-card" style="margin-bottom:14px">
+    <p style="font-size:11px;color:var(--white);line-height:1.8">Federal review under <code>28 U.S.C. § 2254</code> is not a shortcut around the state process. It is the next layer after state remedies are exhausted. In plain terms: the user usually moves from trial to direct appeal, then into Rule 3.850 or Rule 3.800 collateral review as needed, and only then into federal court if a federal constitutional claim remains uncorrected.</p>
+    <p style="font-size:11px;color:var(--muted);line-height:1.8;margin-top:8px">A federal habeas petition usually asks one question: did the state process produce a custody result that violates the Constitution, laws, or treaties of the United States? That is why the state record, the state appellate history, and the state collateral motions matter so much.</p>
+  </div>
+  <div class="draft-card" style="margin-bottom:14px">
+    <div class="section-title" style="margin-top:0">Florida Path Map</div>
+    <div style="font-size:11px;line-height:1.85;color:var(--muted)">
+      <strong style="color:var(--gold)">Direct appeal</strong> reviews the judgment or order already entered. It is the first review layer and usually focuses on errors preserved in the record.
+      <br><br>
+      <strong style="color:var(--gold)">Rule 3.850</strong> is the main Florida postconviction motion for collateral claims like ineffective assistance, newly discovered evidence, involuntary plea issues, and other constitutional problems that depend on facts outside the direct-appeal record.
+      <br><br>
+      <strong style="color:var(--gold)">Rule 3.800</strong> is the narrower sentence-correction path. It is used when the sentence itself is illegal or otherwise wrong under the rule, and it often works alongside the rest of the state case rather than replacing it.
+      <br><br>
+      <strong style="color:var(--gold)">Section 2254</strong> comes after the Florida courts have had the first real chance to resolve the federal constitutional claim. If a claim was not fairly presented in state court, the federal filing may be premature or limited.
+    </div>
+  </div>
+  <div class="draft-card" style="margin-bottom:14px">
+    <div class="section-title" style="margin-top:0">State to Federal Ladder</div>
+    <details open style="margin-bottom:10px;background:var(--ink-card);border:1px solid var(--border);border-radius:12px;padding:12px 14px">
+      <summary style="cursor:pointer;font-weight:700;color:var(--white)">Step 1: Use Florida appeals and collateral motions to build the record</summary>
+      <div class="flow-copy" style="margin-top:10px">
+        Florida direct appeal, Rule 3.850, and Rule 3.800 proceedings are where most of the important factual and legal issues are first preserved. Federal court usually will not rescue claims that were never fairly presented to the state courts. That means the state case history is part of the federal case history.
+        <br><br>
+        What matters here: the issues raised, how they were framed, what relief was requested, and what the state court actually decided.
+      </div>
+    </details>
+    <details style="margin-bottom:10px;background:var(--ink-card);border:1px solid var(--border);border-radius:12px;padding:12px 14px">
+      <summary style="cursor:pointer;font-weight:700;color:var(--white)">Step 2: Exhaustion means the state courts had a fair chance to rule</summary>
+      <div class="flow-copy" style="margin-top:10px">
+        Exhaustion is the idea that the state system should get the first full chance to correct the alleged federal constitutional error. For a Florida user, that usually means the claim has been presented through the Florida trial court and, when required, through the Florida appellate process. If a claim was never fairly presented, the federal court may dismiss or limit review.
+        <br><br>
+        Common failure point: trying to go federal before the state issue was actually given to the state courts in a way they could rule on.
+      </div>
+    </details>
+    <details style="margin-bottom:10px;background:var(--ink-card);border:1px solid var(--border);border-radius:12px;padding:12px 14px">
+      <summary style="cursor:pointer;font-weight:700;color:var(--white)">Step 3: Section 2254 is a federal challenge to state custody</summary>
+      <div class="flow-copy" style="margin-top:10px">
+        A <code>2254</code> petition is the federal habeas vehicle for a person in state custody who says the state-court judgment violates the Constitution or federal law. The federal petition should identify the state judgment being challenged, the constitutional grounds, the supporting facts, and the relief requested.
+        <br><br>
+        Common failure point: turning the federal petition into a general grievance rather than a specific constitutional challenge to one state judgment.
+      </div>
+    </details>
+    <details style="background:var(--ink-card);border:1px solid var(--border);border-radius:12px;padding:12px 14px">
+      <summary style="cursor:pointer;font-weight:700;color:var(--white)">Step 4: File in the correct Florida federal district</summary>
+      <div class="flow-copy" style="margin-top:10px">
+        Florida is split into three federal district courts: Northern, Middle, and Southern. The county of conviction usually points you to the district and division that handles the case. This matters because the court location, clerk's office, and filing instructions are district-specific.
+        <br><br>
+        Use the county router below to find the federal district attached to the Florida county involved in the state case.
+      </div>
+    </details>
+  </div>
+  <div class="library-grid">
+    <div class="lib-card">
+      <div class="lib-icon">📝</div>
+      <div class="lib-title">2254 Packet</div>
+      <div class="lib-statute">28 U.S.C. § 2254 / AO 241</div>
+      <div class="lib-desc">For state prisoners challenging a state judgment on federal constitutional grounds after the state process has run its course.</div>
+      <div class="lib-tip"><button class="btn-view-doc" style="padding:8px 14px;font-size:12px" onclick="launchMotion('2254')">Open in Builder</button></div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">📚</div>
+      <div class="lib-title">Exhaustion Checklist</div>
+      <div class="lib-statute">State court first, federal court second</div>
+      <div class="lib-desc">Track what was raised on direct appeal, in Rule 3.850, and in Rule 3.800 so the federal petition is tied to exhausted claims.</div>
+      <div class="lib-tip">The federal court usually wants a record that shows the claim was fairly presented to the state courts.</div>
+    </div>
+    <div class="lib-card">
+      <div class="lib-icon">🏛</div>
+      <div class="lib-title">Florida Federal Districts</div>
+      <div class="lib-statute">Northern / Middle / Southern</div>
+      <div class="lib-desc">Use the county router in the Courts tab to identify the district and division that matches the Florida county in the state case.</div>
+      <div class="lib-tip">The district is the filing doorway. The county history decides which federal courthouse usually matters.</div>
+    </div>
+  </div>
+  <div class="draft-card" style="margin-top:14px">
+    <div class="section-title" style="margin-top:0">Decision Tree: What To File Next</div>
+    <div style="font-size:11px;line-height:1.8;color:var(--muted);margin-bottom:12px">
+      Start with posture, not preference. Follow the branch that matches where the case is right now.
+    </div>
+    <div class="flow-stack">
+      <div class="flow-box">
+        <div class="flow-kicker" style="color:var(--muted)">START</div>
+        <div class="flow-title">What is the case posture right now?</div>
+        <div class="flow-copy">Check the entered order, the notice deadline, the issue type, and whether Florida has already had a fair chance to rule.</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box flow-box--teal">
+        <div class="flow-kicker" style="color:#6ee7d8">BRANCH 1</div>
+        <div class="flow-title">If the notice deadline is still open</div>
+        <div class="flow-copy">Use the direct appeal. That is the first Florida review path and the one that preserves the record-based issues.</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box flow-box--gold">
+        <div class="flow-kicker" style="color:#fcd34d">BRANCH 2</div>
+        <div class="flow-title">If the problem depends on facts outside the trial record</div>
+        <div class="flow-copy">Look first to Rule 3.850 when the claim needs collateral fact development, such as ineffective assistance or a plea issue.</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box flow-box--gold">
+        <div class="flow-kicker" style="color:#fcd34d">BRANCH 3</div>
+        <div class="flow-title">If the sentence is illegal on its face</div>
+        <div class="flow-copy">Use Rule 3.800 for the narrow sentence-correction path.</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box flow-box--blue">
+        <div class="flow-kicker" style="color:#93c5fd">STOP / NEXT LAYER</div>
+        <div class="flow-title">If Florida already had a fair chance to rule on the federal claim</div>
+        <div class="flow-copy">If the claim was fairly presented and is still unresolved, federal habeas under 2254 may be the next layer.</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-size:11px;line-height:1.8;color:var(--muted)">
+      The wrong filing can waste time, miss deadlines, or create exhaustion problems. When the branch is unclear, identify the order, the deadline, the issue type, and the last state court that actually saw the claim.
+    </div>
+  </div>
+  <div class="draft-card">
+    <div class="section-title" style="margin-top:0">Florida Federal Courthouses</div>
+    <div id="federal-list"></div>
+  </div>
+</div>
+
+<!-- ═══ TAB: RIGHTS ═══ -->
+<div class="tab-panel" id="tab-rights">
+  <div class="section-title">Florida Felon Bill of Rights</div>
+  <div style="background:var(--gold-dim);border:1px solid rgba(249,178,76,0.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:rgba(249,178,76,0.9);line-height:1.7">
+    <strong style="display:block;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;margin-bottom:6px">SECOND CHANCE SPEAKS</strong>
+    The system relies on the returning citizen not knowing these rights exist. This page is the antidote. These are not rights you must earn — they exist in the statutes RIGHT NOW. Print it. Read it. Know it.
+    <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:8px">— Roger Pitts / Second Chance · Curated by Devyn Mack</div>
+  </div>
+  <div id="rights-list"></div>
+</div>
+
+<!-- ═══ TAB: TOOLS ═══ -->
+<div class="tab-panel" id="tab-tools">
+  <div class="section-title">Deadline Calculator</div>
+  <div style="background:var(--gold-dim);border:1px solid rgba(249,178,76,0.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:rgba(249,178,76,0.9);line-height:1.7">
+    Calculate critical filing deadlines based on Florida appellate rules. Enter a triggering event date below.
+  </div>
+  <div class="calc-card">
+    <label class="calc-label">Trial court order / judgment date</label>
+    <input class="calc-input" type="date" id="calcDate" onchange="calcDeadline()">
+  </div>
+  <div class="calc-card">
+    <label class="calc-label">Deadline category</label>
+    <select class="calc-input" id="calcType" onchange="calcDeadline()">
+      <option value="appeal">Notice of Appeal — 30 days (Fla. R. App. P. 9.110)</option>
+      <option value="3850">Rule 3.850 Motion — 2 years (Fla. R. Crim. P. 3.850)</option>
+      <option value="3800">Rule 3.800(a) — No time limit</option>
+      <option value="rehearing">Motion for Rehearing — 15 days (Fla. R. App. P. 9.330)</option>
+      <option value="clarification">Motion for Clarification — 15 days (Fla. R. App. P. 9.330)</option>
+      <option value="mandate">Issuance of Mandate — 15 days after rehearing deadline</option>
+      <option value="discretionary">Discretionary Review — 30 days (Fla. R. App. P. 9.120)</option>
+    </select>
+  </div>
+  <div id="calcResults"></div>
+  <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)">
+    <div class="section-title" style="font-size:13px">📐 How These Deadlines Work</div>
+    <div style="font-size:12px;line-height:1.8;color:var(--muted)">
+      <p><strong>Appeal (30 days):</strong> The clock starts the day after the order is rendered. If day 30 falls on a weekend or holiday, it extends to the next business day. Fla. R. App. P. 9.110(b).</p>
+      <p><strong>Rule 3.850 (2 years):</strong> Two years from the date the judgment becomes final (after mandate issues on direct appeal). Exceptions for newly discovered evidence, retroactive law changes, and unconstitutional sentences. Fla. R. Crim. P. 3.850(b).</p>
+      <p><strong>Rule 3.800(a):</strong> No deadline — an illegal sentence can be corrected at any time. Fla. R. Crim. P. 3.800(a).</p>
+      <p><strong>Rehearing (15 days):</strong> 15 days from the date of the appellate opinion. Fla. R. App. P. 9.330(a).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: GLOSSARY ═══ -->
+<div class="tab-panel" id="tab-reentry">
+  <div class="section-title">Reentry Dashboard <span style="font-size:11px;color:var(--muted);font-weight:400">— Your Roadmap Back</span></div>
+  <div id="reentry-content"></div>
+</div>
+
+<div class="tab-panel" id="tab-glossary">
+  <div class="section-title">Legal Glossary</div>
+  <div style="background:var(--teal-dim);border:1px solid rgba(45,212,191,0.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:var(--teal);line-height:1.7">
+    Plain-English definitions of legal terms used throughout Florida post-conviction and appellate practice.
+  </div>
+  <input class="glossary-search" placeholder="Search terms…" oninput="filterGlossary(this.value)" id="glossarySearch" style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--ink-mid);color:var(--white);font-size:14px;font-family:var(--font-body);outline:none;margin-bottom:16px">
+  <div id="glossary-count" style="font-size:11px;color:var(--muted);margin-bottom:12px"></div>
+  <div id="glossary-list"></div>
+</div>
+
+</div><!-- /app -->
+
+<div id="toast"></div>
+<div class="autosave-indicator" id="autosave-indicator">✓ Auto-saved</div>
+<div class="offline-banner" id="offline-banner">⚠ You are offline — all data is saved locally and will sync when reconnected.</div>
