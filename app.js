@@ -2258,8 +2258,7 @@ function computeFloridaDeadline(startDate, rule) {
     return due;
   }
 
-  const firstDay = nextBusinessDay(addCalendarDays(startDate, 1));
-  const due = addCalendarDays(firstDay, rule.amount - 1);
+  const due = addCalendarDays(startDate, rule.amount);
   return nextBusinessDay(due);
 }
 
