@@ -2095,43 +2095,148 @@ function renderFederal() {
 }
 
 // ── DEADLINE CALCULATOR ──
-const HOLIDAYS = [
-  '01-01','01-20-2025','01-20','02-17','05-26','06-19','07-04','09-01','10-13','11-11','11-27','12-25'
-];
-function isBusinessDay(d) {
-  const m = d.getMonth()+1, day = d.getDate(), y = d.getFullYear();
-  const mmdd = String(m).padStart(2,'0')+'-'+String(day).padStart(2,'0');
-  if(d.getDay()===0||d.getDay()===6) return false;
-  if(HOLIDAYS.includes(mmdd)||HOLIDAYS.includes(mmdd+'-'+y)) return false;
-  return true;
+function toLocalDateKey(d) {
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, '0'),
+    String(d.getDate()).padStart(2, '0')
+  ].join('-');
 }
-function addBusinessDays(d, n) {
-  let r = new Date(d);
-  while(n>0){ r.setDate(r.getDate()+1); if(isBusinessDay(r)) n--; }
+
+function makeLocalNoonDate(year, monthIndex, day) {
+  return new Date(year, monthIndex, day, 12, 0, 0, 0);
+}
+
+function nthWeekdayOfMonth(year, monthIndex, weekday, nth) {
+  const first = makeLocalNoonDate(year, monthIndex, 1);
+  const offset = (weekday - first.getDay() + 7) % 7;
+  const day = 1 + offset + ((nth - 1) * 7);
+  return makeLocalNoonDate(year, monthIndex, day);
+}
+
+function lastWeekdayOfMonth(year, monthIndex, weekday) {
+  const last = makeLocalNoonDate(year, monthIndex + 1, 0);
+  const offset = (last.getDay() - weekday + 7) % 7;
+  return makeLocalNoonDate(year, monthIndex, last.getDate() - offset);
+}
+
+function easterSunday(year) {
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31) - 1;
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return makeLocalNoonDate(year, month, day);
+}
+
+function observedFloridaHoliday(date) {
+  const d = new Date(date);
+  if (d.getDay() === 6) d.setDate(d.getDate() - 1);
+  return d;
+}
+
+function buildFloridaHolidaySet(year) {
+  const holidays = new Set();
+  const add = (date) => holidays.add(toLocalDateKey(date));
+  const addObserved = (monthIndex, day) => add(observedFloridaHoliday(makeLocalNoonDate(year, monthIndex, day)));
+
+  // Florida Rule 2.514 legal holidays are anchored to state-paid holidays in s. 110.117,
+  // plus common court closures like Good Friday.
+  addObserved(0, 1); // New Year's Day
+  add(nthWeekdayOfMonth(year, 0, 1, 3)); // MLK Jr. Day
+  add(lastWeekdayOfMonth(year, 4, 1)); // Memorial Day
+  addObserved(6, 4); // Independence Day
+  add(nthWeekdayOfMonth(year, 8, 1, 1)); // Labor Day
+  addObserved(10, 11); // Veterans Day
+  add(nthWeekdayOfMonth(year, 10, 4, 4)); // Thanksgiving Day
+  add(makeLocalNoonDate(year, 10, nthWeekdayOfMonth(year, 10, 4, 4).getDate() + 1)); // Friday after Thanksgiving
+  addObserved(11, 25); // Christmas Day
+
+  const goodFriday = new Date(easterSunday(year));
+  goodFriday.setDate(goodFriday.getDate() - 2);
+  add(goodFriday);
+
+  return holidays;
+}
+
+const floridaHolidayCache = new Map();
+
+function isFloridaLegalHoliday(d) {
+  const year = d.getFullYear();
+  if (!floridaHolidayCache.has(year)) {
+    floridaHolidayCache.set(year, buildFloridaHolidaySet(year));
+  }
+  return floridaHolidayCache.get(year).has(toLocalDateKey(d));
+}
+
+function isBusinessDay(d) {
+  return d.getDay() !== 0 && d.getDay() !== 6 && !isFloridaLegalHoliday(d);
+}
+
+function nextBusinessDay(d) {
+  const r = new Date(d);
+  while (!isBusinessDay(r)) r.setDate(r.getDate() + 1);
   return r;
 }
+
+function addCalendarDays(d, n) {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+}
+
+function addYearsPreservingMonthDay(d, years) {
+  const r = new Date(d);
+  const month = r.getMonth();
+  r.setFullYear(r.getFullYear() + years);
+  if (r.getMonth() !== month) r.setDate(0);
+  return r;
+}
+
+function computeFloridaDeadline(startDate, rule) {
+  if (rule.kind === 'none') return null;
+
+  if (rule.kind === 'years') {
+    const due = nextBusinessDay(addYearsPreservingMonthDay(startDate, rule.amount));
+    return due;
+  }
+
+  const firstDay = nextBusinessDay(addCalendarDays(startDate, 1));
+  const due = addCalendarDays(firstDay, rule.amount - 1);
+  return nextBusinessDay(due);
+}
+
 function calcDeadline() {
   const el = document.getElementById('calcDate');
   const type = document.getElementById('calcType').value;
   const res = document.getElementById('calcResults');
   if(!el||!el.value||!res) return;
   const start = new Date(el.value+'T12:00:00');
-  const daysMap = { appeal:30, '3850':730, '3800':null, rehearing:15, clarification:15, mandate:30, discretionary:30 };
-  const labels = {
-    appeal:'Notice of Appeal deadline',
-    '3850':'Rule 3.850 deadline (2 years)',
-    '3800':'Rule 3.800(a) — no deadline',
-    rehearing:'Motion for Rehearing deadline',
-    clarification:'Motion for Clarification deadline',
-    mandate:'Mandate issuance (approx.)',
-    discretionary:'Discretionary Review deadline'
+  const rules = {
+    appeal:{ kind:'days', amount:30, label:'Notice of Appeal deadline' },
+    '3850':{ kind:'years', amount:2, label:'Rule 3.850 deadline (2 years)' },
+    '3800':{ kind:'none', amount:0, label:'Rule 3.800(a) — no deadline' },
+    rehearing:{ kind:'days', amount:15, label:'Motion for Rehearing deadline' },
+    clarification:{ kind:'days', amount:15, label:'Motion for Clarification deadline' },
+    mandate:{ kind:'days', amount:30, label:'Mandate issuance (approx.)' },
+    discretionary:{ kind:'days', amount:30, label:'Discretionary Review deadline' }
   };
-  const days = daysMap[type];
-  if(days===null) {
-    res.innerHTML = `<div class="calc-result highlight"><div class="label">${esc(labels[type])}</div><div class="value" style="color:var(--teal)">No time limit</div><div class="note">A Rule 3.800(a) motion to correct an illegal sentence can be filed at any time. There is no statutory deadline.</div></div>`;
+  const rule = rules[type];
+  if(!rule) return;
+  if(rule.kind === 'none') {
+    res.innerHTML = `<div class="calc-result highlight"><div class="label">${esc(rule.label)}</div><div class="value" style="color:var(--teal)">No time limit</div><div class="note">A Rule 3.800(a) motion to correct an illegal sentence can be filed at any time. There is no statutory deadline.</div></div>`;
     return;
   }
-  const due = addBusinessDays(start, days);
+  const due = computeFloridaDeadline(start, rule);
   const options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
   res.innerHTML = `
     <div class="calc-result highlight">
@@ -2139,9 +2244,9 @@ function calcDeadline() {
       <div class="value" style="color:var(--white);font-size:14px">${start.toLocaleDateString('en-US',options)}</div>
     </div>
     <div class="calc-result highlight">
-      <div class="label">${esc(labels[type])}</div>
+      <div class="label">${esc(rule.label)}</div>
       <div class="value">${due.toLocaleDateString('en-US',options)}</div>
-      <div class="note">${days} calendar days, counting only business days. ${due<new Date()?'⚠ This deadline may have passed.':'This deadline is in the future.'}</div>
+      <div class="note">${rule.kind === 'years' ? '2 calendar years' : `${rule.amount} calendar days`} under Florida Rule 2.514. Local clerk or chief-judge closure days can still move the deadline. ${due<new Date()?'⚠ This deadline may have passed.':'This deadline is in the future.'}</div>
     </div>`;
 }
 
