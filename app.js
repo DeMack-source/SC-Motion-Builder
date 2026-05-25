@@ -634,6 +634,49 @@ function registerServiceWorker() {
   }).catch(() => {});
 }
 
+let deferredPwaPrompt = null;
+
+function hidePwaBanner() {
+  const banner = document.getElementById('pwa-banner');
+  if (banner) banner.hidden = true;
+}
+
+function showPwaBanner() {
+  const banner = document.getElementById('pwa-banner');
+  if (banner) banner.hidden = false;
+}
+
+function setupPwaInstallPrompt() {
+  const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone;
+  if (isStandalone) {
+    hidePwaBanner();
+    return;
+  }
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPwaPrompt = event;
+    showPwaBanner();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPwaPrompt = null;
+    hidePwaBanner();
+    toast('App installed');
+  });
+
+  document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
+    if (!deferredPwaPrompt) return;
+    deferredPwaPrompt.prompt();
+    const choice = await deferredPwaPrompt.userChoice;
+    deferredPwaPrompt = null;
+    hidePwaBanner();
+    if (choice && choice.outcome === 'accepted') {
+      toast('Added to home screen');
+    }
+  });
+}
+
 // ═══════════════════════════════════════════════
 // LEGAL INTELLIGENCE ENGINE — Lexicon & Search
 // ═══════════════════════════════════════════════
@@ -7928,6 +7971,7 @@ async function bootstrapApp() {
   renderGlossary();
   document.getElementById('glossarySearch')?.addEventListener('input', function(){filterGlossary(this.value);});
   setQuestionIdleState();
+  setupPwaInstallPrompt();
   window.addEventListener('offline', ()=>{ document.getElementById('offline-banner')?.classList.add('show'); });
   window.addEventListener('online', ()=>{ document.getElementById('offline-banner')?.classList.remove('show'); });
   if(!navigator.onLine) document.getElementById('offline-banner')?.classList.add('show');
