@@ -1614,12 +1614,15 @@ function selectMotion(id, tile) {
   document.querySelectorAll('.motion-tile').forEach(t=>t.classList.remove('selected'));
   tile.classList.add('selected');
   currentMotion = id;
+  currentQ = 0;
+  buildQuestions();
   const btn = document.getElementById('start-btn');
   const flow = FLOWS[id];
   btn.disabled = false;
   document.getElementById('start-btn-text').textContent = 'Begin — ' + flow.title;
   setQuestionIdleState();
   renderStateMachine();
+  renderCaseIntelligence();
   filterMotionsByState();
   renderEmotionalIntel();
 }
@@ -2828,6 +2831,9 @@ function saveSession(data) {
   } else localStorage.removeItem('fl-case-session');
   renderSessionBar();
   renderStateMachine();
+  renderCaseIntelligence();
+  renderCaseSummary();
+  renderEmotionalIntel();
   filterMotionsByState();
 }
 
@@ -6743,7 +6749,36 @@ function renderEligibilityPanel() {
 // Builds a structured case profile, runs condition-based rules, returns evaluation.
 
 function buildCaseProfile(motionId, a, e) {
-  a = a || {}; e = e || {};
+  const session = caseSession || {};
+  const sessionAnswers = {
+    county: session.county || '',
+    'case-num': session.caseNumber || '',
+    'def-name': session.person?.name || session.defendantName || '',
+    'def-dob': session.person?.dob || session.defendantDOB || '',
+    offense: session.offense?.text || session.chargeName || '',
+    'offense-statute': session.offense?.statute || session.chargeStatute || '',
+    'currently-incarcerated': session.procedure?.incarcerationNow || '',
+    'sentence-date': session.procedure?.sentenceDate || '',
+    'conviction-date': session.procedure?.convictionDate || '',
+    'direct-appeal-status': session.procedure?.appealStatus || '',
+    'prior-motions': session.procedure?.priorMotions || '',
+    'po-position': session.procedure?.poPosition || '',
+    'prob-type': session.procedure?.probationType || '',
+    violations: session.flags?.violations || '',
+    'rest-amount': session.sentence?.restitutionAmount || '',
+    'illegal-basis': session.sentence?.illegalBasis || '',
+    'elig-prior-seal': session.eligibility?.priorSeal || '',
+    'elig-convicted': session.eligibility?.convicted || '',
+    'elig-charge-type': session.eligibility?.chargeType || '',
+    'fdle-cert-obtained': session.eligibility?.fdleCert || '',
+    'fees-paid': session.eligibility?.feesPaid || '',
+    'restitution-status': session.eligibility?.restitutionPaid || '',
+    'elig-3850-2': session.raw?.['elig-3850-2'] || '',
+    'elig-2254-1': session.raw?.['elig-2254-1'] || '',
+    'elig-2254-2': session.raw?.['elig-2254-2'] || '',
+  };
+  a = { ...sessionAnswers, ...(session.raw || {}), ...(a || {}) };
+  e = { ...(session.raw || {}), ...(e || {}) };
   const off = (a.offense || a['arrest-charge'] || '').toLowerCase();
   const sent = (a['sentence-terms'] || a['sentence-imposed'] || '').toLowerCase();
   const facts = (a['facts-main'] || a['facts'] || '').toLowerCase();
