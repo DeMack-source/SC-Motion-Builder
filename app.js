@@ -4137,17 +4137,30 @@ function startWizardAfterElig() {
 }
 
 function syncQuestionProgressFallback() {
-  const total = Math.max(questions.length || 1, 1);
-  const pct = 0;
   const mini = document.getElementById('q-progress-mini');
-  if (mini) mini.innerHTML = 'Question <span>1</span> of <span id="q-total">' + total + '</span> · You\'re <span id="q-pct">' + pct + '%</span> done';
   const label = document.getElementById('q-progress-label');
-  if (label) label.textContent = 'Question 1 of ' + total + (FLOWS[currentMotion] ? ' — ' + FLOWS[currentMotion].tag : '');
   const fill = document.getElementById('q-progress-fill');
-  if (fill) fill.style.width = pct + '%';
   const totalEl = document.getElementById('q-total');
-  if (totalEl) totalEl.textContent = total;
   const pctEl = document.getElementById('q-pct');
+
+  if (!currentMotion || !questions.length) {
+    if (mini) mini.innerHTML = 'Select a motion type above to begin';
+    if (label) label.textContent = 'Getting Started';
+    if (fill) fill.style.width = '0%';
+    if (totalEl) totalEl.textContent = '0';
+    if (pctEl) pctEl.textContent = '0%';
+    return;
+  }
+
+  const total = questions.length;
+  const current = Math.min(currentQ + 1, total);
+  const pct = total > 0 ? Math.round((currentQ / total) * 100) : 0;
+  const tag = FLOWS[currentMotion] ? ' — ' + FLOWS[currentMotion].tag : '';
+
+  if (mini) mini.innerHTML = 'Question <span>' + current + '</span> of <span id="q-total">' + total + '</span> · You\'re <span id="q-pct">' + pct + '%</span> done';
+  if (label) label.textContent = 'Question ' + current + ' of ' + total + tag;
+  if (fill) fill.style.width = pct + '%';
+  if (totalEl) totalEl.textContent = total;
   if (pctEl) pctEl.textContent = pct + '%';
 }
 
