@@ -1570,6 +1570,11 @@ function syncMobileTabNav(tab) {
   });
 }
 
+function getMobileOverflowLabel() {
+  const activeHiddenTab = document.querySelector('.mobile-tab-menu-item.active');
+  return activeHiddenTab ? activeHiddenTab.textContent : 'More';
+}
+
 function toggleMobileTabMenu() {
   const menu = document.getElementById('mobile-tab-menu');
   const moreBtn = document.getElementById('mobile-tab-more');
@@ -1578,18 +1583,17 @@ function toggleMobileTabMenu() {
   menu.hidden = !willOpen;
   moreBtn.setAttribute('aria-expanded', String(willOpen));
   moreBtn.classList.toggle('active', willOpen);
-  moreBtn.textContent = willOpen ? 'Close' : 'More';
+  moreBtn.textContent = willOpen ? 'Close' : getMobileOverflowLabel();
 }
 
 function closeMobileTabMenu() {
   const menu = document.getElementById('mobile-tab-menu');
   const moreBtn = document.getElementById('mobile-tab-more');
   if (!menu || !moreBtn) return;
-  const activeHiddenTab = document.querySelector('.mobile-tab-menu-item.active');
   menu.hidden = true;
   moreBtn.setAttribute('aria-expanded', 'false');
   moreBtn.classList.remove('active');
-  moreBtn.textContent = activeHiddenTab ? activeHiddenTab.textContent : 'More';
+  moreBtn.textContent = getMobileOverflowLabel();
 }
 
 document.addEventListener('click', (event) => {
