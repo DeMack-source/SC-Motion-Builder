@@ -32,6 +32,8 @@
   --gold-glow: 0 0 28px rgba(249,178,76,0.25);
   --teal:    #2DD4BF;
   --teal-dim: rgba(45,212,191,0.1);
+  --purple:  #A78BFA;
+  --purple-dim: rgba(167,139,250,0.12);
   --red:     #F87171;
   --red-dim:  rgba(248,113,113,0.1);
   --sky:     #60A5FA;
@@ -883,6 +885,144 @@ body::after {
 }
 .btn-draft-load:hover   { background: rgba(249,178,76,0.2); }
 .btn-draft-delete:hover { background: rgba(248,113,113,0.2); }
+
+/* ── MOTION SYSTEM DRAFT PANEL (builder sidebar) ── */
+.ms-draft-panel {
+  max-width: 420px; margin: 16px auto 0; padding: 0 16px;
+}
+.ms-draft-header {
+  margin-bottom: 10px;
+}
+.ms-draft-title-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.ms-draft-icon { font-size: 16px; }
+.ms-draft-title {
+  font-size: 12px; font-weight: 700; color: var(--white);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.ms-draft-count {
+  font-family: var(--font-mono); font-size: 9px;
+  background: var(--ink-card); border: 1px solid var(--border);
+  padding: 1px 8px; border-radius: 99px; color: var(--muted);
+}
+.ms-draft-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.ms-draft-card {
+  background: var(--ink-card); border: 1px solid var(--border);
+  border-left: 3px solid var(--ms-color, #F9B24C);
+  border-radius: 8px; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.ms-draft-card:hover { border-color: var(--ms-color, #F9B24C); background: rgba(255,255,255,0.04); }
+.ms-draft-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.ms-draft-card-info { flex: 1; min-width: 0; }
+.ms-draft-card-title { font-size: 12px; font-weight: 700; color: var(--white); }
+.ms-draft-auto-badge {
+  font-family: var(--font-mono); font-size: 7px; text-transform: uppercase;
+  background: var(--gold-dim); color: var(--gold); padding: 1px 5px;
+  border-radius: 3px; letter-spacing: 0.3px; vertical-align: middle;
+}
+.ms-draft-card-meta { display: flex; gap: 8px; margin-top: 2px; }
+.ms-draft-statute { font-family: var(--font-mono); font-size: 8px; color: var(--muted); }
+.ms-draft-date { font-family: var(--font-mono); font-size: 8px; color: var(--muted); opacity: 0.7; }
+.ms-draft-pct { font-family: var(--font-mono); font-size: 14px; font-weight: 800; }
+.ms-draft-bar { height: 3px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+.ms-draft-bar-fill { height: 100%; border-radius: 99px; transition: width 0.3s; }
+.ms-draft-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+.ms-draft-btn {
+  font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 4px;
+  cursor: pointer; border: 1px solid var(--border); background: transparent;
+  color: var(--muted); font-family: inherit; transition: all 0.15s;
+}
+.ms-draft-btn:hover { border-color: var(--white); color: var(--white); }
+.ms-draft-btn--restore { color: var(--gold); border-color: rgba(249,178,76,0.3); }
+.ms-draft-btn--restore:hover { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+.ms-draft-btn--rename:hover { background: rgba(255,255,255,0.06); }
+.ms-draft-btn--delete { color: var(--red); border-color: rgba(248,113,113,0.2); }
+.ms-draft-btn--delete:hover { background: var(--red-dim); border-color: var(--red); }
+.ms-draft-save-btn {
+  display: block; width: 100%; font-size: 11px; font-weight: 700; padding: 8px 16px;
+  border-radius: 6px; cursor: pointer; border: 1px dashed var(--border);
+  background: transparent; color: var(--muted); font-family: inherit;
+  transition: all 0.2s;
+}
+.ms-draft-save-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+
+/* ── CONSTITUTIONAL INTELLIGENCE ── */
+.ci-panel {
+  max-width: 420px; margin: 14px auto 0; padding: 0 16px;
+}
+.ci-block {
+  background: rgba(167,139,250,0.04);
+  border: 1px solid rgba(167,139,250,0.15);
+  border-radius: 10px; padding: 14px 16px;
+}
+.ci-block-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.ci-block-icon { font-size: 13px; }
+.ci-block-title {
+  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+  color: #A78BFA; text-transform: uppercase; letter-spacing: 1.5px;
+}
+.ci-block-divider {
+  border: none; border-top: 1px solid rgba(167,139,250,0.12);
+  margin: 0 0 8px 0;
+}
+.ci-list { list-style: none; padding: 0; margin: 0; }
+.ci-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0; font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+}
+.ci-item--signaled { color: var(--white); }
+.ci-item-check {
+  width: 16px; text-align: center;
+  font-weight: 700; flex-shrink: 0;
+}
+.ci-item--signaled .ci-item-check { color: #A78BFA; }
+.ci-item:not(.ci-item--signaled) .ci-item-check { color: rgba(255,255,255,0.12); }
+.ci-item-label { font-weight: 600; }
+.ci-item-statute { font-size: 8px; color: var(--muted); letter-spacing: 0.3px; margin-left: auto; }
+.ci-item--signaled .ci-item-statute { color: rgba(167,139,250,0.6); }
+.ci-detail-row {
+  display: none; font-size: 9px; color: rgba(167,139,250,0.8);
+  line-height: 1.5; padding: 6px 0 4px 24px;
+}
+.ci-item--signaled .ci-detail-row { display: block; }
+.ci-item-action {
+  font-size: 8px; color: var(--muted); font-style: italic;
+}
+.ci-item strong { color: var(--gold); }
+
+/* ── EMOTIONAL INTELLIGENCE ── */
+.ei-banner {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 14px; border-radius: 8px;
+  font-size: 11px; line-height: 1.6;
+  margin: 0 auto 10px; max-width: 520px;
+  animation: eiFade 0.35s ease;
+}
+@keyframes eiFade { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+.ei-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.ei-text { color: var(--light); }
+.ei--info {
+  background: rgba(96,165,250,0.06);
+  border: 1px solid rgba(96,165,250,0.12);
+}
+.ei--info .ei-text { color: var(--light); }
+.ei--high {
+  background: rgba(249,178,76,0.08);
+  border: 1px solid rgba(249,178,76,0.18);
+}
+.ei--high .ei-text { color: var(--gold); }
+.ei--success {
+  background: rgba(74,222,128,0.06);
+  border: 1px solid rgba(74,222,128,0.12);
+}
+.ei--success .ei-text { color: var(--green); }
 
 .no-drafts {
   text-align: center;
@@ -3213,6 +3353,7 @@ body::before {
       <div class="tac-sys-stat"><span class="tac-dot"></span>SYS ONLINE</div>
       <div class="tac-sys-stat"><span class="tac-val" id="tac-case-count">0</span> CASES</div>
       <div class="tac-sys-stat"><span class="tac-val" id="tac-motion-count">0</span> MOTIONS</div>
+      <div class="tac-sys-stat"><span class="tac-val" id="tac-draft-count">0</span> DRAFTS</div>
     </div>
   </div>
 
@@ -3425,6 +3566,9 @@ body::before {
       </div>
     </div>
 
+    <!-- Emotional Intelligence Banner -->
+    <div id="emotional-intel" style="display:none"></div>
+
     <!-- Eligibility screen -->
     <div id="elig-screen" style="display:none"></div>
 
@@ -3569,6 +3713,12 @@ body::before {
     <button class="btn-view-doc" onclick="switchTab('preview')">📄 View Document</button>
     <button class="btn-start-new" onclick="resetBuilder()">Start Another Motion</button>
   </div>
+
+  <!-- ═══ CONSTITUTIONAL INTELLIGENCE ═══ -->
+  <div id="constitutional-intel" class="ci-panel" style="display:none"></div>
+
+  <!-- ═══ DRAFT SIDEBAR ═══ -->
+  <div id="ms-draft-panel" class="ms-draft-panel" style="display:none"></div>
 
 </div><!-- /tab-builder -->
 
@@ -5570,6 +5720,7 @@ function switchTab(tab) {
   const tb = document.querySelector('.tn[data-tab="'+tab+'"]');
   if(tb) tb.classList.add('active');
   if(tab==='drafts') renderDrafts();
+  if(tab==='builder') { renderMsDrafts(); renderConstitutionalIntel(); renderEmotionalIntel(); }
   if(tab==='appeals') renderAppeals();
   if(tab==='rights') renderRights();
   if(tab==='courts') { renderClerks(); renderCourts(); }
@@ -5589,6 +5740,7 @@ function selectMotion(id, tile) {
   document.getElementById('start-btn-text').textContent = 'Begin — ' + flow.title;
   renderStateMachine();
   filterMotionsByState();
+  renderEmotionalIntel();
 }
 
 function launchMotion(id) {
@@ -7975,6 +8127,7 @@ function startWizardAfterElig() {
   renderQuestion('forward');
   updateLivePreview();
   renderStrength();
+  renderEmotionalIntel();
 }
 
 // ── RENDER SINGLE QUESTION ──
@@ -8062,6 +8215,8 @@ function renderQuestion(dir) {
   }
 
   card.innerHTML = sectionTag + condBadge + '<div class="q-question">'+esc(q.label)+'</div>' + inputHtml + whyHtml + '<div class="q-reassurance">'+reassurance+'</div>';
+
+  renderEmotionalIntel();
 
   // Focus input
   setTimeout(() => {
@@ -8880,6 +9035,494 @@ function saveDraft() {
   toast('Draft saved!');
 }
 
+// ═══════════════════════════════════════════════
+// DRAFT MANAGEMENT SYSTEM
+// Named, versioned, restorable drafts
+// ═══════════════════════════════════════════════
+
+function getDrafts() { return S.get('fl-motion-drafts', []); }
+function persistDrafts(d) { S.set('fl-motion-drafts', d); }
+
+function msCreateDraft(name) {
+  if (!currentMotion || !FLOWS[currentMotion]) { toast('No active motion to save.'); return null; }
+  saveCurrentAnswer();
+  const drafts = getDrafts();
+  const flow = FLOWS[currentMotion];
+  const existing = drafts.findIndex(d => d.autoId && d.autoId === '__auto__');
+  const id = Date.now();
+  const draft = {
+    id, motion: currentMotion, title: name || flow.title,
+    statute: flow.statute, tag: flow.tag, color: flow.color || '#F9B24C',
+    answers: { ...answers }, legalAnswers: { ...legalAnswers },
+    eligAnswers: { ...eligAnswers },
+    currentQ, timeline: [], evidence: [],
+    totalQs: questions.length,
+    answeredCount: Object.keys(answers).filter(k => answers[k] && answers[k] !== '').length,
+    created: existing >= 0 ? drafts[existing].created : new Date().toISOString(),
+    updated: new Date().toISOString()
+  };
+  if (existing >= 0) { drafts[existing] = draft; }
+  else { drafts.unshift(draft); }
+  persistDrafts(drafts);
+  clearAutoDraft();
+  renderMsDrafts();
+  updateTacSysbar();
+  return draft;
+}
+
+function msAutoSaveDraft() {
+  if (!currentMotion || !FLOWS[currentMotion]) return;
+  const drafts = getDrafts();
+  const existing = drafts.findIndex(d => d.autoId && d.autoId === '__auto__');
+  const flow = FLOWS[currentMotion];
+  const id = existing >= 0 ? drafts[existing].id : Date.now();
+  const progress = calcStrength ? calcStrength().pct || 0 : 0;
+  const draft = {
+    id, autoId: '__auto__', motion: currentMotion, title: flow.title,
+    statute: flow.statute, tag: flow.tag, color: flow.color || '#F9B24C',
+    answers: { ...answers }, legalAnswers: { ...legalAnswers },
+    eligAnswers: { ...eligAnswers },
+    currentQ, timeline: [], evidence: [],
+    totalQs: questions.length,
+    answeredCount: Object.keys(answers).filter(k => answers[k] && answers[k] !== '').length,
+    progress,
+    created: existing >= 0 ? drafts[existing].created : new Date().toISOString(),
+    updated: new Date().toISOString()
+  };
+  if (existing >= 0) { drafts[existing] = draft; }
+  else { drafts.unshift(draft); }
+  persistDrafts(drafts);
+}
+
+function msDeleteDraft(id) {
+  let drafts = getDrafts();
+  drafts = drafts.filter(d => d.id !== id);
+  persistDrafts(drafts);
+  renderMsDrafts();
+  updateTacSysbar();
+  toast('Draft deleted');
+}
+
+function msRenameDraft(id, name) {
+  const drafts = getDrafts();
+  const d = drafts.find(x => x.id === id);
+  if (!d) return;
+  d.title = name;
+  d.updated = new Date().toISOString();
+  persistDrafts(drafts);
+  renderMsDrafts();
+  toast('Draft renamed');
+}
+
+function msRestoreDraft(id) {
+  const drafts = getDrafts();
+  const d = drafts.find(x => x.id === id);
+  if (!d) { toast('Draft not found'); return; }
+  if (!FLOWS[d.motion]) { toast('Motion type no longer available'); return; }
+
+  currentMotion = d.motion;
+  answers = d.answers || {};
+  legalAnswers = d.legalAnswers || {};
+  eligAnswers = d.eligAnswers || {};
+  currentQ = d.currentQ || 0;
+
+  initCaseSession();
+  Object.keys(answers).forEach(k => saveToSession(k, answers[k]));
+  Object.keys(eligAnswers).forEach(k => saveToSession(k, eligAnswers[k]));
+
+  const flow = FLOWS[currentMotion];
+  buildQuestions();
+  if (currentQ >= questions.length) currentQ = Math.max(0, questions.length - 1);
+
+  document.getElementById('completion')?.classList.remove('show');
+
+  switchTab('builder');
+  document.getElementById('wizard').classList.add('open');
+  document.getElementById('live-preview').style.display = 'block';
+  document.getElementById('elig-screen').style.display = 'none';
+  document.getElementById('q-wizard').style.display = 'block';
+  renderQuestion('forward');
+  updateLivePreview();
+  renderStrength();
+  renderEmergencyAlerts();
+  renderCaseSummary();
+  renderStateMachine();
+
+  const tile = document.querySelector(`.motion-tile[data-motion="${d.motion}"]`);
+  if (tile) selectMotion(d.motion, tile);
+
+  toast('Restored: ' + d.title);
+  renderConstitutionalIntel();
+  renderEmotionalIntel();
+}
+
+function renderMsDrafts() {
+  const panel = document.getElementById('ms-draft-panel');
+  if (!panel) return;
+  const drafts = getDrafts();
+
+  if (!drafts.length) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+
+  let html = '<div class="ms-draft-header">' +
+    '<div class="ms-draft-title-row">' +
+      '<span class="ms-draft-icon">📁</span>' +
+      '<span class="ms-draft-title">Saved Drafts</span>' +
+      '<span class="ms-draft-count">' + drafts.length + '</span>' +
+    '</div>' +
+  '</div>';
+
+  html += '<div class="ms-draft-list">';
+  drafts.forEach(d => {
+    const pct = d.progress || (d.totalQs ? Math.round((d.answeredCount / d.totalQs) * 100) : 0);
+    const date = new Date(d.updated || d.created);
+    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const isAuto = d.autoId === '__auto__';
+    html += '<div class="ms-draft-card" style="--ms-color:' + (d.color || '#F9B24C') + '">' +
+      '<div class="ms-draft-card-top">' +
+        '<div class="ms-draft-card-info">' +
+          '<div class="ms-draft-card-title">' + esc(d.title) + (isAuto ? ' <span class="ms-draft-auto-badge">auto</span>' : '') + '</div>' +
+          '<div class="ms-draft-card-meta">' +
+            '<span class="ms-draft-statute">' + esc(d.statute || d.motion) + '</span>' +
+            '<span class="ms-draft-date">' + dateStr + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ms-draft-pct" style="color:' + (pct >= 80 ? 'var(--green)' : pct >= 40 ? 'var(--gold)' : 'var(--muted)') + '">' + pct + '%</div>' +
+      '</div>' +
+      '<div class="ms-draft-bar"><div class="ms-draft-bar-fill" style="width:' + pct + '%;background:' + (d.color || '#F9B24C') + '"></div></div>' +
+      '<div class="ms-draft-actions">' +
+        '<button class="ms-draft-btn ms-draft-btn--restore" onclick="msRestoreDraft(' + d.id + ')">↩ Restore</button>' +
+        (!isAuto ? '<button class="ms-draft-btn ms-draft-btn--rename" onclick="msPromptRename(' + d.id + ')">✎ Rename</button>' : '') +
+        '<button class="ms-draft-btn ms-draft-btn--delete" onclick="msConfirmDelete(' + d.id + ')">✕</button>' +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  if (currentMotion) {
+    html += '<button class="ms-draft-save-btn" onclick="msPromptSaveDraft()">+ Save Current as Draft</button>';
+  }
+
+  panel.innerHTML = html;
+}
+
+function msPromptSaveDraft() {
+  const flow = FLOWS[currentMotion];
+  const suggested = flow ? flow.title : 'My Draft';
+  const name = prompt('Name this draft:', suggested);
+  if (name && name.trim()) {
+    msCreateDraft(name.trim());
+  }
+}
+
+function msPromptRename(id) {
+  const drafts = getDrafts();
+  const d = drafts.find(x => x.id === id);
+  if (!d) return;
+  const name = prompt('Rename draft:', d.title);
+  if (name && name.trim()) msRenameDraft(id, name.trim());
+}
+
+function msConfirmDelete(id) {
+  const drafts = getDrafts();
+  const d = drafts.find(x => x.id === id);
+  if (!d) return;
+  if (confirm('Delete "' + d.title + '"?')) msDeleteDraft(id);
+}
+
+// Augment existing auto-save to also save to drafts list
+function autoSave() {
+  if (!currentMotion) return;
+  const draft = {
+    motion: currentMotion,
+    answers: { ...answers },
+    legalAnswers: { ...legalAnswers },
+    eligAnswers: { ...eligAnswers },
+    currentQ: currentQ,
+    timestamp: new Date().toISOString()
+  };
+  S.set('fl-auto-draft', draft);
+  msAutoSaveDraft();
+  showAutoSaveIndicator();
+  renderMsDrafts();
+  renderConstitutionalIntel();
+  renderEmotionalIntel();
+  updateTacSysbar();
+}
+
+// ═══════════════════════════════════════════════
+// CONSTITUTIONAL INTELLIGENCE ENGINE
+// Dynamically maps each motion/answer to
+// 4th, 5th, 6th, Due Process, Equal Protection
+// ═══════════════════════════════════════════════
+
+function constitutionalIntel() {
+  if (!currentMotion || !FLOWS[currentMotion] || !answers) return [];
+  const motion = currentMotion;
+  const a = answers;
+  const facts = (a.facts || a['fact-summary'] || a['facts-case'] || '').toLowerCase();
+  const offense = (a.offense || a['offense-charged'] || a['charge'] || '').toLowerCase();
+  const sentence = (a.sentence || a['sentence-imposed'] || '').toLowerCase();
+  const co = (a.county || '').toLowerCase();
+
+  const ansEq = (id, v) => (a[id] || '').toLowerCase() === v.toLowerCase();
+  const ansHas = (id, ...ts) => ts.some(t => (a[id] || '').toLowerCase().includes(t.toLowerCase()));
+  const rgx = (...ps) => ps.some(p => p.test(facts) || p.test(offense));
+  const isFelony = rgx(/felony|traffick|murder|robbery|burglary|kidnap|life|sex|battery|assault/i);
+
+  const issues = [];
+
+  // ── 4th Amendment: Unlawful Search / Seizure / Arrest ──
+  {
+    const triggered = ansEq('searchReasonable', 'no') || ansEq('consentSearch', 'no') ||
+      rgx(/search|warrant|stop|seizure|traffic.stop|frisk|suppress|curtilage/i) ||
+      ansHas('grounds-other', 'search', 'seizure', '4th', 'fourth');
+    const strength = triggered ? 'identified' : 'potential';
+    issues.push({
+      amendment: '4th Amendment',
+      short: '4th',
+      icon: '🔍',
+      title: 'Unlawful Search / Seizure',
+      status: triggered ? 'identified' : 'potential',
+      signaled: triggered,
+      rule: 'Fourth Amendment — Katz v. US (1967) · Mapp v. Ohio (1961)',
+      desc: triggered
+        ? 'Warrantless searches are presumptively unreasonable. The state must prove a warrant exception (consent, plain view, search incident to arrest, exigent circumstances, or inventory).'
+        : 'If your case involved a search, seizure, or stop, the Fourth Amendment requires a warrant or a valid exception. Review whether law enforcement had probable cause.',
+      reasoning: triggered
+        ? 'Your answers indicate search/seizure facts. File a motion to suppress if the state cannot prove a warrant exception.'
+        : 'No search/seizure facts detected — but if applicable, the warrant requirement is the default rule.',
+      action: triggered ? 'Move to suppress all evidence. Demand the state prove a warrant exception applied.' : 'Review whether any search, stop, or seizure occurred. File a motion to suppress if warranted.'
+    });
+  }
+
+  // ── 5th Amendment: Self-Incrimination / Miranda / Double Jeopardy ──
+  {
+    const triggered = ansHas('grounds-plea', 'involuntary', 'uninformed') ||
+      rgx(/interrogat|question|statement|confess|admit|miranda|custodial|invoke|remain.silent|double.jeopardy|jeopardy/i) ||
+      isFelony;
+    issues.push({
+      amendment: '5th Amendment',
+      short: '5th',
+      icon: '🔊',
+      title: 'Self-Incrimination / Miranda / Double Jeopardy',
+      status: triggered ? 'identified' : 'potential',
+      signaled: triggered,
+      rule: 'Fifth Amendment — Miranda v. Arizona (1966) · Dickerson v. US (2000)',
+      desc: triggered
+        ? 'Custodial interrogation requires Miranda warnings. Any statement obtained without proper warnings is presumptively involuntary. Double jeopardy bars successive prosecutions for the same offense.'
+        : 'The Fifth Amendment protects against compelled self-incrimination and double jeopardy. Any custodial interrogation requires Miranda warnings.',
+      reasoning: triggered
+        ? 'Your case involves interrogation, confession, or plea-related facts — Miranda compliance must be verified.'
+        : 'If you were questioned while in custody, verify Miranda warnings were given and waiver was knowing and voluntary.',
+      action: triggered ? 'File a motion to suppress statements. Determine if interrogation was custodial and whether warnings were given.' : 'Determine whether any custodial interrogation occurred without proper warnings.'
+    });
+  }
+
+  // ── 6th Amendment: Right to Counsel / Confrontation / Speedy Trial ──
+  {
+    const triggered = ansEq('grounds-iac', 'yes') || motion === '3850' || motion === '3800' ||
+      rgx(/counsel|attorney|lawyer|iac|ineffective|strickland|confront|witness|cross.examine|speedy.trial|subpoena/i) ||
+      isFelony;
+    issues.push({
+      amendment: '6th Amendment',
+      short: '6th',
+      icon: '⚖️',
+      title: 'Right to Counsel / Confrontation / Speedy Trial',
+      status: triggered ? 'identified' : 'potential',
+      signaled: triggered,
+      rule: 'Sixth Amendment — Strickland v. Washington (1984) · Crawford v. Washington (2004) · Barker v. Wingo (1972)',
+      desc: triggered
+        ? 'The Sixth Amendment guarantees effective assistance of counsel, the right to confront witnesses, compulsory process for defense witnesses, and a speedy trial. Counsel must perform reasonably; deficient performance with prejudice requires reversal.'
+        : 'The Sixth Amendment secures the right to counsel (at all critical stages), to confront and cross-examine witnesses, to subpoena defense witnesses, and to a speedy public trial.',
+      reasoning: triggered
+        ? 'Felony charges, IAC grounds, or post-conviction motion indicates Sixth Amendment rights are central to your case.'
+        : 'If you are charged with a serious crime, the Sixth Amendment guarantees counsel at every critical stage.',
+      action: triggered ? 'Identify specific counsel failures (Strickland prongs). Demand confrontation rights. Assert speedy trial if applicable.' : 'Ensure counsel has been appointed and is effective. Assert speedy trial if delay is prejudicial.'
+    });
+  }
+
+  // ── 14th Amendment Due Process ──
+  {
+    const triggered = ansEq('grounds-brady', 'yes') || ansEq('grounds-plea', 'yes') ||
+      ansEq('grounds-sentence', 'yes') || ansEq('grounds-other', 'yes') ||
+      rgx(/brady|discovery|disclose|withhold|exculpatory|material|plea|coerced|pressure|involuntary|unfair|notice|fundamentally.fair/i) ||
+      ansHas('illegal-basis', 'scoresheet', 'statutory', 'constitutional', 'due.process');
+    issues.push({
+      amendment: '14th Amendment — Due Process',
+      short: '14DP',
+      icon: '⚜️',
+      title: 'Due Process of Law',
+      status: triggered ? 'identified' : 'potential',
+      signaled: triggered,
+      rule: 'Fourteenth Amendment — Brady v. Maryland (1963) · Boykin v. Alabama (1969) · Rochin v. California (1952)',
+      desc: triggered
+        ? 'Due Process requires fair notice, a meaningful opportunity to be heard, and a fundamentally fair proceeding. Brady violations (withheld exculpatory evidence), involuntary pleas, and certain sentencing errors violate Due Process.'
+        : 'The Due Process Clause guarantees fundamental fairness in criminal proceedings — from arrest through appeal. This includes fair notice, the right to present a defense, and a neutral decision-maker.',
+      reasoning: triggered
+        ? 'Grounds for relief (Brady, plea, illegal sentence) indicate Due Process protections are directly in play.'
+        : 'If the proceeding lacked fundamental fairness, the Due Process Clause provides a basis for relief.',
+      action: triggered ? 'Identify the specific Due Process violation: Brady, involuntary plea, or illegal sentence. Frame the claim as a Due Process deprivation.' : 'Review the proceeding for any fundamental unfairness — withheld evidence, coercive plea, or biased decision-maker.'
+    });
+  }
+
+  // ── 14th Amendment Equal Protection ──
+  {
+    const triggered = rgx(/equal.protection|discriminat|racial|gender|selective.prosecut|biased|disparate|class.of.one/i) ||
+      ansHas('grounds-summary', 'equal.protection', 'discriminat', 'selective');
+    issues.push({
+      amendment: '14th Amendment — Equal Protection',
+      short: '14EP',
+      icon: '🛡️',
+      title: 'Equal Protection of the Laws',
+      status: triggered ? 'identified' : 'potential',
+      signaled: triggered,
+      rule: 'Fourteenth Amendment — Batson v. Kentucky (1986) · Washington v. Davis (1976)',
+      desc: triggered
+        ? 'Equal Protection prohibits discriminatory enforcement and application of the law based on race, gender, or other protected classifications. Selective prosecution claims require proof of discriminatory intent and effect.'
+        : 'The Equal Protection Clause requires that similarly situated persons be treated alike under the law. If you were singled out based on race, gender, or other protected status, a claim may exist.',
+      reasoning: triggered
+        ? 'Your answers reference discrimination, selective prosecution, or equal protection grounds — this amendment is directly implicated.'
+        : 'If you believe you were treated differently than similarly situated persons, investigate whether a protected classification was the basis.',
+      action: triggered ? 'Document the discriminatory impact and intent. File a Batson challenge if jury selection was tainted. Consider selective prosecution claim.' : 'If disparity in treatment or enforcement exists, develop facts showing the discrimination was intentional.'
+    });
+  }
+
+  return issues;
+}
+
+function renderConstitutionalIntel() {
+  const el = document.getElementById('constitutional-intel');
+  if (!el) return;
+  const issues = constitutionalIntel();
+  if (!issues.length) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+
+  const signaledCount = issues.filter(i => i.signaled).length;
+  const noneMsg = signaledCount === 0 ? ' — none automatically detected from your answers' : '';
+
+  let html = '<div class="ci-block">' +
+    '<div class="ci-block-header">' +
+      '<span class="ci-block-icon">⚖️</span>' +
+      '<span class="ci-block-title">Potential Constitutional Issues' + noneMsg + '</span>' +
+    '</div>' +
+    '<hr class="ci-block-divider">' +
+    '<ul class="ci-list">';
+
+  issues.forEach(iss => {
+    const isSig = iss.signaled;
+    html += '<li class="ci-item ' + (isSig ? 'ci-item--signaled' : '') + '">' +
+      '<span class="ci-item-check">' + (isSig ? '✓' : '○') + '</span>' +
+      '<span class="ci-item-label">' + esc(iss.short) + ' Amendment — ' + esc(iss.title) + '</span>' +
+      '<span class="ci-item-statute">' + esc(iss.rule.split(' — ')[0]) + '</span>' +
+    '</li>';
+    if (isSig) {
+      html += '<div class="ci-detail-row">' +
+        esc(iss.desc) + '<br>' +
+        '<span class="ci-item-action"><strong>→</strong> ' + esc(iss.action) + '</span>' +
+      '</div>';
+    }
+  });
+
+  html += '</ul></div>';
+
+  el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════
+// EMOTIONAL INTELLIGENCE ENGINE
+// Context-aware UX that acknowledges the stress
+// of the legal process — without fake empathy
+// ═══════════════════════════════════════════════
+
+function emotionalIntel() {
+  const state = getCurrentState();
+  const stateCtx = CASE_STATES[state] || {};
+  const pct = currentQ > 0 && questions.length > 0
+    ? Math.round((currentQ / questions.length) * 100) : 0;
+  const flow = currentMotion && FLOWS[currentMotion] ? FLOWS[currentMotion] : null;
+  const motionId = currentMotion;
+
+  // Build message based on context
+  let msg = '';
+  let urgency = 'info';
+
+  // New session, no progress
+  if (!currentMotion && !caseSession) {
+    msg = 'This tool is here to help you organize. Take your time — there\'s no wrong way to start.';
+    return { msg, urgency: 'info', icon: '🧭' };
+  }
+
+  // Motion selected but wizard not started
+  if (currentMotion && !document.querySelector('.wizard.open')) {
+    if (motionId === '3850') msg = 'Rule 3.850 has a 2-year window from finality. Let\'s make sure we capture everything.';
+    else if (motionId === '3800') msg = 'Illegal sentences can be corrected at any time — but the sooner the better.';
+    else if (motionId === 'expunge') msg = 'Seal/expunge is a one-time opportunity. Let\'s verify eligibility before anything else.';
+    else if (motionId === '2254') msg = 'Federal habeas is narrow and technical. Every word matters — let\'s build carefully.';
+    else if (motionId === 'appeal') msg = 'The 30-day appeal window is tight. Let\'s prioritize the notice of appeal first.';
+    else if (motionId === 'restitution') msg = 'Financial obligations during incarceration or reentry can feel overwhelming. We\'ll take it step by step.';
+    else if (motionId === 'mitigation') msg = 'Mitigation is about telling your full story. Let\'s gather what matters most.';
+    else if (motionId === 'terminate') msg = 'Early termination can close this chapter. Let\'s check what\'s needed.';
+    else msg = 'You\'ve selected a motion type. When you\'re ready, click Begin to start the guided intake.';
+    return { msg, urgency: 'info', icon: '🪷' };
+  }
+
+  // Based on state machine
+  if (state === 'ARREST' || state === 'FIRST_APPEARANCE') {
+    msg = 'Being arrested is disorienting. Focus on one thing: do not make statements without counsel present. Preserve your silence — it is a right, not an admission.';
+    urgency = 'high';
+  } else if (state === 'PRETRIAL' && pct < 10) {
+    msg = 'This stage is extremely stressful. Focus first on preserving deadlines. You can review strategy details after intake.';
+    urgency = 'high';
+  } else if (state === 'PRETRIAL') {
+    msg = 'You\'re building your case file. Each answer strengthens your position — consistent documentation matters more than perfection.';
+    urgency = 'info';
+  } else if (state === 'SENTENCED') {
+    msg = 'A sentence is heavy. You don\'t have to process everything at once. Start with the deadline: 30 days to file a notice of appeal.';
+    urgency = 'high';
+  } else if (state === 'DIRECT_APPEAL') {
+    msg = 'Appeals move on a strict clock. Focus on deadlines first — strategy refinements can come after the notice is filed.';
+    urgency = 'high';
+  } else if (state === 'POSTCONVICTION') {
+    msg = 'Post-conviction is a marathon, not a sprint. This tool breaks it into steps so you don\'t have to hold everything in your head.';
+    urgency = 'info';
+  } else if (state === 'FEDERAL_HABEAS') {
+    msg = 'Federal habeas is procedurally complex. Stay methodical — each requirement exists for a reason. Let\'s check exhaustion first.';
+    urgency = 'high';
+  } else if (state === 'REENTRY') {
+    msg = 'You made it through. Reentry is a new chapter — let\'s clear what we can from your record so you can move forward.';
+    urgency = 'info';
+  }
+
+  // Progress-based messages (override if more specific)
+  if (pct === 0 && currentMotion) {
+    msg = msg || 'Starting is the hardest part. Let\'s just get through the first few questions — it gets clearer as you go.';
+  } else if (pct > 0 && pct < 30) {
+    msg = msg || 'You\'re in the intake phase. Just answer what you know — you can refine details later.';
+  } else if (pct >= 30 && pct < 60) {
+    msg = msg || 'You\'ve built momentum. Keep going — consistent progress matters more than speed.';
+  } else if (pct >= 60 && pct < 85) {
+    msg = msg || 'Almost there. Take a breath — the framework is taking shape.';
+  } else if (pct >= 85 && pct < 100) {
+    msg = msg || 'The finish line is close. One or two more questions and your draft will be ready to review.';
+  } else if (pct >= 100) {
+    msg = 'Your draft is complete. You did the hard part. Review it in Preview, then copy or print when ready.';
+    urgency = 'success';
+  }
+
+  return { msg, urgency, icon: urgency === 'high' ? '🪷' : urgency === 'success' ? '✅' : '🧭' };
+}
+
+function renderEmotionalIntel() {
+  const el = document.getElementById('emotional-intel');
+  if (!el) return;
+  const { msg, urgency, icon } = emotionalIntel();
+  if (!msg) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  const cls = 'ei-banner ei--' + urgency;
+  el.innerHTML = '<div class="' + cls + '"><span class="ei-icon">' + icon + '</span><span class="ei-text">' + esc(msg) + '</span></div>';
+}
+
 // ── KEYBOARD ──
 document.addEventListener('keydown', e => {
   if(e.key === 'Enter') {
@@ -9458,8 +10101,10 @@ function renderCaseScanner(motionId, answers) {
 function updateTacSysbar() {
   const caseCount = document.getElementById('tac-case-count');
   const motionCount = document.getElementById('tac-motion-count');
+  const draftCount = document.getElementById('tac-draft-count');
   if (caseCount) caseCount.textContent = caseSession ? 1 : 0;
   if (motionCount) motionCount.textContent = currentMotion ? 1 : 0;
+  if (draftCount) draftCount.textContent = getDrafts().length;
   const overlay = document.getElementById('tac-overlay');
   if (overlay) overlay.classList.toggle('active', !!(caseSession || currentMotion));
 }
@@ -11279,6 +11924,10 @@ document.getElementById('draft-search')?.addEventListener('input', renderDrafts)
 document.getElementById('draft-filter')?.addEventListener('change', renderDrafts);
 initQuickSearch();
 checkResumeDraft();
+renderMsDrafts();
+renderConstitutionalIntel();
+renderEmotionalIntel();
+updateTacSysbar();
 renderGlossary();
 document.getElementById('glossarySearch')?.addEventListener('input', function(){filterGlossary(this.value);});
 // Offline detection
