@@ -5672,6 +5672,7 @@ function initQuickSearch() {
 }
 
 function performQuickSearch(q) {
+  const input = document.getElementById('quick-search');
   const results = document.getElementById('qs-results');
   const hint = document.getElementById('qs-hint');
   if (!results) return;
