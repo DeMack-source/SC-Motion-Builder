@@ -8022,7 +8022,7 @@ async function bootstrapApp() {
 
   try {
     await purgeStaleBuildState();
-    const shell = await fetch('app-shell.html', { cache: 'no-cache' }).then(r => {
+    const shell = await fetch('app-shell.html?v=' + APP_BUILD_ID, { cache: 'no-cache' }).then(r => {
       if (!r.ok) throw new Error('Failed to load app shell');
       return r.text();
     });
