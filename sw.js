@@ -1,4 +1,4 @@
-const CACHE = 'sc-motion-v3';
+const CACHE = 'sc-motion-v4';
 
 const ASSETS = [
   './',
@@ -42,6 +42,12 @@ self.addEventListener('activate', e => {
     await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
     self.clients.claim();
   })());
+});
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // FETCH - tiered strategy by request type

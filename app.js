@@ -619,18 +619,42 @@ const FLOWS = {
   }
 };
 
+const APP_BUILD_ID = '2026-05-26-force-v1';
+
+async function purgeStaleBuildState() {
+  try {
+    if (localStorage.getItem('sc-motion-build-id') === APP_BUILD_ID) return;
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(reg => reg.unregister()));
+    }
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.filter(key => key.startsWith('sc-motion-')).map(key => caches.delete(key)));
+    }
+    localStorage.setItem('sc-motion-build-id', APP_BUILD_ID);
+  } catch (_) {}
+}
+
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.register('./sw.js').then(reg => {
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
       if (!newWorker) return;
       newWorker.addEventListener('statechange', () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
           console.log('New version available - reload to update');
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
         }
       });
     });
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    }, { once: true });
+    reg.update().catch(() => {});
   }).catch(() => {});
 }
 
@@ -7997,6 +8021,7 @@ async function bootstrapApp() {
   if (!host) return;
 
   try {
+    await purgeStaleBuildState();
     const shell = await fetch('app-shell.html', { cache: 'no-cache' }).then(r => {
       if (!r.ok) throw new Error('Failed to load app shell');
       return r.text();
