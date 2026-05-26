@@ -4193,9 +4193,8 @@ function renderQuestion(dir) {
     if (isQuestionRelevant(i)) { visibleCount++; if (i === currentQ) visibleIdx = visibleCount; }
   }
   if (visibleCount === 0) {
-    visibleCount = total;
-    visibleIdx = Math.min(currentQ + 1, total);
-    if (visibleIdx <= 0) visibleIdx = 1;
+    setQuestionIdleState();
+    return;
   }
   const pct = visibleCount > 0 ? Math.round((visibleIdx / visibleCount) * 100) : 0;
   const flow = FLOWS[currentMotion];
