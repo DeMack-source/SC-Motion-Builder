@@ -619,7 +619,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '2026-05-26-force-v1';
+const APP_BUILD_ID = '2026-05-26-force-v2';
 
 async function purgeStaleBuildState() {
   try {
