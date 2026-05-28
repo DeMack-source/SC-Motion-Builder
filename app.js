@@ -5672,97 +5672,100 @@ function initQuickSearch() {
 }
 
 function performQuickSearch(q) {
+  // Self-contained — finds its own elements, fails gracefully
   const input = document.getElementById('quick-search');
   const results = document.getElementById('qs-results');
   const hint = document.getElementById('qs-hint');
+
   if (!results) return;
-
-  const hits = [];
-
-  // Search motion types (FLOWS)
-  Object.keys(FLOWS).forEach(key => {
-    const f = FLOWS[key];
-    const text = f.title+' '+f.statute+' '+f.tag;
-    const score = scoreText(q, text);
-    if (score > 0) hits.push({ score, label: f.title, sub: f.statute, icon: '⚖️', action: () => { selectMotion(key, document.querySelector(`.motion-tile[data-motion="${key}"]`)); switchTab('builder'); document.getElementById('start-btn')?.scrollIntoView({behavior:'smooth'}); } });
-  });
-
-  // Search rights
-  RIGHTS.forEach(r => {
-    const text = r.t+' '+r.s+' '+r.d;
-    const score = scoreText(q, text);
-    if (score > 0) hits.push({ score, label: r.t, sub: r.s, icon: '📜', action: () => { switchTab('rights'); } });
-  });
-
-  // Search courts
-  COURTS.forEach(c => {
-    const text = c.name+' '+c.court+' '+c.address;
-    const score = scoreText(q, text);
-    if (score > 0) hits.push({ score, label: c.name, sub: c.court, icon: '🏛', action: () => { switchTab('courts'); } });
-  });
-
-  // Search counties
-  COUNTY_CLERKS.forEach(c => {
-    const text = c.county+' Clerk '+c.address;
-    const score = scoreText(q, text);
-    if (score > 0) hits.push({ score, label: c.county+' County', sub: c.phone, icon: '🏛', action: () => { switchTab('courts'); document.getElementById('clerk-search').value = c.county; renderClerks(); } });
-  });
-
-  // Search federal districts
-  FEDERAL_DISTRICTS.forEach(d => {
-    const text = d.name+' '+d.code+' '+d.counties.join(' ');
-    const score = scoreText(q, text);
-    if (score > 0) hits.push({ score, label: d.name, sub: d.code, icon: '🏛', action: () => { switchTab('federal'); } });
-  });
-
-  // Search drafts
-  const drafts = S.get('fl-motion-drafts', []);
-  drafts.forEach(d => {
-    const text = d.title+' '+d.tag+' '+d.statute+' '+(d.answers?Object.values(d.answers).join(' '):'');
-    const score = scoreText(q, text);
-    if (score > 0) hits.push({ score, label: d.title, sub: d.tag || d.motion+' draft', icon: '📁', action: () => { renderPreview(d); switchTab('preview'); } });
-  });
-
-  // Sort by relevance
-  hits.sort((a, b) => b.score - a.score);
-  const top = hits.slice(0, 8);
-
-  // Show hint
-  if (hint) {
-    const strong = top.filter(h => h.score >= 0.8).length;
-    const moderate = top.filter(h => h.score >= 0.4 && h.score < 0.8).length;
-    if (strong + moderate > 0) {
-      hint.textContent = `⚡ ${strong} strong · ${moderate} moderate · ${top.length - strong - moderate} weak matches`;
-      hint.className = 'quick-search-hint highlight';
-    } else {
-      hint.textContent = `${hits.length} results — try different terms`;
-      hint.className = 'quick-search-hint';
-    }
+  if (!q || q.length < 2) {
+    results.classList.remove('open');
+    if (hint) hint.textContent = '';
+    return;
   }
 
-  if (!top.length) {
-    // Show no results with suggestion
-    results.innerHTML = `<div class="qsr-no-results">No matches for "<strong>${esc(q)}</strong>"<div class="hint">Try: statute number, case name, legal term, or county</div></div>`;
+  const hits = [];
+  const safe = str => (str || '').toLowerCase();
+  const match = (query, text) => safe(text).includes(safe(query));
+
+  // Search FLOWS
+  try {
+    Object.keys(FLOWS || {}).forEach(key => {
+      const f = FLOWS[key];
+      const text = (f.title || '') + ' ' + (f.statute || '') + ' ' + (f.tag || '');
+      if (match(q, text)) {
+        hits.push({
+          label: f.title,
+          sub: f.statute || '',
+          icon: '⚖️',
+          action: () => {
+            const tile = document.querySelector('.motion-tile[data-motion="' + key + '"]');
+            if (tile) selectMotion(key, tile);
+            switchTab('builder');
+          }
+        });
+      }
+    });
+  } catch(e) {}
+
+  // Search RIGHTS
+  try {
+    (RIGHTS || []).forEach(r => {
+      if (match(q, (r.t || '') + ' ' + (r.s || '') + ' ' + (r.d || ''))) {
+        hits.push({ label: r.t, sub: r.s || '', icon: '📜', action: () => switchTab('rights') });
+      }
+    });
+  } catch(e) {}
+
+  // Search COURTS
+  try {
+    (COURTS || []).forEach(c => {
+      if (match(q, (c.name || '') + ' ' + (c.court || '') + ' ' + (c.address || ''))) {
+        hits.push({ label: c.name, sub: c.court || '', icon: '🏛', action: () => switchTab('courts') });
+      }
+    });
+  } catch(e) {}
+
+  // Search COUNTY_CLERKS
+  try {
+    (COUNTY_CLERKS || []).forEach(c => {
+      if (match(q, (c.county || '') + ' clerk ' + (c.address || ''))) {
+        hits.push({
+          label: (c.county || '') + ' County Clerk',
+          sub: c.phone || '',
+          icon: '🏛',
+          action: () => {
+            switchTab('courts');
+            const cs = document.getElementById('clerk-search');
+            if (cs) { cs.value = c.county; renderClerks(); }
+          }
+        });
+      }
+    });
+  } catch(e) {}
+
+  // Show results
+  if (!hits.length) {
+    results.innerHTML = '<div class="qsr-no-results">No matches for "<strong>' +
+      esc(q) + '</strong>"<div class="hint">Try: motion type, statute number, or county</div></div>';
     results.classList.add('open');
     return;
   }
 
+  const top = hits.slice(0, 8);
   results.innerHTML = top.map((h, i) =>
-    `<div class="qsr-item" tabindex="0" data-idx="${i}">
-      <span class="qsr-icon">${h.icon}</span>
-      <span class="qsr-label">${esc(h.label)}<small>${esc(h.sub)}</small></span>
-      <span class="qsr-score">${h.score >= 1 ? '★' : '·'}</span>
-    </div>`
+    '<div class="qsr-item" tabindex="0" data-idx="' + i + '">' +
+    '<span class="qsr-icon">' + h.icon + '</span>' +
+    '<span class="qsr-label">' + esc(h.label) + '<small>' + esc(h.sub) + '</small></span>' +
+    '</div>'
   ).join('');
-
   results.classList.add('open');
 
-  // Click handlers
   results.querySelectorAll('.qsr-item').forEach((el, i) => {
     el.addEventListener('click', () => {
       results.classList.remove('open');
-      input.value = top[i].label;
-      hint.textContent = '';
+      if (input) input.value = top[i].label;
+      if (hint) hint.textContent = '';
       top[i].action();
     });
   });
