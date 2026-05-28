@@ -3585,24 +3585,29 @@ const CHARGE_MOTION_MAP = {
 
 function initChargeSearch() {
   const input = document.getElementById('charge-search');
-  if (!input) return;
-  let debounceTimer;
+  const ac = document.getElementById('charge-ac');
+  if (!input || !ac) return;
+
+  let timer;
   input.addEventListener('input', function() {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => searchCharges(this.value), 150);
+    clearTimeout(timer);
+    const q = this.value.trim();
+    if (q.length < 2) {
+      clearChargeResults();
+      return;
+    }
+    timer = setTimeout(() => searchCharges(q), 200);
   });
-  input.addEventListener('focus', function() {
-    if (this.value.trim().length >= 1) searchCharges(this.value);
-  });
+
   document.addEventListener('click', function(e) {
-    const wrap = document.getElementById('charge-ac');
-    if (wrap && !e.target.closest('.charge-search-wrap')) {
-      wrap.classList.remove('open');
+    if (!e.target.closest('.charge-search-wrap')) {
+      ac.classList.remove('open');
     }
   });
+
   input.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-      document.getElementById('charge-ac')?.classList.remove('open');
+      ac.classList.remove('open');
     }
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
@@ -3623,23 +3628,69 @@ function initChargeSearch() {
   });
 }
 
+function clearChargeResults() {
+  const results = document.getElementById('charge-ac');
+  if (results) {
+    results.innerHTML = '';
+    results.classList.remove('open');
+  }
+}
+
 function searchCharges(query) {
   const ac = document.getElementById('charge-ac');
-  const results = fuzzySearchCharges(query);
-  if (!results.length || !query.trim()) {
-    ac.classList.remove('open');
+  if (!ac) return;
+
+  const q = (query || '').toLowerCase().trim();
+  if (q.length < 2) {
+    clearChargeResults();
     return;
   }
-  ac.innerHTML = results.map((r, i) => {
-    const c = r.charge;
-    const degClass = c.degree.includes('Capital') ? 'capital' : c.degree.includes('Life') ? 'life' : c.degree.includes('F1') ? 'f1' : 'f2';
-    return '<div class="charge-ac-item" data-idx="'+r.idx+'" onclick="selectCharge('+r.idx+')">'+
-      '<span class="charge-ac-degree '+degClass+'">'+esc(c.degree.replace('Felony','').trim())+'</span>'+
-      '<span class="charge-ac-name">'+esc(c.name)+'</span>'+
-      '<span class="charge-ac-statute">'+esc(c.statute)+'</span>'+
+
+  const hits = [];
+
+  try {
+    (CHARGES || []).forEach(function(charge, idx) {
+      const text = (
+        (charge.name || '') + ' ' +
+        (charge.statute || '') + ' ' +
+        (charge.category || '') + ' ' +
+        (charge.degree || '')
+      ).toLowerCase();
+      if (text.includes(q)) hits.push({ charge: charge, idx: idx });
+    });
+  } catch (e) {
+    ac.innerHTML = '<div class="ac-error">Search unavailable</div>';
+    ac.classList.add('open');
+    return;
+  }
+
+  if (!hits.length) {
+    ac.innerHTML = '<div class="ac-no-results">No charges found for "' + esc(query) + '"</div>';
+    ac.classList.add('open');
+    return;
+  }
+
+  ac.innerHTML = hits.slice(0, 10).map(function(hit) {
+    const c = hit.charge;
+    return '<div class="charge-ac-item" data-idx="' + hit.idx + '">' +
+      '<span class="charge-ac-name">' + esc(c.name || '') + '</span>' +
+      '<span class="charge-ac-statute">' + esc(c.statute || '') + '</span>' +
+      '<span class="charge-ac-degree">' + esc(c.degree || '') + '</span>' +
     '</div>';
   }).join('');
   ac.classList.add('open');
+
+  ac.querySelectorAll('.charge-ac-item').forEach(function(el) {
+    el.addEventListener('click', function() {
+      const idx = Number(el.getAttribute('data-idx'));
+      const selected = (CHARGES || [])[idx];
+      if (!selected) return;
+      ac.classList.remove('open');
+      const input = document.getElementById('charge-search');
+      if (input) input.value = selected.name || '';
+      selectCharge(idx);
+    });
+  });
 }
 
 function selectCharge(idx) {
@@ -5672,7 +5723,6 @@ function initQuickSearch() {
 }
 
 function performQuickSearch(q) {
-  // Self-contained — finds its own elements, fails gracefully
   const input = document.getElementById('quick-search');
   const results = document.getElementById('qs-results');
   const hint = document.getElementById('qs-hint');
@@ -5685,20 +5735,25 @@ function performQuickSearch(q) {
   }
 
   const hits = [];
-  const safe = str => (str || '').toLowerCase();
-  const match = (query, text) => safe(text).includes(safe(query));
+  function safeMatch(query, text) {
+    try {
+      return (text || '').toLowerCase().includes((query || '').toLowerCase());
+    } catch (e) {
+      return false;
+    }
+  }
 
   // Search FLOWS
   try {
-    Object.keys(FLOWS || {}).forEach(key => {
+    Object.keys(FLOWS || {}).forEach(function(key) {
       const f = FLOWS[key];
       const text = (f.title || '') + ' ' + (f.statute || '') + ' ' + (f.tag || '');
-      if (match(q, text)) {
+      if (safeMatch(q, text)) {
         hits.push({
-          label: f.title,
+          label: f.title || key,
           sub: f.statute || '',
           icon: '⚖️',
-          action: () => {
+          action: function() {
             const tile = document.querySelector('.motion-tile[data-motion="' + key + '"]');
             if (tile) selectMotion(key, tile);
             switchTab('builder');
@@ -5710,31 +5765,31 @@ function performQuickSearch(q) {
 
   // Search RIGHTS
   try {
-    (RIGHTS || []).forEach(r => {
-      if (match(q, (r.t || '') + ' ' + (r.s || '') + ' ' + (r.d || ''))) {
-        hits.push({ label: r.t, sub: r.s || '', icon: '📜', action: () => switchTab('rights') });
+    (RIGHTS || []).forEach(function(r) {
+      if (safeMatch(q, (r.t || '') + ' ' + (r.s || '') + ' ' + (r.d || ''))) {
+        hits.push({ label: r.t || '', sub: r.s || '', icon: '📜', action: function() { switchTab('rights'); } });
       }
     });
   } catch(e) {}
 
   // Search COURTS
   try {
-    (COURTS || []).forEach(c => {
-      if (match(q, (c.name || '') + ' ' + (c.court || '') + ' ' + (c.address || ''))) {
-        hits.push({ label: c.name, sub: c.court || '', icon: '🏛', action: () => switchTab('courts') });
+    (COURTS || []).forEach(function(c) {
+      if (safeMatch(q, (c.name || '') + ' ' + (c.court || '') + ' ' + (c.address || ''))) {
+        hits.push({ label: c.name || '', sub: c.court || '', icon: '🏛', action: function() { switchTab('courts'); } });
       }
     });
   } catch(e) {}
 
   // Search COUNTY_CLERKS
   try {
-    (COUNTY_CLERKS || []).forEach(c => {
-      if (match(q, (c.county || '') + ' clerk ' + (c.address || ''))) {
+    (COUNTY_CLERKS || []).forEach(function(c) {
+      if (safeMatch(q, (c.county || '') + ' clerk ' + (c.address || ''))) {
         hits.push({
           label: (c.county || '') + ' County Clerk',
           sub: c.phone || '',
           icon: '🏛',
-          action: () => {
+          action: function() {
             switchTab('courts');
             const cs = document.getElementById('clerk-search');
             if (cs) { cs.value = c.county; renderClerks(); }
@@ -5753,16 +5808,16 @@ function performQuickSearch(q) {
   }
 
   const top = hits.slice(0, 8);
-  results.innerHTML = top.map((h, i) =>
-    '<div class="qsr-item" tabindex="0" data-idx="' + i + '">' +
-    '<span class="qsr-icon">' + h.icon + '</span>' +
-    '<span class="qsr-label">' + esc(h.label) + '<small>' + esc(h.sub) + '</small></span>' +
-    '</div>'
-  ).join('');
+  results.innerHTML = top.map(function(h, i) {
+    return '<div class="qsr-item" tabindex="0" data-idx="' + i + '">' +
+      '<span class="qsr-icon">' + h.icon + '</span>' +
+      '<span class="qsr-label">' + esc(h.label) + '<small>' + esc(h.sub) + '</small></span>' +
+      '</div>';
+  }).join('');
   results.classList.add('open');
 
-  results.querySelectorAll('.qsr-item').forEach((el, i) => {
-    el.addEventListener('click', () => {
+  results.querySelectorAll('.qsr-item').forEach(function(el, i) {
+    el.addEventListener('click', function() {
       results.classList.remove('open');
       if (input) input.value = top[i].label;
       if (hint) hint.textContent = '';
