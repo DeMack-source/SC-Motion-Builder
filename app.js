@@ -8077,6 +8077,92 @@ function renderEmergencyAlerts() {
   bar.innerHTML = html;
 }
 
+function installMobileDebugPanel() {
+  var isDebug = /debug=1/.test(location.search) || /Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (!isDebug || document.getElementById('mobile-debug-panel')) return;
+
+  var logs = [];
+
+  function pushLog(type, message) {
+    var entry = '[' + new Date().toLocaleTimeString() + '] ' + type + ': ' + message;
+    logs.push(entry);
+    if (logs.length > 20) logs.shift();
+    render();
+  }
+
+  function render() {
+    var panel = document.getElementById('mobile-debug-panel');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'mobile-debug-panel';
+      panel.style.cssText = '\
+        position: fixed;\
+        left: 8px;\
+        right: 8px;\
+        bottom: 8px;\
+        z-index: 999999;\
+        max-height: 35vh;\
+        overflow: auto;\
+        background: rgba(10,10,12,.94);\
+        color: #ffd36a;\
+        border: 1px solid rgba(255,211,106,.45);\
+        border-radius: 12px;\
+        padding: 10px;\
+        font: 12px/1.35 monospace;\
+        box-shadow: 0 10px 30px rgba(0,0,0,.4);\
+      ';
+      document.body.appendChild(panel);
+    }
+
+    panel.innerHTML =
+      '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">' +
+        '<strong style="flex:1;">Mobile Debug</strong>' +
+        '<button id="copy-mobile-debug" type="button">Copy</button>' +
+        '<button id="close-mobile-debug" type="button">Close</button>' +
+      '</div>' +
+      '<div>Build: ' + (window.APP_VERSION || 'missing') + '</div>' +
+      '<div>Viewport: ' + innerWidth + 'x' + innerHeight + '</div>' +
+      '<hr style="border-color:rgba(255,255,255,.15)">' +
+      '<pre style="white-space:pre-wrap;margin:0;">' + (logs.join('\n') || 'No errors captured yet.') + '</pre>';
+
+    document.getElementById('close-mobile-debug').onclick = function() { panel.remove(); };
+    document.getElementById('copy-mobile-debug').onclick = async function() {
+      var text = [
+        'APP_VERSION=' + (window.APP_VERSION || 'missing'),
+        'URL=' + location.href,
+        'UA=' + navigator.userAgent,
+        'VIEWPORT=' + innerWidth + 'x' + innerHeight,
+        '',
+        logs.join('\n') || 'No errors captured.'
+      ].join('\n');
+      await navigator.clipboard.writeText(text);
+    };
+  }
+
+  var originalError = console.error;
+  var originalWarn = console.warn;
+
+  console.error = function() {
+    pushLog('console.error', Array.from(arguments).map(String).join(' '));
+    originalError.apply(console, arguments);
+  };
+
+  console.warn = function() {
+    pushLog('console.warn', Array.from(arguments).map(String).join(' '));
+    originalWarn.apply(console, arguments);
+  };
+
+  window.onerror = function(message, source, lineno, colno) {
+    pushLog('window.onerror', message + ' @ ' + source + ':' + lineno + ':' + colno);
+  };
+
+  window.onunhandledrejection = function(event) {
+    pushLog('unhandledrejection', (event.reason && event.reason.stack) || event.reason || 'Unknown rejection');
+  };
+
+  window.addEventListener('DOMContentLoaded', render, { once: true });
+}
+
 async function bootstrapApp() {
   const host = document.getElementById('app-root');
   if (!host) return;
@@ -8122,6 +8208,8 @@ async function bootstrapApp() {
   window.addEventListener('online', ()=>{ document.getElementById('offline-banner')?.classList.remove('show'); });
   if(!navigator.onLine) document.getElementById('offline-banner')?.classList.add('show');
 }
+
+installMobileDebugPanel();
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', bootstrapApp, { once: true });
