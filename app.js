@@ -619,7 +619,9 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '2026-05-26-force-v3';
+const APP_BUILD_ID = '29fdca9-mobile-nav-polish';
+window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
+document.documentElement.dataset.appVersion = window.APP_VERSION;
 
 async function purgeStaleBuildState() {
   try {
