@@ -619,7 +619,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '29fdca9-mobile-nav-polish';
+const APP_BUILD_ID = '7749242-search-bootfix';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -7423,8 +7423,13 @@ var SESSION_FIELD_MAP = {
 };
 
 function initCaseSession() {
-  var saved = S.get(SESSION_KEY, null);
-  if (saved) {
+  var saved = null;
+  try {
+    saved = loadSession();
+  } catch (e) {
+    saved = null;
+  }
+  if (saved && typeof saved === 'object') {
     CaseSession = saved;
   } else {
     CaseSession = {
@@ -7446,7 +7451,11 @@ function initCaseSession() {
 function persistCaseSession() {
   if (!CaseSession || !CaseSession._loaded) return;
   CaseSession.lastUpdated = Date.now();
-  S.set(SESSION_KEY, CaseSession);
+  try {
+    saveSession(CaseSession);
+  } catch (e) {
+    try { localStorage.setItem(SESSION_KEY, JSON.stringify(CaseSession)); } catch (_) {}
+  }
 }
 
 function saveToSession(id, value) {
