@@ -153,6 +153,22 @@ body .tac-overlay.active { display:block; }
   display:flex; align-items:center; gap:10px;
   font-family: var(--font-mono); font-size:8px;
 }
+.app-version-chip {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--gold), #f8d37a);
+  box-shadow: var(--gold-glow);
+  border: 1px solid rgba(255,255,255,0.18);
+  width: fit-content;
+}
 .tac-sys-stat {
   display:flex; align-items:center; gap:4px;
   padding:3px 8px;
@@ -2006,6 +2022,11 @@ body.low-distraction #tabnav { display: none; }
   .pwa-banner-btn {
     align-self: stretch;
   }
+  .app-version-chip {
+    margin-left: 0;
+    margin-top: 6px;
+    font-size: 9px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -2035,6 +2056,10 @@ body.low-distraction #tabnav { display: none; }
   .preview-doc { padding: 16px 13px; font-size: 12px; line-height: 1.8; }
   .brand-text .sub { font-size: 8px; letter-spacing: 1px; }
   .header-badge { font-size: 8px; padding: 4px 8px; }
+  .app-version-chip {
+    padding: 4px 8px;
+    letter-spacing: 0.06em;
+  }
   .preview-actions { gap: 4px; }
   .btn-copy, .btn-download, .btn-print { font-size: 9px; padding: 5px 8px; }
   .pwa-banner {

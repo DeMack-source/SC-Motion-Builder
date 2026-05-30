@@ -8096,6 +8096,8 @@ async function bootstrapApp() {
   initCaseSession();
   renderEmergencyAlerts();
   renderCaseSummary();
+  const versionBadge = document.getElementById('app-version-badge');
+  if (versionBadge) versionBadge.textContent = 'Build ' + (window.APP_VERSION || 'unknown');
 
   // ── BOOT ──
   renderRights();
