@@ -623,6 +623,50 @@ const APP_BUILD_ID = '29fdca9-mobile-nav-polish';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
+const S = (() => {
+  const memory = new Map();
+  const canUseLocalStorage = (() => {
+    try {
+      return typeof localStorage !== 'undefined';
+    } catch (_) {
+      return false;
+    }
+  })();
+
+  function read(key, fallback) {
+    try {
+      if (canUseLocalStorage) {
+        const raw = localStorage.getItem(key);
+        if (raw === null || raw === undefined) return fallback;
+        return JSON.parse(raw);
+      }
+    } catch (_) {}
+    return memory.has(key) ? memory.get(key) : fallback;
+  }
+
+  function write(key, value) {
+    try {
+      if (canUseLocalStorage) {
+        localStorage.setItem(key, JSON.stringify(value));
+        return;
+      }
+    } catch (_) {}
+    memory.set(key, value);
+  }
+
+  function del(key) {
+    try {
+      if (canUseLocalStorage) {
+        localStorage.removeItem(key);
+        return;
+      }
+    } catch (_) {}
+    memory.delete(key);
+  }
+
+  return { get: read, set: write, del };
+})();
+
 async function purgeStaleBuildState() {
   try {
     if (localStorage.getItem('sc-motion-build-id') === APP_BUILD_ID) return;
