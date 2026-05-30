@@ -7376,6 +7376,8 @@ function renderCaseIntelligence() {
 var CaseSession = null;
 var caseFileOpen = true;
 let currentMotion = null;
+let answers = {};
+let eligAnswers = {};
 
 var SESSION_KEY = 'fl-case-session';
 var SESSION_FIELD_MAP = {
@@ -8084,7 +8086,9 @@ function renderEmergencyAlerts() {
   var bar = document.getElementById('alert-bar');
   if (!bar) return;
   const motion = typeof currentMotion !== 'undefined' ? currentMotion : null;
-  var alerts = detectProceduralEmergencies(motion, answers, eligAnswers);
+  const answerState = typeof answers !== 'undefined' ? answers : {};
+  const eligibilityState = typeof eligAnswers !== 'undefined' ? eligAnswers : {};
+  var alerts = detectProceduralEmergencies(motion, answerState, eligibilityState);
   if (!alerts.length) { bar.style.display = 'none'; return; }
   bar.style.display = 'block';
 
