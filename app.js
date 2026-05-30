@@ -3585,127 +3585,6 @@ const CHARGE_MOTION_MAP = {
   "Attempted First-Degree Murder": ["3850","3800","appeal"]
 };
 
-function initChargeSearch() {
-  const input = document.getElementById('charge-search');
-  const ac = document.getElementById('charge-ac');
-  if (!input || !ac) return;
-
-  let timer;
-  input.addEventListener('input', function() {
-    clearTimeout(timer);
-    const q = this.value.trim();
-    if (q.length < 2) {
-      clearChargeResults();
-      return;
-    }
-    timer = setTimeout(() => searchCharges(q), 200);
-  });
-
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.charge-search-wrap')) {
-      ac.classList.remove('open');
-    }
-  });
-
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      ac.classList.remove('open');
-    }
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      const items = document.querySelectorAll('.charge-ac-item');
-      const current = document.querySelector('.charge-ac-item.highlight');
-      let idx = -1;
-      if (current) { idx = Array.from(items).indexOf(current); current.classList.remove('highlight'); }
-      if (e.key === 'ArrowDown') idx = Math.min(idx + 1, items.length - 1);
-      else idx = Math.max(idx - 1, 0);
-      if (items[idx]) items[idx].classList.add('highlight');
-    }
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const highlighted = document.querySelector('.charge-ac-item.highlight');
-      if (highlighted) { highlighted.click(); return; }
-      if (input.value.trim().length >= 1) searchCharges(input.value);
-    }
-  });
-}
-
-function clearChargeResults() {
-  const results = document.getElementById('charge-ac');
-  if (results) {
-    results.innerHTML = '';
-    results.classList.remove('open');
-  }
-}
-
-function searchCharges(query) {
-  const ac = document.getElementById('charge-ac');
-  if (!ac) return;
-
-  const q = (query || '').toLowerCase().trim();
-  if (q.length < 2) {
-    clearChargeResults();
-    return;
-  }
-
-  const hits = [];
-
-  try {
-    (CHARGES || []).forEach(function(charge, idx) {
-      const text = (
-        (charge.name || '') + ' ' +
-        (charge.statute || '') + ' ' +
-        (charge.category || '') + ' ' +
-        (charge.degree || '')
-      ).toLowerCase();
-      if (text.includes(q)) hits.push({ charge: charge, idx: idx });
-    });
-  } catch (e) {
-    ac.innerHTML = '<div class="ac-error">Search unavailable</div>';
-    ac.classList.add('open');
-    return;
-  }
-
-  if (!hits.length) {
-    ac.innerHTML = '<div class="ac-no-results">No charges found for "' + esc(query) + '"</div>';
-    ac.classList.add('open');
-    return;
-  }
-
-  ac.innerHTML = hits.slice(0, 10).map(function(hit) {
-    const c = hit.charge;
-    return '<div class="charge-ac-item" data-idx="' + hit.idx + '">' +
-      '<span class="charge-ac-name">' + esc(c.name || '') + '</span>' +
-      '<span class="charge-ac-statute">' + esc(c.statute || '') + '</span>' +
-      '<span class="charge-ac-degree">' + esc(c.degree || '') + '</span>' +
-    '</div>';
-  }).join('');
-  ac.classList.add('open');
-
-  ac.querySelectorAll('.charge-ac-item').forEach(function(el) {
-    el.addEventListener('click', function() {
-      const idx = Number(el.getAttribute('data-idx'));
-      const selected = (CHARGES || [])[idx];
-      if (!selected) return;
-      ac.classList.remove('open');
-      const input = document.getElementById('charge-search');
-      if (input) input.value = selected.name || '';
-      selectCharge(idx);
-    });
-  });
-}
-
-function selectCharge(idx) {
-  const c = CHARGES[idx];
-  if (!c) return;
-  chargeSelected = c;
-  document.getElementById('charge-search').value = c.name;
-  document.getElementById('charge-ac').classList.remove('open');
-  document.getElementById('charge-empty').style.display = 'none';
-  renderChargeIntel(c);
-  openIntake(c.name);
-}
-
 function setTimeline(tl) {
   chargeTimeline = tl;
   document.getElementById('tl-pretrial').classList.toggle('active', tl === 'pretrial');
@@ -4038,6 +3917,265 @@ function renderCollateral(c) {
     '</div>';
   }
   el.innerHTML = html || '<div style="color:var(--muted);font-size:12px">No collateral consequence data available.</div>';
+}
+
+function normalizeSearchText(value) {
+  return String(value || '').toLowerCase().trim();
+}
+
+function safeText(value) {
+  return typeof esc === 'function' ? esc(String(value || '')) : String(value || '').replace(/[&<>"']/g, function(ch) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+  });
+}
+
+function initChargeSearch() {
+  const input = document.getElementById('charge-search');
+  const results = document.getElementById('charge-ac');
+  if (!input || !results) return;
+
+  input.addEventListener('input', function () {
+    renderChargeSearchResults(input.value);
+  });
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeChargeSearch();
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.charge-search-wrap')) {
+      closeChargeSearch();
+    }
+  });
+}
+
+function closeChargeSearch() {
+  const results = document.getElementById('charge-ac');
+  if (!results) return;
+  results.innerHTML = '';
+  results.classList.remove('open');
+}
+
+function renderChargeSearchResults(query) {
+  const results = document.getElementById('charge-ac');
+  if (!results) return;
+
+  const q = normalizeSearchText(query);
+  if (q.length < 2) {
+    closeChargeSearch();
+    return;
+  }
+
+  const source = Array.isArray(window.CHARGES) ? window.CHARGES : (Array.isArray(CHARGES) ? CHARGES : []);
+
+  const matches = source
+    .map(function (charge, idx) {
+      const haystack = normalizeSearchText([
+        charge.name,
+        charge.statute,
+        charge.category,
+        charge.degree
+      ].join(' '));
+
+      return haystack.includes(q) ? { charge: charge, idx: idx } : null;
+    })
+    .filter(Boolean)
+    .slice(0, 12);
+
+  if (!matches.length) {
+    results.innerHTML = '<div class="ac-no-results">No charges found for "' + safeText(query) + '"</div>';
+    results.classList.add('open');
+    return;
+  }
+
+  results.innerHTML = matches.map(function (hit) {
+    const c = hit.charge;
+    return (
+      '<button type="button" class="charge-ac-item" data-charge-idx="' + hit.idx + '">' +
+        '<span class="charge-ac-name">' + safeText(c.name) + '</span>' +
+        '<span class="charge-ac-statute">' + safeText(c.statute) + '</span>' +
+        '<span class="charge-ac-degree">' + safeText(c.degree) + '</span>' +
+      '</button>'
+    );
+  }).join('');
+
+  results.classList.add('open');
+
+  results.querySelectorAll('[data-charge-idx]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const idx = Number(btn.getAttribute('data-charge-idx'));
+      selectCharge(idx);
+    });
+  });
+}
+
+function selectCharge(idx) {
+  const source = Array.isArray(window.CHARGES) ? window.CHARGES : (Array.isArray(CHARGES) ? CHARGES : []);
+  const charge = source[idx];
+  if (!charge) return;
+
+  chargeSelected = charge;
+
+  const input = document.getElementById('charge-search');
+  const empty = document.getElementById('charge-empty');
+
+  if (input) input.value = charge.name || '';
+  if (empty) empty.style.display = 'none';
+
+  closeChargeSearch();
+
+  if (typeof renderChargeIntel === 'function') {
+    renderChargeIntel(charge);
+  }
+
+  if (typeof openIntake === 'function') {
+    openIntake(charge.name || '');
+  }
+}
+
+function initQuickSearch() {
+  const input = document.getElementById('quick-search');
+  const results = document.getElementById('qs-results');
+  const hint = document.getElementById('qs-hint');
+  if(!input) return;
+
+  let timer;
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    const q = input.value.trim();
+    if (q.length < 2) { results.classList.remove('open'); hint.textContent = ''; return; }
+    timer = setTimeout(() => performQuickSearch(q), 150);
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { results.classList.remove('open'); input.blur(); }
+    if (e.key === 'ArrowDown') { const items = results.querySelectorAll('.qsr-item'); if(items.length) { items[0].classList.add('highlighted'); items[0].focus(); } }
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.quick-search-wrap')) results.classList.remove('open');
+  });
+  results.addEventListener('keydown', e => {
+    const items = [...results.querySelectorAll('.qsr-item')];
+    const idx = items.findIndex(el => el.classList.contains('highlighted'));
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      items.forEach(el => el.classList.remove('highlighted'));
+      const next = (idx + 1) % items.length;
+      items[next].classList.add('highlighted');
+      items[next].focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      items.forEach(el => el.classList.remove('highlighted'));
+      const prev = (idx - 1 + items.length) % items.length;
+      items[prev].classList.add('highlighted');
+      items[prev].focus();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const hit = items.find(el => el.classList.contains('highlighted')) || items[0];
+      if (hit) hit.click();
+    }
+  });
+}
+
+function performQuickSearch(q) {
+  const input = document.getElementById('quick-search');
+  const results = document.getElementById('qs-results');
+  const hint = document.getElementById('qs-hint');
+
+  if (!results) return;
+  if (!q || q.length < 2) {
+    results.classList.remove('open');
+    if (hint) hint.textContent = '';
+    return;
+  }
+
+  const hits = [];
+  function safeMatch(query, text) {
+    try {
+      return (text || '').toLowerCase().includes((query || '').toLowerCase());
+    } catch (e) {
+      return false;
+    }
+  }
+
+  try {
+    Object.keys(FLOWS || {}).forEach(function(key) {
+      const f = FLOWS[key];
+      const text = (f.title || '') + ' ' + (f.statute || '') + ' ' + (f.tag || '');
+      if (safeMatch(q, text)) {
+        hits.push({
+          label: f.title || key,
+          sub: f.statute || '',
+          icon: '⚖️',
+          action: function() {
+            const tile = document.querySelector('.motion-tile[data-motion="' + key + '"]');
+            if (tile) selectMotion(key, tile);
+            switchTab('builder');
+          }
+        });
+      }
+    });
+  } catch(e) {}
+
+  try {
+    (RIGHTS || []).forEach(function(r) {
+      if (safeMatch(q, (r.t || '') + ' ' + (r.s || '') + ' ' + (r.d || ''))) {
+        hits.push({ label: r.t || '', sub: r.s || '', icon: '📜', action: function() { switchTab('rights'); } });
+      }
+    });
+  } catch(e) {}
+
+  try {
+    (COURTS || []).forEach(function(c) {
+      if (safeMatch(q, (c.name || '') + ' ' + (c.court || '') + ' ' + (c.address || ''))) {
+        hits.push({ label: c.name || '', sub: c.court || '', icon: '🏛', action: function() { switchTab('courts'); } });
+      }
+    });
+  } catch(e) {}
+
+  try {
+    (COUNTY_CLERKS || []).forEach(function(c) {
+      if (safeMatch(q, (c.county || '') + ' clerk ' + (c.address || ''))) {
+        hits.push({
+          label: (c.county || '') + ' County Clerk',
+          sub: c.phone || '',
+          icon: '🏛',
+          action: function() {
+            switchTab('courts');
+            const cs = document.getElementById('clerk-search');
+            if (cs) { cs.value = c.county; renderClerks(); }
+          }
+        });
+      }
+    });
+  } catch(e) {}
+
+  if (!hits.length) {
+    results.innerHTML = '<div class="qsr-no-results">No matches for "<strong>' +
+      esc(q) + '</strong>"<div class="hint">Try: motion type, statute number, or county</div></div>';
+    results.classList.add('open');
+    return;
+  }
+
+  const top = hits.slice(0, 8);
+  results.innerHTML = top.map(function(h, i) {
+    return '<div class="qsr-item" tabindex="0" data-idx="' + i + '">' +
+      '<span class="qsr-icon">' + h.icon + '</span>' +
+      '<span class="qsr-label">' + esc(h.label) + '<small>' + esc(h.sub) + '</small></span>' +
+      '</div>';
+  }).join('');
+  results.classList.add('open');
+
+  results.querySelectorAll('.qsr-item').forEach(function(el, i) {
+    el.addEventListener('click', function() {
+      results.classList.remove('open');
+      if (input) input.value = top[i].label;
+      if (hint) hint.textContent = '';
+      top[i].action();
+    });
+  });
 }
 
 initChargeSearch();
@@ -5678,156 +5816,6 @@ document.addEventListener('keydown', e => {
 registerServiceWorker();
 
 // ── QUICK SEARCH ──
-function initQuickSearch() {
-  const input = document.getElementById('quick-search');
-  const results = document.getElementById('qs-results');
-  const hint = document.getElementById('qs-hint');
-  if(!input) return;
-
-  let timer;
-  input.addEventListener('input', () => {
-    clearTimeout(timer);
-    const q = input.value.trim();
-    if (q.length < 2) { results.classList.remove('open'); hint.textContent = ''; return; }
-    timer = setTimeout(() => performQuickSearch(q), 150);
-  });
-
-  // Close on escape or click outside
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { results.classList.remove('open'); input.blur(); }
-    if (e.key === 'ArrowDown') { const items = results.querySelectorAll('.qsr-item'); if(items.length) { items[0].classList.add('highlighted'); items[0].focus(); } }
-  });
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.quick-search-wrap')) results.classList.remove('open');
-  });
-  // Keyboard nav within results
-  results.addEventListener('keydown', e => {
-    const items = [...results.querySelectorAll('.qsr-item')];
-    const idx = items.findIndex(el => el.classList.contains('highlighted'));
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      items.forEach(el => el.classList.remove('highlighted'));
-      const next = (idx + 1) % items.length;
-      items[next].classList.add('highlighted');
-      items[next].focus();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      items.forEach(el => el.classList.remove('highlighted'));
-      const prev = (idx - 1 + items.length) % items.length;
-      items[prev].classList.add('highlighted');
-      items[prev].focus();
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      const hit = items.find(el => el.classList.contains('highlighted')) || items[0];
-      if (hit) hit.click();
-    }
-  });
-}
-
-function performQuickSearch(q) {
-  const input = document.getElementById('quick-search');
-  const results = document.getElementById('qs-results');
-  const hint = document.getElementById('qs-hint');
-
-  if (!results) return;
-  if (!q || q.length < 2) {
-    results.classList.remove('open');
-    if (hint) hint.textContent = '';
-    return;
-  }
-
-  const hits = [];
-  function safeMatch(query, text) {
-    try {
-      return (text || '').toLowerCase().includes((query || '').toLowerCase());
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Search FLOWS
-  try {
-    Object.keys(FLOWS || {}).forEach(function(key) {
-      const f = FLOWS[key];
-      const text = (f.title || '') + ' ' + (f.statute || '') + ' ' + (f.tag || '');
-      if (safeMatch(q, text)) {
-        hits.push({
-          label: f.title || key,
-          sub: f.statute || '',
-          icon: '⚖️',
-          action: function() {
-            const tile = document.querySelector('.motion-tile[data-motion="' + key + '"]');
-            if (tile) selectMotion(key, tile);
-            switchTab('builder');
-          }
-        });
-      }
-    });
-  } catch(e) {}
-
-  // Search RIGHTS
-  try {
-    (RIGHTS || []).forEach(function(r) {
-      if (safeMatch(q, (r.t || '') + ' ' + (r.s || '') + ' ' + (r.d || ''))) {
-        hits.push({ label: r.t || '', sub: r.s || '', icon: '📜', action: function() { switchTab('rights'); } });
-      }
-    });
-  } catch(e) {}
-
-  // Search COURTS
-  try {
-    (COURTS || []).forEach(function(c) {
-      if (safeMatch(q, (c.name || '') + ' ' + (c.court || '') + ' ' + (c.address || ''))) {
-        hits.push({ label: c.name || '', sub: c.court || '', icon: '🏛', action: function() { switchTab('courts'); } });
-      }
-    });
-  } catch(e) {}
-
-  // Search COUNTY_CLERKS
-  try {
-    (COUNTY_CLERKS || []).forEach(function(c) {
-      if (safeMatch(q, (c.county || '') + ' clerk ' + (c.address || ''))) {
-        hits.push({
-          label: (c.county || '') + ' County Clerk',
-          sub: c.phone || '',
-          icon: '🏛',
-          action: function() {
-            switchTab('courts');
-            const cs = document.getElementById('clerk-search');
-            if (cs) { cs.value = c.county; renderClerks(); }
-          }
-        });
-      }
-    });
-  } catch(e) {}
-
-  // Show results
-  if (!hits.length) {
-    results.innerHTML = '<div class="qsr-no-results">No matches for "<strong>' +
-      esc(q) + '</strong>"<div class="hint">Try: motion type, statute number, or county</div></div>';
-    results.classList.add('open');
-    return;
-  }
-
-  const top = hits.slice(0, 8);
-  results.innerHTML = top.map(function(h, i) {
-    return '<div class="qsr-item" tabindex="0" data-idx="' + i + '">' +
-      '<span class="qsr-icon">' + h.icon + '</span>' +
-      '<span class="qsr-label">' + esc(h.label) + '<small>' + esc(h.sub) + '</small></span>' +
-      '</div>';
-  }).join('');
-  results.classList.add('open');
-
-  results.querySelectorAll('.qsr-item').forEach(function(el, i) {
-    el.addEventListener('click', function() {
-      results.classList.remove('open');
-      if (input) input.value = top[i].label;
-      if (hint) hint.textContent = '';
-      top[i].action();
-    });
-  });
-}
-
 function scoreText(query, text) {
   if (!query || !text) return 0;
   const q = query.toLowerCase().trim();
