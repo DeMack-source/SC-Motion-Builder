@@ -4222,7 +4222,6 @@ function performQuickSearch(q) {
   });
 }
 
-initChargeSearch();
 if (caseSession) { renderSessionBar(); renderStateMachine(); filterMotionsByState(); }
 // ═══════════════════════════════════════════════
 // NEW ARCHITECTURE: Single-Question Wizard
@@ -8242,6 +8241,7 @@ async function bootstrapApp() {
   document.getElementById('draft-search')?.addEventListener('input', renderDrafts);
   document.getElementById('draft-filter')?.addEventListener('change', renderDrafts);
   initQuickSearch();
+  initChargeSearch();
   checkResumeDraft();
   renderMsDrafts();
   renderConstitutionalIntel();
