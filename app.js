@@ -3826,12 +3826,13 @@ function renderConstitutional(c) {
 function getCountyProfile(raw) {
   if (!raw || !raw.trim()) return null;
   const c = raw.trim().toLowerCase();
-  const keys = Object.keys(countyProfiles);
+  const cp = window.countyProfiles || countyProfiles;
+  const keys = Object.keys(cp);
   for (const key of keys) {
-    if (key.toLowerCase() === c) return { key, data: countyProfiles[key] };
-    if (c.includes(key.toLowerCase()) || key.toLowerCase().includes(c)) return { key, data: countyProfiles[key] };
+    if (key.toLowerCase() === c) return { key, data: cp[key] };
+    if (c.includes(key.toLowerCase()) || key.toLowerCase().includes(c)) return { key, data: cp[key] };
     const parts = key.split(/[- ]/);
-    for (const p of parts) { if (p === c) return { key, data: countyProfiles[key] }; }
+    for (const p of parts) { if (p === c) return { key, data: cp[key] }; }
   }
   return null;
 }
@@ -4012,47 +4013,56 @@ function renderChargeSearchResults(query) {
     return;
   }
 
-  const source = Array.isArray(window.CHARGES) ? window.CHARGES : (Array.isArray(CHARGES) ? CHARGES : []);
+  try {
+    const source = Array.isArray(window.CHARGES) ? window.CHARGES : [];
+    if (!source.length) {
+      results.innerHTML = '<div class="ac-no-results">Charge data not loaded — refresh the page.</div>';
+      results.classList.add('open');
+      return;
+    }
 
-  const matches = source
-    .map(function (charge, idx) {
-      const haystack = normalizeSearchText([
-        charge.name,
-        charge.statute,
-        charge.category,
-        charge.degree
-      ].join(' '));
+    const matches = source
+      .map(function (charge, idx) {
+        const haystack = normalizeSearchText([
+          charge.name,
+          charge.statute,
+          charge.degree
+        ].join(' '));
+        return haystack.includes(q) ? { charge: charge, idx: idx } : null;
+      })
+      .filter(Boolean)
+      .slice(0, 12);
 
-      return haystack.includes(q) ? { charge: charge, idx: idx } : null;
-    })
-    .filter(Boolean)
-    .slice(0, 12);
+    if (!matches.length) {
+      results.innerHTML = '<div class="ac-no-results">No charges found for "' + safeText(query) + '"</div>';
+      results.classList.add('open');
+      return;
+    }
 
-  if (!matches.length) {
-    results.innerHTML = '<div class="ac-no-results">No charges found for "' + safeText(query) + '"</div>';
+    results.innerHTML = matches.map(function (hit) {
+      const c = hit.charge;
+      return (
+        '<button type="button" class="charge-ac-item" data-charge-idx="' + hit.idx + '">' +
+          '<span class="charge-ac-name">' + safeText(c.name) + '</span>' +
+          '<span class="charge-ac-statute">' + safeText(c.statute) + '</span>' +
+          '<span class="charge-ac-degree">' + safeText(c.degree) + '</span>' +
+        '</button>'
+      );
+    }).join('');
+
     results.classList.add('open');
-    return;
-  }
 
-  results.innerHTML = matches.map(function (hit) {
-    const c = hit.charge;
-    return (
-      '<button type="button" class="charge-ac-item" data-charge-idx="' + hit.idx + '">' +
-        '<span class="charge-ac-name">' + safeText(c.name) + '</span>' +
-        '<span class="charge-ac-statute">' + safeText(c.statute) + '</span>' +
-        '<span class="charge-ac-degree">' + safeText(c.degree) + '</span>' +
-      '</button>'
-    );
-  }).join('');
-
-  results.classList.add('open');
-
-  results.querySelectorAll('[data-charge-idx]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const idx = Number(btn.getAttribute('data-charge-idx'));
-      selectCharge(idx);
+    results.querySelectorAll('[data-charge-idx]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const idx = Number(btn.getAttribute('data-charge-idx'));
+        selectCharge(idx);
+      });
     });
-  });
+  } catch (err) {
+    console.error('[ChargeSearch] renderChargeSearchResults failed:', err);
+    results.innerHTML = '<div class="ac-no-results">Search error — check console.</div>';
+    results.classList.add('open');
+  }
 }
 
 function selectCharge(idx) {
