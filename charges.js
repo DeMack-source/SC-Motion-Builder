@@ -1053,6 +1053,7 @@ const CHARGES = [
     }
   }
 ];
+window.CHARGES = CHARGES;
 
 const CHARGE_INDEX = CHARGES.map((c, i) => {
   const terms = [
@@ -1593,6 +1594,7 @@ const countyProfiles = {
     reentryResources: ["St. Johns Reentry Program"]
   }
 };
+window.countyProfiles = countyProfiles;
 
 // ═══════════════════════════════════════════════
 // ORM SCHEMA — Machine-Reasoning Data Layer
