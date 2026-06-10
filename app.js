@@ -4066,7 +4066,7 @@ function renderChargeSearchResults(query) {
 }
 
 function selectCharge(idx) {
-  const source = Array.isArray(window.CHARGES) ? window.CHARGES : (Array.isArray(CHARGES) ? CHARGES : []);
+  const source = Array.isArray(window.CHARGES) ? window.CHARGES : [];
   const charge = source[idx];
   if (!charge) return;
 
