@@ -1,11 +1,11 @@
-const CACHE = 'sc-motion-v20';
+const CACHE = 'sc-motion-v27';
 
 const ASSETS = [
   './',
   'index.html',
   'app-shell.html',
   'styles.css',
-  'app.js?v=9412063-charge-intel-explain',
+  'app.js?v=1957284-fix-casesummary-groups-crash',
   'charges.js',
   'icon.svg',
   'motion-manifest.json',
