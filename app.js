@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '5193847-field-help-intake-progressive';
+const APP_BUILD_ID = '8261735-glossary-simple-mode';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -1586,43 +1586,43 @@ const FEDERAL_DISTRICTS = [
 
 // ── GLOSSARY ──
 const GLOSSARY = [
-  {t:"Appeal", d:"A request to a higher court to review a lower court's decision.", key:true},
-  {t:"Appellant", d:"The party who files an appeal."},
-  {t:"Appellee", d:"The party responding to an appeal (usually the State)."},
-  {t:"Brief", d:"A written legal argument submitted to the court explaining why the decision should be upheld or reversed.", key:true},
-  {t:"Certificate of Appealability", d:"Required before a federal appeal can proceed in habeas cases. Shows the petitioner made a substantial constitutional claim.", key:true},
-  {t:"Constitutional Right", d:"A right guaranteed by the U.S. Constitution, such as due process, effective assistance of counsel, or protection against self-incrimination."},
-  {t:"Direct Appeal", d:"The first appeal as of right after a final judgment. In Florida, the Notice of Appeal must be filed within 30 days.", key:true},
-  {t:"En Banc", d:"A hearing before all judges of a court, rather than a panel of three. Usually reserved for significant legal questions."},
-  {t:"Evidentiary Hearing", d:"A court hearing where evidence (witnesses, documents) is presented to resolve factual disputes.", key:true},
-  {t:"Exhaustion of Remedies", d:"The requirement that a state prisoner must pursue all available state court remedies before seeking federal habeas relief.", key:true},
-  {t:"Final Order", d:"A court order that ends the case on its merits, leaving nothing further for the court to decide."},
-  {t:"Habeas Corpus", d:"A legal action challenging the legality of a person's detention. In Florida, post-conviction motions serve this function.", key:true},
-  {t:"Ineffective Assistance of Counsel", d:"A claim that trial counsel's performance fell below reasonable professional standards and prejudiced the outcome. Strickland v. Washington.", key:true},
-  {t:"Jurisdiction", d:"The court's legal authority to hear a case. Without jurisdiction, any order is void.", key:true},
-  {t:"Mandate", d:"The official communication from an appellate court to the trial court advising of the appeal's outcome."},
-  {t:"Notice of Appeal", d:"A formal document filed with the clerk stating the intent to appeal. In Florida, due within 30 days of the order.", key:true},
-  {t:"Per Curiam", d:"A Latin term meaning 'by the court.' A unanimous opinion issued by the court collectively rather than by a named judge."},
-  {t:"Petitioner", d:"The party filing a petition for review (in post-conviction or habeas cases)."},
-  {t:"Post-Conviction", d:"Legal proceedings that occur after a criminal conviction becomes final, challenging the legality of the conviction or sentence.", key:true},
-  {t:"Pro Se", d:"Representing yourself in court without a lawyer.", key:true},
-  {t:"Record on Appeal", d:"The official collection of all documents, filings, transcripts, and exhibits from the trial court sent to the appellate court."},
-  {t:"Remand", d:"When an appellate court sends a case back to the trial court for further proceedings consistent with the opinion."},
-  {t:"Respondent", d:"The party responding to a petition (typically the State in post-conviction cases)."},
-  {t:"Standard of Review", d:"The level of deference an appellate court gives to the lower court's decision. Common standards include de novo, abuse of discretion, and competent substantial evidence."},
-  {t:"Stay", d:"A court order temporarily halting proceedings. Often requested to stop an execution while an appeal is pending."},
-  {t:"Summary Denial", d:"When a trial court denies a post-conviction motion without holding an evidentiary hearing.", key:true},
-  {t:"Writ of Certiorari", d:"A discretionary review by the U.S. Supreme Court. Very few petitions are granted."},
-  {t:"Writ of Habeas Corpus (28 U.S.C. § 2254)", d:"The federal statute that allows state prisoners to challenge their detention on federal constitutional grounds.", key:true},
-  {t:"Default Judgment", d:"A judgment entered against a party who fails to respond to a pleading within the required time."},
-  {t:"Summary Judgment", d:"A decision made without a full trial when there is no genuine dispute about the material facts."},
-  {t:"Interlocutory Order", d:"A temporary or preliminary order that does not finally resolve the case. Generally not appealable until a final judgment."},
-  {t:"Supersedeas Bond", d:"A bond posted to stay enforcement of a judgment while an appeal is pending, guaranteeing payment if the appeal fails."},
-  {t:"Venue", d:"The geographic location where a case is heard. Proper venue is usually where the crime occurred."},
-  {t:"Prosecutorial Misconduct", d:"Improper conduct by a prosecutor that violates the defendant's right to a fair trial."},
-  {t:"Harmless Error", d:"An error that did not affect the outcome of the case and therefore does not warrant reversal."},
-  {t:"Plain Error", d:"A clear and obvious error that affected substantial rights, reviewable even if not raised at trial.", key:true},
-  {t:"Fundamental Error", d:"An error that goes to the very foundation of the case and renders the proceeding invalid.", key:true},
+  {t:"Appeal", d:"A request to a higher court to review a lower court's decision.", key:true, simple:"Asking a different, higher court to look at the same case again and decide if the first court got it wrong."},
+  {t:"Appellant", d:"The party who files an appeal.", simple:"The person who is appealing — they're the one asking for the second look."},
+  {t:"Appellee", d:"The party responding to an appeal (usually the State).", simple:"The other side in an appeal — usually the State, defending the original decision."},
+  {t:"Brief", d:"A written legal argument submitted to the court explaining why the decision should be upheld or reversed.", key:true, simple:"A written explanation of your argument that you give to the judges to read."},
+  {t:"Certificate of Appealability", d:"Required before a federal appeal can proceed in habeas cases. Shows the petitioner made a substantial constitutional claim.", key:true, simple:"A kind of permission slip you need before you're allowed to appeal a habeas case to a higher federal court."},
+  {t:"Constitutional Right", d:"A right guaranteed by the U.S. Constitution, such as due process, effective assistance of counsel, or protection against self-incrimination.", simple:"A basic right that's protected no matter what — like getting a fair trial or having a lawyer."},
+  {t:"Direct Appeal", d:"The first appeal as of right after a final judgment. In Florida, the Notice of Appeal must be filed within 30 days.", key:true, simple:"The one appeal everyone automatically gets right after being convicted — you only have 30 days in Florida to ask for it."},
+  {t:"En Banc", d:"A hearing before all judges of a court, rather than a panel of three. Usually reserved for significant legal questions.", simple:"When the whole court (not just three judges) hears the case together, because it's an especially important question."},
+  {t:"Evidentiary Hearing", d:"A court hearing where evidence (witnesses, documents) is presented to resolve factual disputes.", key:true, simple:"A court hearing where people testify and show proof, so the judge can sort out what actually happened."},
+  {t:"Exhaustion of Remedies", d:"The requirement that a state prisoner must pursue all available state court remedies before seeking federal habeas relief.", key:true, simple:"Before you can ask a federal court for help, you have to first ask every available state court."},
+  {t:"Final Order", d:"A court order that ends the case on its merits, leaving nothing further for the court to decide.", simple:"A decision that completely wraps up the case — there's nothing left for the judge to decide."},
+  {t:"Habeas Corpus", d:"A legal action challenging the legality of a person's detention. In Florida, post-conviction motions serve this function.", key:true, simple:"A way to ask a court to check whether someone is being held in custody legally."},
+  {t:"Ineffective Assistance of Counsel", d:"A claim that trial counsel's performance fell below reasonable professional standards and prejudiced the outcome. Strickland v. Washington.", key:true, simple:"A claim that your lawyer did such a poor job that it actually hurt your case."},
+  {t:"Jurisdiction", d:"The court's legal authority to hear a case. Without jurisdiction, any order is void.", key:true, simple:"Whether a court even has the legal power to decide your case at all. No power, no valid ruling."},
+  {t:"Mandate", d:"The official communication from an appellate court to the trial court advising of the appeal's outcome.", simple:"The official letter an appeals court sends back to the trial court saying what to do next."},
+  {t:"Notice of Appeal", d:"A formal document filed with the clerk stating the intent to appeal. In Florida, due within 30 days of the order.", key:true, simple:"The paper you file to officially tell the court you want to appeal — due within 30 days in Florida."},
+  {t:"Per Curiam", d:"A Latin term meaning 'by the court.' A unanimous opinion issued by the court collectively rather than by a named judge.", simple:"A decision the whole court agrees on together, without one judge's name attached."},
+  {t:"Petitioner", d:"The party filing a petition for review (in post-conviction or habeas cases).", simple:"The person asking the court for help — usually you, if you're filing a post-conviction motion."},
+  {t:"Post-Conviction", d:"Legal proceedings that occur after a criminal conviction becomes final, challenging the legality of the conviction or sentence.", key:true, simple:"Anything that happens in court after you've already been convicted and that conviction is final."},
+  {t:"Pro Se", d:"Representing yourself in court without a lawyer.", key:true, simple:"Representing yourself in court without a lawyer."},
+  {t:"Record on Appeal", d:"The official collection of all documents, filings, transcripts, and exhibits from the trial court sent to the appellate court.", simple:"Every document, transcript, and piece of evidence from the trial, packaged up and sent to the appeals court."},
+  {t:"Remand", d:"When an appellate court sends a case back to the trial court for further proceedings consistent with the opinion.", simple:"When the appeals court sends the case back down to the trial court to redo something."},
+  {t:"Respondent", d:"The party responding to a petition (typically the State in post-conviction cases).", simple:"The other side responding to your petition — usually the State."},
+  {t:"Standard of Review", d:"The level of deference an appellate court gives to the lower court's decision. Common standards include de novo, abuse of discretion, and competent substantial evidence.", simple:"How much the appeals court trusts the original judge's decision — sometimes they check everything fresh, sometimes they mostly defer."},
+  {t:"Stay", d:"A court order temporarily halting proceedings. Often requested to stop an execution while an appeal is pending.", simple:"A pause button — the court temporarily stops something (like a punishment) from happening."},
+  {t:"Summary Denial", d:"When a trial court denies a post-conviction motion without holding an evidentiary hearing.", key:true, simple:"When the judge says no to your motion without even holding a hearing."},
+  {t:"Writ of Certiorari", d:"A discretionary review by the U.S. Supreme Court. Very few petitions are granted.", simple:"A request asking the U.S. Supreme Court to take your case. Almost never granted."},
+  {t:"Writ of Habeas Corpus (28 U.S.C. § 2254)", d:"The federal statute that allows state prisoners to challenge their detention on federal constitutional grounds.", key:true, simple:"The federal law that lets someone held by a state challenge that custody on constitutional grounds."},
+  {t:"Default Judgment", d:"A judgment entered against a party who fails to respond to a pleading within the required time.", simple:"An automatic loss handed to someone who never responded to the case in time."},
+  {t:"Summary Judgment", d:"A decision made without a full trial when there is no genuine dispute about the material facts.", simple:"A decision made without a trial because the facts aren't even in dispute — only the law is."},
+  {t:"Interlocutory Order", d:"A temporary or preliminary order that does not finally resolve the case. Generally not appealable until a final judgment.", simple:"A 'for now' ruling made in the middle of a case — not the final word, and usually can't be appealed yet."},
+  {t:"Supersedeas Bond", d:"A bond posted to stay enforcement of a judgment while an appeal is pending, guaranteeing payment if the appeal fails.", simple:"Money put up to guarantee payment if you lose your appeal, so a judgment can be paused in the meantime."},
+  {t:"Venue", d:"The geographic location where a case is heard. Proper venue is usually where the crime occurred.", simple:"Which courthouse / location the case is heard in — usually wherever the alleged crime happened."},
+  {t:"Prosecutorial Misconduct", d:"Improper conduct by a prosecutor that violates the defendant's right to a fair trial.", simple:"When the prosecutor does something improper that makes the trial unfair."},
+  {t:"Harmless Error", d:"An error that did not affect the outcome of the case and therefore does not warrant reversal.", simple:"A mistake in the trial that the court decides didn't actually change the outcome, so it doesn't get the case overturned."},
+  {t:"Plain Error", d:"A clear and obvious error that affected substantial rights, reviewable even if not raised at trial.", key:true, simple:"A mistake so clear and serious that the appeals court will look at it even though nobody objected at the time."},
+  {t:"Fundamental Error", d:"An error that goes to the very foundation of the case and renders the proceeding invalid.", key:true, simple:"A mistake so basic it undermines the whole case, even if no one objected to it at trial."},
 ];
 
 // ── UTILITY ──
@@ -2480,12 +2480,19 @@ function calcDeadline() {
 }
 
 // ── GLOSSARY ──
+let glossarySimpleMode = false;
+function toggleGlossarySimpleMode() {
+  glossarySimpleMode = !glossarySimpleMode;
+  const toggle = document.getElementById('glossary-simple-toggle');
+  if (toggle) toggle.querySelector('.toggle-indicator').classList.toggle('on', glossarySimpleMode);
+  filterGlossary(document.getElementById('glossarySearch')?.value || '');
+}
 function glossarySort(a, b) {
   if (!!a.key !== !!b.key) return a.key ? -1 : 1;
   return a.t.localeCompare(b.t);
 }
 function renderGlossaryList(terms) {
-  return terms.map(g=>`<div class="glossary-term${g.key ? ' key-term' : ''}"><div class="term">${esc(g.t)}${g.key ? '<span class="key-term-badge" title="Comes up constantly in pro se postconviction and appellate filings — worth knowing cold.">ESSENTIAL</span>' : ''}</div><div class="def">${esc(g.d)}</div></div>`).join('');
+  return terms.map(g=>`<div class="glossary-term${g.key ? ' key-term' : ''}"><div class="term">${esc(g.t)}${g.key ? '<span class="key-term-badge" title="Comes up constantly in pro se postconviction and appellate filings — worth knowing cold.">ESSENTIAL</span>' : ''}</div><div class="def">${esc(glossarySimpleMode && g.simple ? g.simple : g.d)}</div></div>`).join('');
 }
 function renderGlossary() {
   const list = document.getElementById('glossary-list');
