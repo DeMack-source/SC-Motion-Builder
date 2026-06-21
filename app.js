@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '6285391-wizard-step-of-total';
+const APP_BUILD_ID = '7402851-case-num-format-hint';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -3657,6 +3657,7 @@ function openIntake(chargeName) {
     document.getElementById('intake-case-num').value = caseSession.caseNum || '';
     document.getElementById('intake-def-name').value = caseSession.defendantName || '';
     document.getElementById('intake-dob').value = caseSession.defendantDOB || '';
+    checkCaseNumberFormat(document.getElementById('intake-case-num'));
   } else {
     document.getElementById('intake-county').value = '';
     document.getElementById('intake-case-num').value = '';
@@ -4720,13 +4721,17 @@ function renderQuestion(dir) {
     const today = new Date().toISOString().slice(0,10);
     inputHtml = '<input type="date" id="q-field" class="field-input" value="'+(saved||today)+'" onchange="saveCurrentAnswer()">';
   } else {
-    inputHtml = '<input type="'+(q.type||'text')+'" id="q-field" class="field-input" placeholder="'+esc(q.placeholder||'')+'" value="'+esc(saved)+'" oninput="saveCurrentAnswer()">';
+    const caseNumAttrs = q.id === 'case-num' ? ' oninput="saveCurrentAnswer();checkCaseNumberFormat(this)"' : ' oninput="saveCurrentAnswer()"';
+    inputHtml = '<input type="'+(q.type||'text')+'" id="q-field" class="field-input" placeholder="'+esc(q.placeholder||'')+'" value="'+esc(saved)+'"'+caseNumAttrs+'>';
   }
 
   // Field-specific help, shown inline (no toggle needed — it's short and answers "what is this asking").
   let fieldHelpHtml = '';
   if(q.help) {
     fieldHelpHtml = '<div class="q-field-help">ⓘ '+esc(q.help)+'</div>';
+  }
+  if (q.id === 'case-num') {
+    fieldHelpHtml += '<div class="q-format-hint" id="q-format-hint"></div>';
   }
 
   // Why this matters (step-level — broader context than the field help above)
@@ -4744,6 +4749,10 @@ function renderQuestion(dir) {
   card.innerHTML = sectionTag + condBadge + '<div class="q-question">'+esc(q.label)+'</div>' + fieldHelpHtml + inputHtml + whyHtml + '<div class="q-reassurance">'+reassurance+'</div>';
 
   renderEmotionalIntel();
+
+  if (q.id === 'case-num' && saved) {
+    checkCaseNumberFormat(document.getElementById('q-field'));
+  }
 
   // Focus input
   setTimeout(() => {
@@ -4799,6 +4808,24 @@ function saveCurrentAnswer() {
   
   schedulePreviewUpdate();
   scheduleAutoSave();
+}
+
+// Real-time format check for case-number fields — Florida case numbers are
+// almost always YYYY-xx-XXXXXX (year, division code, sequence). Flags the
+// input rather than blocking it, since real-world numbers vary by clerk.
+function checkCaseNumberFormat(el) {
+  const hint = document.getElementById(el.id === 'intake-case-num' ? 'intake-case-num-hint' : 'q-format-hint');
+  const val = (el.value || '').trim();
+  if (!val) {
+    el.classList.remove('field-warn');
+    if (hint) hint.textContent = '';
+    return;
+  }
+  const looksRight = /^\d{4}-[A-Za-z]{1,4}-\d{3,8}/.test(val);
+  el.classList.toggle('field-warn', !looksRight);
+  if (hint) {
+    hint.textContent = looksRight ? '' : 'Doesn\'t look like a standard Florida case number (usually YYYY-CF-XXXXXX) — double-check it against your judgment or docket before continuing.';
+  }
 }
 
 // ── SYNTHESIS ──

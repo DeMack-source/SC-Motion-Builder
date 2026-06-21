@@ -172,7 +172,8 @@
         </div>
         <div class="field-group">
           <label class="field-label">Case Number <span style="color:var(--muted);font-weight:400">(optional)</span></label>
-          <input class="field-input" id="intake-case-num" placeholder="e.g. 2019-CF-012345" oninput="intakeDirty=true">
+          <input class="field-input" id="intake-case-num" placeholder="e.g. 2019-CF-012345" oninput="intakeDirty=true;checkCaseNumberFormat(this)">
+          <div class="q-format-hint" id="intake-case-num-hint"></div>
         </div>
         <div class="field-group">
           <label class="field-label">Defendant Name <span style="color:var(--muted);font-weight:400">(optional)</span></label>
