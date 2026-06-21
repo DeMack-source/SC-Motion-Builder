@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '4128375-rights-why-matters';
+const APP_BUILD_ID = '6390218-motion-chip-explain';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -3878,6 +3878,42 @@ function renderCountdowns(c, tl) {
   }
 }
 
+const MOTION_EXPLANATIONS = [
+  { keywords: ['suppress', 'suppression'], text: 'Asks the court to exclude evidence (statements, physical evidence, search results) obtained in violation of constitutional rights — if granted, the state can\'t use that evidence at trial.' },
+  { keywords: ['bond hearing', 'bond reduction', 'pretrial detention'], text: 'Asks the court to set, lower, or reconsider conditions of pretrial release so you aren\'t held in jail solely because you can\'t afford bail.' },
+  { keywords: ['change of venue'], text: 'Asks to move the trial to a different county, typically because local media coverage or community ties make it unlikely you can get an impartial jury where the case is currently filed.' },
+  { keywords: ['speedy trial'], text: 'Invokes your constitutional and statutory right to a trial within a fixed time — forces the state to either go to trial promptly or risk the charge being discharged.' },
+  { keywords: ['competency'], text: 'Asks the court to determine whether you are mentally competent to understand the proceedings and assist in your own defense — if found incompetent, the case pauses until competency is restored.' },
+  { keywords: ['severance', 'sever'], text: 'Asks to separate your case from a co-defendant\'s (or separate multiple charges against you) so each is tried on its own, preventing evidence against someone else from prejudicing your trial.' },
+  { keywords: ['franks hearing'], text: 'Challenges the truthfulness of a search warrant affidavit — if the affidavit contained false statements or omissions needed to establish probable cause, evidence from that warrant can be suppressed.' },
+  { keywords: ['discovery'], text: 'Forces the state to turn over evidence, witness lists, and reports it\'s required to disclose — used when the prosecution is sitting on material the defense is entitled to see.' },
+  { keywords: ['psychological evaluation', 'psych'], text: 'Requests a mental-health evaluation relevant to competency, sanity at the time of the offense, or mitigation at sentencing.' },
+  { keywords: ['forensic examination', 'independent lab', 'independent toxicology', 'drug analysis', 'pcr lab', 'fire investigation'], text: 'Requests independent testing of physical evidence (drugs, DNA, blood) rather than relying solely on the state lab\'s results, which can be challenged or contradicted by a second analysis.' },
+  { keywords: ['identification', 'lineup'], text: 'Challenges an eyewitness identification procedure (lineup, photo array, showup) as unreliable or unconstitutionally suggestive, which can get the identification excluded or undermined at trial.' },
+  { keywords: ['grand jury transcript'], text: 'Requests access to grand jury proceedings to check for inconsistencies between grand jury testimony and trial testimony, or procedural defects in how the indictment was obtained.' },
+  { keywords: ['cell tower', 'surveillance video'], text: 'Challenges the reliability, chain of custody, or admissibility of location/video evidence the state intends to use to place you at the scene.' },
+  { keywords: ['dcf records', 'medical records', 'confidential informant'], text: 'Seeks access to records or information the state or a third party is withholding that could be relevant to credibility, motive, or an alternate explanation for the charge.' },
+  { keywords: ['motion in limine'], text: 'Asks the court to rule, before trial starts, that certain evidence (often prior bad acts) be excluded as unfairly prejudicial rather than waiting to object once the jury has already heard it.' },
+  { keywords: ['lesser included'], text: 'Asks the judge to instruct the jury on a less serious charge contained within the charged offense, giving jurors a middle option besides full conviction or full acquittal.' },
+  { keywords: ['constructive possession'], text: 'Challenges whether the state can actually prove you had knowledge and control over contraband you didn\'t physically have on you — a common gap in possession cases.' },
+  { keywords: ['medical marijuana'], text: 'Raises a legal-use defense where applicable, asserting the substance or conduct was authorized under Florida\'s medical marijuana program.' },
+  { keywords: ['dui investigation', 'bac results'], text: 'Challenges the procedures used during a DUI stop and breath/blood testing — improper administration or calibration issues can get BAC results thrown out.' },
+];
+
+function explainCriticalMotion(label) {
+  const lower = (label || '').toLowerCase();
+  const match = MOTION_EXPLANATIONS.find(e => e.keywords.some(k => lower.includes(k)));
+  return match ? match.text : 'A pretrial motion relevant to this charge\'s posture — discuss with counsel how it applies to your specific facts.';
+}
+
+function showMotionDetail(el) {
+  const detail = document.getElementById('ci-motions-detail');
+  if (!detail) return;
+  const label = el.dataset.motion || '';
+  detail.innerHTML = '<strong>'+esc(label)+':</strong> '+esc(explainCriticalMotion(label));
+  detail.classList.add('open');
+}
+
 function renderChargeMotions(c) {
   const el = document.getElementById('ci-motions');
   const tl = chargeTimeline;
@@ -3888,7 +3924,7 @@ function renderChargeMotions(c) {
   const buildMotions = CHARGE_MOTION_MAP[c.name] || ['3850'];
 
   let html = motions.slice(0, 5).map(m => {
-    return '<span class="charge-motion-chip">'+esc(m)+'</span>';
+    return '<span class="charge-motion-chip" data-motion="'+esc(m)+'" onclick="showMotionDetail(this)">'+esc(m)+'</span>';
   }).join('');
 
   html += buildMotions.map(mid => {
@@ -3898,6 +3934,8 @@ function renderChargeMotions(c) {
   }).join('');
 
   el.innerHTML = html;
+  const detail = document.getElementById('ci-motions-detail');
+  if (detail) { detail.innerHTML = ''; detail.classList.remove('open'); }
 }
 
 function renderStrategic(c) {

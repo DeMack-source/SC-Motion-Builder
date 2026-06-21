@@ -2526,6 +2526,12 @@ body.low-distraction #tabnav { display: none; }
   font-weight: 700; font-size: 11px; padding: 8px 16px;
 }
 .charge-motion-chip.build:hover { box-shadow: var(--gold-glow); }
+.charge-motion-detail {
+  display: none; margin-top: 10px; padding: 10px 14px;
+  background: var(--gold-dim); border-left: 3px solid var(--gold);
+  border-radius: 8px; font-size: 11px; color: rgba(249,178,76,0.9); line-height: 1.6;
+}
+.charge-motion-detail.open { display: block; }
 
 /* Detection alerts */
 .charge-alerts { margin: 0 18px 14px; }
