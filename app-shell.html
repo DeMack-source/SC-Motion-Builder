@@ -168,19 +168,22 @@
         <div class="intake-charge-badge" id="intake-charge-badge"></div>
         <div class="field-group">
           <label class="field-label">County of Court</label>
-          <input class="field-input" id="intake-county" placeholder="e.g. Broward, Miami-Dade, Duval" oninput="intakeDirty=true">
+          <input class="field-input" id="intake-county" placeholder="e.g. Broward, Miami-Dade, Duval" oninput="intakeDirty=true;revealIntakeProgressive(this)">
         </div>
-        <div class="field-group">
-          <label class="field-label">Case Number <span style="color:var(--muted);font-weight:400">(optional)</span></label>
-          <input class="field-input" id="intake-case-num" placeholder="e.g. 2019-CF-012345" oninput="intakeDirty=true">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Defendant Name <span style="color:var(--muted);font-weight:400">(optional)</span></label>
-          <input class="field-input" id="intake-def-name" placeholder="Full legal name" oninput="intakeDirty=true">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Date of Birth <span style="color:var(--muted);font-weight:400">(optional)</span></label>
-          <input class="field-input" id="intake-dob" type="date">
+        <div id="intake-progressive" style="display:none">
+          <div class="field-group">
+            <label class="field-label">Case Number <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+            <input class="field-input" id="intake-case-num" placeholder="e.g. 2019-CF-012345" oninput="intakeDirty=true;checkCaseNumberFormat(this)">
+            <div class="q-format-hint" id="intake-case-num-hint"></div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Defendant Name <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+            <input class="field-input" id="intake-def-name" placeholder="Full legal name" oninput="intakeDirty=true">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Date of Birth <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+            <input class="field-input" id="intake-dob" type="date">
+          </div>
         </div>
       </div>
       <div class="intake-modal-footer">
