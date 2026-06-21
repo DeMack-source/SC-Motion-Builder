@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '1957284-fix-casesummary-groups-crash';
+const APP_BUILD_ID = '6285391-wizard-step-of-total';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -4666,7 +4666,8 @@ function renderQuestion(dir) {
   const flow = FLOWS[currentMotion];
 
   // Progress bar
-  document.getElementById('q-progress-label').textContent = 'Question '+(visibleIdx)+' of '+visibleCount+' — '+(flow ? flow.tag : '');
+  const stepTag = 'Step '+(q._stepIndex+1)+' of '+q._totalSteps+' — ';
+  document.getElementById('q-progress-label').textContent = stepTag+'Question '+(visibleIdx)+' of '+visibleCount+' — '+(flow ? flow.tag : '');
   document.getElementById('q-progress-pct').textContent = pct + '%';
   document.getElementById('q-progress-fill').style.width = pct + '%';
 
@@ -4685,7 +4686,7 @@ function renderQuestion(dir) {
   card.className = 'q-card ' + animClass;
 
   const saved = answers[q.id] || '';
-  const sectionTag = '<div class="q-section-tag">Step '+(q._stepIndex+1)+': '+esc(q._stepTitle)+'</div>';
+  const sectionTag = '<div class="q-section-tag">Step '+(q._stepIndex+1)+' of '+q._totalSteps+': '+esc(q._stepTitle)+'</div>';
 
   // Condition badge — show what triggered this question
   let condBadge = '';
