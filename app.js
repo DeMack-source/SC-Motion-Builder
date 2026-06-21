@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '3047619-glossary-essential-flag';
+const APP_BUILD_ID = '1957284-fix-casesummary-groups-crash';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -7924,6 +7924,8 @@ function renderCaseSummary() {
   }
   section.style.display = 'block';
   cmdOpen('cf-h');
+
+  var groups = [];
 
   // Person
   var pRows = [];
