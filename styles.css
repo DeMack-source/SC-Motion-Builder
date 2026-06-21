@@ -484,6 +484,27 @@ body::after {
   display: block;
 }
 
+.tile-recommended-badge {
+  display: none;
+  position: absolute;
+  top: 12px; left: 12px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--tile-color, var(--gold));
+  border-radius: 5px;
+  padding: 3px 7px;
+}
+.motion-tile.tile-recommended {
+  border-color: var(--tile-color, var(--gold));
+  box-shadow: 0 0 0 1px var(--tile-color, var(--gold)), 0 8px 24px rgba(0,0,0,0.3);
+}
+.motion-tile.tile-recommended .tile-recommended-badge {
+  display: block;
+}
+
 /* ── START BUTTON ── */
 .start-btn {
   width: 100%;

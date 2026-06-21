@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '8261735-glossary-simple-mode';
+const APP_BUILD_ID = '9374128-recommended-motion-badge';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -3146,6 +3146,15 @@ function getCurrentState() {
   return getCaseState(caseSession, answers, currentMotion, chargeTimeline);
 }
 
+// Of a state's available remedies, which single one (if any) is the clearest
+// starting point for someone who hasn't picked a motion yet — only set where
+// the 6-tile .motion-grid actually has an obvious best-first-pick.
+const RECOMMENDED_MOTION_BY_STATE = {
+  FINALIZED: '3850',
+  POSTCONVICTION: '3850',
+  REENTRY: 'expunge'
+};
+
 // ═══════════════════════════════════════════════
 // DEADLINE INTELLIGENCE ENGINE
 // Enterprise-grade deadline tracking & visualization
@@ -3603,10 +3612,12 @@ function filterMotionsByState() {
   if (!caseSession && !currentMotion) {
     tiles.forEach(tile => {
       tile.style.display = '';
-      tile.classList.remove('tile-blocked');
+      tile.classList.remove('tile-blocked', 'tile-recommended');
       tile.removeAttribute('aria-disabled');
       const blockedNote = tile.querySelector('.tile-blocked-note');
       if (blockedNote) blockedNote.style.display = 'none';
+      const recommendedBadge = tile.querySelector('.tile-recommended-badge');
+      if (recommendedBadge) recommendedBadge.textContent = '';
     });
     const existingMsg = grid.querySelector('.state-empty-msg');
     if (existingMsg) existingMsg.style.display = 'none';
@@ -3616,13 +3627,16 @@ function filterMotionsByState() {
   const state = getCurrentState();
   const ctx = getStateContext(state);
   const blockedIds = ctx.blocked || [];
+  const recommendedId = RECOMMENDED_MOTION_BY_STATE[state];
   let visibleCount = 0;
 
   tiles.forEach(tile => {
     const mid = tile.getAttribute('data-motion');
     const blockedNote = tile.querySelector('.tile-blocked-note');
+    const recommendedBadge = tile.querySelector('.tile-recommended-badge');
     if (blockedIds.includes(mid)) {
       tile.classList.add('tile-blocked');
+      tile.classList.remove('tile-recommended');
       tile.style.display = '';
       tile.setAttribute('aria-disabled', 'true');
       if (blockedNote) {
@@ -3631,11 +3645,19 @@ function filterMotionsByState() {
           (unlockStage ? ' <span class="tile-unlock">Available at: ' + esc(unlockStage) + '</span>' : '');
         blockedNote.style.display = '';
       }
+      if (recommendedBadge) recommendedBadge.textContent = '';
     } else {
       tile.classList.remove('tile-blocked');
       tile.style.display = '';
       tile.removeAttribute('aria-disabled');
       if (blockedNote) blockedNote.style.display = 'none';
+      if (mid === recommendedId) {
+        tile.classList.add('tile-recommended');
+        if (recommendedBadge) recommendedBadge.textContent = '★ Recommended for your stage';
+      } else {
+        tile.classList.remove('tile-recommended');
+        if (recommendedBadge) recommendedBadge.textContent = '';
+      }
       visibleCount++;
     }
   });
