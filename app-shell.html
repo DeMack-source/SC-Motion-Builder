@@ -85,7 +85,7 @@
   <div class="charge-search-section">
     <div class="charge-search-wrap">
       <span class="charge-search-icon">🔍</span>
-      <input class="charge-search-bar" id="charge-search" type="search" placeholder="Search a charge — e.g. murder, 893.135, trafficking, fentanyl, armed robbery..." autocomplete="off" spellcheck="false">
+      <input class="charge-search-bar" id="charge-search" type="search" placeholder="Search a charge — e.g. murder, 893.135, trafficking, fentanyl, armed robbery..." autocomplete="off" spellcheck="false" oninput="renderChargeSearchResults(this.value)">
       <div class="charge-autocomplete" id="charge-ac"></div>
     </div>
     <div class="timeline-toggle-wrap">
