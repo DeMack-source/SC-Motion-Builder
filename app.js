@@ -7385,6 +7385,7 @@ function renderCaseIntelligence() {
 var CaseSession = null;
 var caseFileOpen = true;
 let currentMotion = null;
+let currentQ = 0;
 let answers = {};
 let eligAnswers = {};
 
