@@ -115,14 +115,19 @@
       <div class="charge-timeline" id="ci-timeline"></div>
       <div class="charge-countdown-wrap" id="ci-countdown"></div>
       <div class="charge-section-label">Critical Motions</div>
+      <div class="cs-section-intro">Motions tied to where this case sits in the process right now — tap "Build" on any chip to start that motion pre-filled with what's already known about this charge.</div>
       <div class="charge-motion-chips" id="ci-motions"></div>
       <div class="charge-section-label">Strategic Analysis</div>
+      <div class="cs-section-intro">Defenses are facts that could negate an element of the charge; weaknesses are gaps in the state's evidence; attack vectors are specific procedural or evidentiary angles a defense attorney would target.</div>
       <div class="charge-strategic-grid" id="ci-strategic"></div>
       <div class="charge-section-label">Constitutional Issues</div>
+      <div class="cs-section-intro">Federal constitutional problems that, if provable, can get evidence or statements suppressed, or support a claim that counsel's performance was deficient.</div>
       <div class="charge-detail-list" id="ci-constitutional"></div>
       <div class="charge-section-label">Collateral Consequences</div>
+      <div class="cs-section-intro">Non-criminal consequences that follow a conviction even after the sentence is served — these matter when deciding whether to take a plea, not just at sentencing.</div>
       <div class="charge-collateral-grid" id="ci-collateral"></div>
       <div class="charge-section-label county-label">County Intelligence <span class="ci-county-name" id="ci-county-name"></span></div>
+      <div class="ci-intro">Local practice varies a lot by county — this is general background on how this county tends to handle bond, diversion, and sentencing, not a guarantee of how your case will go. Use it to set expectations and ask informed questions, not as legal advice.</div>
       <div id="ci-county"></div>
     </div>
   </div>
@@ -221,6 +226,8 @@
       <div class="tile-code">Rule 3.850</div>
       <div class="tile-title">Postconviction Relief</div>
       <div class="tile-desc">Challenge convictions due to ineffective counsel, newly discovered evidence, or constitutional violations.</div>
+      <div class="tile-path-note"></div>
+      <div class="tile-blocked-note"></div>
     </div>
     <div class="motion-tile" data-motion="3800" style="--tile-color:#60A5FA" onclick="selectMotion('3800',this)">
       <div class="tile-check">✓</div>
@@ -228,6 +235,8 @@
       <div class="tile-code">Rule 3.800</div>
       <div class="tile-title">Illegal Sentence Correction</div>
       <div class="tile-desc">Correct a sentence that exceeds the maximum, falls below the minimum, or was improperly structured.</div>
+      <div class="tile-path-note"></div>
+      <div class="tile-blocked-note"></div>
     </div>
     <div class="motion-tile" data-motion="expunge" style="--tile-color:#4ADE80" onclick="selectMotion('expunge',this)">
       <div class="tile-check">✓</div>
@@ -235,6 +244,8 @@
       <div class="tile-code">F.S. 943.0585 / 943.059</div>
       <div class="tile-title">Seal / Expunge Record</div>
       <div class="tile-desc">Remove or seal criminal records from public access. Strict eligibility — one chance per lifetime.</div>
+      <div class="tile-path-note"></div>
+      <div class="tile-blocked-note"></div>
     </div>
     <div class="motion-tile" data-motion="terminate" style="--tile-color:#F9B24C" onclick="selectMotion('terminate',this)">
       <div class="tile-check">✓</div>
@@ -242,6 +253,8 @@
       <div class="tile-code">F.S. 948.04</div>
       <div class="tile-title">Early Termination</div>
       <div class="tile-desc">Petition for early termination of probation after completing 50% of the term and all special conditions.</div>
+      <div class="tile-path-note"></div>
+      <div class="tile-blocked-note"></div>
     </div>
     <div class="motion-tile" data-motion="restitution" style="--tile-color:#A78BFA" onclick="selectMotion('restitution',this)">
       <div class="tile-check">✓</div>
@@ -249,6 +262,8 @@
       <div class="tile-code">F.S. 775.089</div>
       <div class="tile-title">Restitution Modification</div>
       <div class="tile-desc">Reduce payments when inability to pay is documented. Bearden v. Georgia protection applies.</div>
+      <div class="tile-path-note"></div>
+      <div class="tile-blocked-note"></div>
     </div>
     <div class="motion-tile" data-motion="mitigation" style="--tile-color:#2DD4BF" onclick="selectMotion('mitigation',this)">
       <div class="tile-check">✓</div>
@@ -256,6 +271,8 @@
       <div class="tile-code">F.R.Crim.P. 3.800(c)</div>
       <div class="tile-title">Mitigation Packet</div>
       <div class="tile-desc">Build a comprehensive mitigation package for sentencing hearings, parole hearings, or clemency applications.</div>
+      <div class="tile-path-note"></div>
+      <div class="tile-blocked-note"></div>
     </div>
   </div>
 
@@ -380,13 +397,14 @@
       <span class="cmd-card-toggle" id="intel-h">▼</span>
     </div>
     <div class="cmd-card-body" id="intel-body">
+      <div class="intel-explain">This score isn't a prediction of how your case will turn out — it's a count of the sentencing exposure, procedural, and strategic-motion flags this tool detected in your answers. Higher score = more issues worth raising with the court or an attorney, not worse odds. Tap <strong>⚖️ WHY THIS MATTERS</strong> on any item below for the rule and case law behind it.</div>
       <div class="intel-risk-bar"><div class="intel-risk-fill" id="intel-risk-fill" style="width:0%"></div></div>
       <div class="intel-risk-label" id="intel-risk-label"></div>
       <div class="intel-row" id="intel-row">
-        <div class="intel-card"><div class="intel-card-title">⚔️ Strategic Motions <span class="intel-card-count" id="intel-motion-count">0</span></div><div class="intel-card-list" id="intel-motions"></div></div>
-        <div class="intel-card"><div class="intel-card-title">⏰ Filing Deadlines <span class="intel-card-count" id="intel-deadline-count">0</span></div><div class="intel-card-list" id="intel-deadlines"></div></div>
-        <div class="intel-card"><div class="intel-card-title">⚠️ Sentencing Exposure <span class="intel-card-count" id="intel-sentencing-count">0</span></div><div class="intel-card-list" id="intel-sentencing"></div></div>
-        <div class="intel-card"><div class="intel-card-title">🚧 Procedural Obstacles <span class="intel-card-count" id="intel-obstacle-count">0</span></div><div class="intel-card-list" id="intel-obstacles"></div></div>
+        <div class="intel-card"><div class="intel-card-title">⚔️ Strategic Motions <span class="intel-card-count" id="intel-motion-count">0</span></div><div class="intel-card-sub-label">Additional motions your facts may support filing.</div><div class="intel-card-list" id="intel-motions"></div></div>
+        <div class="intel-card"><div class="intel-card-title">⏰ Filing Deadlines <span class="intel-card-count" id="intel-deadline-count">0</span></div><div class="intel-card-sub-label">Time-sensitive windows detected from your case dates.</div><div class="intel-card-list" id="intel-deadlines"></div></div>
+        <div class="intel-card"><div class="intel-card-title">⚠️ Sentencing Exposure <span class="intel-card-count" id="intel-sentencing-count">0</span></div><div class="intel-card-sub-label">Mandatory minimums and enhancements that may apply.</div><div class="intel-card-list" id="intel-sentencing"></div></div>
+        <div class="intel-card"><div class="intel-card-title">🚧 Procedural Obstacles <span class="intel-card-count" id="intel-obstacle-count">0</span></div><div class="intel-card-sub-label">Rules that could get this filing rejected or delayed.</div><div class="intel-card-list" id="intel-obstacles"></div></div>
       </div>
     </div>
   </div>
@@ -917,6 +935,9 @@
       <p><strong>Rule 3.850 (2 years):</strong> Two years from the date the judgment becomes final (after mandate issues on direct appeal). If the final day lands on a weekend or legal holiday, the deadline rolls to the next business day. Exceptions for newly discovered evidence, retroactive law changes, and unconstitutional sentences. Fla. R. Crim. P. 3.850(b); Fla. R. Gen. Prac. &amp; Jud. Admin. 2.514.</p>
       <p><strong>Rule 3.800(a):</strong> No deadline — an illegal sentence can be corrected at any time. Fla. R. Crim. P. 3.800(a).</p>
       <p><strong>Rehearing (15 days):</strong> 15 days from the date of the appellate opinion, with weekends and legal holidays handled under Rule 2.514. Fla. R. App. P. 9.330(a); Fla. R. Gen. Prac. &amp; Jud. Admin. 2.514.</p>
+      <p><strong>Clarification (15 days):</strong> Same 15-day window and procedure as a motion for rehearing — both ask the appellate court to revisit its opinion before mandate issues. Fla. R. App. P. 9.330(a); Fla. R. Gen. Prac. &amp; Jud. Admin. 2.514.</p>
+      <p><strong>Mandate (~30 days):</strong> The mandate finalizes the appellate decision and returns jurisdiction to the trial court. It generally issues 15 days after the rehearing deadline expires — roughly 30 days after the opinion — though the clerk controls the exact date. Fla. R. App. P. 9.340.</p>
+      <p><strong>Discretionary Review (30 days):</strong> A notice to invoke the Florida Supreme Court's discretionary jurisdiction must be filed within 30 days of the district court of appeal's decision — the same 30-day window as a direct appeal. Fla. R. App. P. 9.120(b); Fla. R. Gen. Prac. &amp; Jud. Admin. 2.514.</p>
     </div>
   </div>
 </div>

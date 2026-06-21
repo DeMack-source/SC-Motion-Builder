@@ -1,11 +1,11 @@
-const CACHE = 'sc-motion-v7';
+const CACHE = 'sc-motion-v20';
 
 const ASSETS = [
   './',
   'index.html',
   'app-shell.html',
   'styles.css',
-  'app.js?v=4821093',
+  'app.js?v=9412063-charge-intel-explain',
   'charges.js',
   'icon.svg',
   'motion-manifest.json',
@@ -54,8 +54,14 @@ self.addEventListener('message', event => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
-  // HTML navigations and the shell: network-first with cache fallback
-  if (e.request.mode === 'navigate' || url.pathname.endsWith('app-shell.html')) {
+  // HTML navigations and the shell: network-first with cache fallback.
+  // ignoreSearch matters here: app.js fetches 'app-shell.html?v=<build>' with a
+  // build-id query string that changes every release, but the precached entry
+  // (from ASSETS) has no query string. Without ignoreSearch, an offline lookup
+  // misses the cache entirely and falls through to serving index.html's markup
+  // in place of the real app shell.
+  const isShellRequest = url.pathname.endsWith('app-shell.html');
+  if (e.request.mode === 'navigate' || isShellRequest) {
     e.respondWith(
       fetch(e.request)
         .then(res => {
@@ -64,8 +70,11 @@ self.addEventListener('fetch', e => {
           return res;
         })
         .catch(async () => {
-          const cached = await caches.match(e.request);
-          return cached || caches.match('index.html');
+          const cached = await caches.match(e.request, { ignoreSearch: true });
+          if (cached) return cached;
+          return isShellRequest
+            ? caches.match('app-shell.html')
+            : caches.match('index.html');
         })
     );
     return;
@@ -85,15 +94,18 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Same-origin app assets: cache-first, network fallback
+  // Same-origin app assets: cache-first (ignoring query strings - see note
+  // above re: versioned ?v= params), network fallback. If neither cache nor
+  // network has it, let the request fail rather than substituting index.html's
+  // markup for a missing script/stylesheet/data file.
   if (url.origin === self.location.origin) {
     e.respondWith(
-      caches.match(e.request).then(cached => {
+      caches.match(e.request, { ignoreSearch: true }).then(cached => {
         if (cached) return cached;
         return fetch(e.request).then(res => {
           caches.open(CACHE).then(c => c.put(e.request, res.clone()));
           return res;
-        }).catch(() => caches.match('index.html'));
+        });
       })
     );
     return;

@@ -437,6 +437,53 @@ body::after {
 }
 .motion-tile.selected .tile-check { opacity: 1; transform: scale(1); }
 
+.tile-path-note {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.tile-path-note:empty { display: none; }
+.tile-stage {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  color: var(--tile-color, var(--gold));
+  margin-bottom: 3px;
+}
+.tile-blocked-note {
+  display: none;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  background: rgba(248,113,113,0.1);
+  border: 1px solid rgba(248,113,113,0.3);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.tile-blocked-note .tile-unlock {
+  display: block;
+  margin-top: 4px;
+  color: var(--white);
+  font-weight: 600;
+}
+.motion-tile.tile-blocked {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.motion-tile.tile-blocked:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border);
+}
+.motion-tile.tile-blocked .tile-blocked-note {
+  display: block;
+}
+
 /* ── START BUTTON ── */
 .start-btn {
   width: 100%;
@@ -1404,6 +1451,7 @@ body::after {
 .q-card.animate-left { animation: qFadeInLeft 0.3s ease; }
 .q-section-tag { font-family: var(--font-mono); font-size: 9px; color: var(--teal); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
 .q-question { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 16px; line-height: 1.4; }
+.q-field-help { font-size: 12px; color: var(--muted); line-height: 1.6; margin: -8px 0 16px; }
 .q-why { margin-top: 12px; }
 .q-why-toggle { font-size: 11px; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; border-bottom: 1px dashed var(--border); padding-bottom: 2px; transition: color 0.2s; }
 .q-why-toggle:hover { color: var(--gold); }
@@ -2315,11 +2363,13 @@ body.low-distraction #tabnav { display: none; }
 }
 .charge-autocomplete.open { display: block; }
 .charge-ac-item {
-  padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--border);
-  transition: background 0.15s; display: flex; align-items: center; gap: 10px;
+  width: 100%; text-align: left; padding: 12px 16px; cursor: pointer;
+  border: none; border-bottom: 1px solid var(--border); background: transparent;
+  transition: background 0.15s; display: block;
 }
 .charge-ac-item:last-child { border-bottom: none; }
 .charge-ac-item:hover, .charge-ac-item.highlight { background: var(--gold-dim); }
+.charge-ac-row { display: flex; align-items: center; gap: 10px; }
 .charge-ac-degree {
   font-family: var(--font-mono); font-size: 8px; letter-spacing: 1px;
   padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
@@ -2330,6 +2380,18 @@ body.low-distraction #tabnav { display: none; }
 .charge-ac-degree.f2 { background: rgba(96,165,250,0.12); color: var(--sky); }
 .charge-ac-name { font-size: 13px; font-weight: 600; color: var(--white); flex: 1; }
 .charge-ac-statute { font-family: var(--font-mono); font-size: 9px; color: var(--muted); flex-shrink: 0; }
+.charge-ac-meta {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+}
+.charge-ac-penalty {
+  font-size: 10px; color: var(--muted);
+}
+.charge-ac-threat {
+  font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.5px;
+  padding: 2px 6px; border-radius: 4px;
+}
+.charge-ac-threat.critical { background: rgba(248,113,113,0.2); color: var(--red); }
+.charge-ac-threat.danger { background: rgba(249,178,76,0.15); color: var(--gold); }
 
 /* Timeline toggle */
 .timeline-toggle-wrap {
@@ -2409,6 +2471,7 @@ body.low-distraction #tabnav { display: none; }
   color: var(--muted); text-transform: uppercase; margin: 14px 0 8px;
   padding-bottom: 4px; border-bottom: 1px solid var(--border);
 }
+.cs-section-intro { font-size: 11px; color: var(--muted); line-height: 1.6; margin: -2px 0 8px; }
 .charge-detail-list { list-style: none; padding: 0; margin: 0; }
 .charge-detail-list li {
   font-size: 12px; color: var(--muted); padding: 4px 0;
@@ -2495,6 +2558,7 @@ body.low-distraction #tabnav { display: none; }
 /* ── County Intelligence ── */
 .county-label { display: none; align-items: center; gap: 8px; }
 .ci-county-name { font-weight: 400; font-size: 11px; color: var(--sky); }
+.ci-intro { font-size: 11px; color: var(--muted); line-height: 1.6; margin: 6px 0 10px; }
 #ci-county { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
 .county-intel-card {
   background: var(--ink-mid); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
@@ -2507,6 +2571,7 @@ body.low-distraction #tabnav { display: none; }
   text-transform: uppercase; letter-spacing: 0.5px;
 }
 .ci-card-ico { font-size: 14px; }
+.ci-card-sub { font-size: 9.5px; color: var(--muted); line-height: 1.4; padding: 6px 12px 0; }
 .ci-card-body { padding: 10px 12px; font-size: 11px; }
 .ci-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 3px 0; gap: 8px; }
 .ci-row-label { color: var(--muted); white-space: nowrap; flex-shrink: 0; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; }
@@ -2872,6 +2937,12 @@ body.low-distraction #tabnav { display: none; }
 .dl-card-remedy {
   font-size: 10px; color: var(--sky);
   margin-top: 4px; line-height: 1.3;
+}
+.dl-card-why {
+  font-size: 9.5px; color: var(--muted);
+  margin-top: 4px; padding-top: 4px;
+  border-top: 1px solid var(--border);
+  line-height: 1.4;
 }
 .dl-card-count {
   font-size: 20px; font-weight: 900;
@@ -3325,6 +3396,8 @@ body.low-distraction #tabnav { display: none; }
 .intel-header { display:flex;align-items:center;gap:10px;margin-bottom:14px }
 .intel-header .section-title { margin:0 }
 .intel-subtitle { font-size:10px;color:var(--muted);margin-top:2px }
+.intel-explain { font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:14px }
+.intel-card-sub-label { font-size:9.5px;color:var(--muted);line-height:1.4;margin:-4px 0 8px }
 .intel-risk-bar { height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin:10px 0 14px;position:relative }
 .intel-risk-fill { height:100%;border-radius:3px;transition:width .6s ease }
 .intel-risk-fill--critical { background:linear-gradient(90deg,var(--red),#f97316) }

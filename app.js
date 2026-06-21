@@ -11,12 +11,18 @@ const FLOWS = {
         sub:"Provide the basic case details exactly as they appear on your court documents.",
         tip:{label:"PRO TIP — Fla. R. Crim. P. 3.850(c)", text:"Your case number must match the exact format on your judgment."},
         fields:[
-          {id:"county",      label:"County of Conviction",     type:"text",   required:true,  placeholder:"e.g., Broward", cite:""},
-          {id:"case-num",    label:"Case Number",               type:"text",   required:true,  placeholder:"e.g., 2019-CF-012345"},
-          {id:"judge",       label:"Presiding Judge",           type:"text",   required:false, placeholder:"e.g., Hon. [Last Name]"},
-          {id:"prosecutor",  label:"State Attorney (optional)", type:"text",   required:false, placeholder:""},
-          {id:"def-name",    label:"Your Full Legal Name",      type:"text",   required:true,  placeholder:"As it appears on the judgment"},
-          {id:"def-dob",     label:"Date of Birth",             type:"date",   required:true},
+          {id:"county",      label:"County of Conviction",     type:"text",   required:true,  placeholder:"e.g., Broward", cite:"",
+            help:"The Florida county where you were convicted — not where you currently live or are incarcerated."},
+          {id:"case-num",    label:"Case Number",               type:"text",   required:true,  placeholder:"e.g., 2019-CF-012345",
+            help:"Copy this exactly from your judgment or sentencing order. A mismatched case number is a common reason clerks reject filings."},
+          {id:"judge",       label:"Presiding Judge",           type:"text",   required:false, placeholder:"e.g., Hon. [Last Name]",
+            help:"The judge who handled your trial or accepted your plea — found on the judgment. Leave blank if unsure; it's optional."},
+          {id:"prosecutor",  label:"State Attorney (optional)", type:"text",   required:false, placeholder:"",
+            help:"The Assistant State Attorney who prosecuted your case, if named on any of your court paperwork. Not required to file."},
+          {id:"def-name",    label:"Your Full Legal Name",      type:"text",   required:true,  placeholder:"As it appears on the judgment",
+            help:"Use your name exactly as it appears on the judgment, including any suffix — this becomes the case caption."},
+          {id:"def-dob",     label:"Date of Birth",             type:"date",   required:true,
+            help:"Used to identify you in the court record alongside your case number."},
         ]
       },
       {
@@ -27,30 +33,44 @@ const FLOWS = {
         fields:[
           {id:"case-resolution", label:"Was this case resolved by:", type:"decision", required:true,
             options:["Plea","Trial","Violation of Probation","Dismissal"],
-            cite:""},
+            cite:"",
+            help:"This determines which follow-up questions apply and which deadline starts your 2-year clock under Rule 3.850(b)."},
           {id:"plea-type", label:"What type of plea?", type:"decision", required:true, condition:{field:"case-resolution",equals:"Plea"},
-            options:["Guilty Plea","No Contest / Nolo Contendere","Alford Plea","Open Plea (no agreement)"]},
+            options:["Guilty Plea","No Contest / Nolo Contendere","Alford Plea","Open Plea (no agreement)"],
+            help:"An Alford plea means you maintained innocence but agreed the State had enough evidence to convict. An open plea means you pleaded without a negotiated sentence."},
           {id:"plea-counsel", label:"Did you have a lawyer at the plea?", type:"decision", required:true, condition:{field:"case-resolution",equals:"Plea"},
-            options:["Yes — retained private attorney","Yes — public defender","Yes — court-appointed counsel","No — I represented myself (pro se)"]},
-          {id:"plea-date", label:"Date of plea:", type:"date", required:true, condition:{field:"case-resolution",equals:"Plea"}},
+            options:["Yes — retained private attorney","Yes — public defender","Yes — court-appointed counsel","No — I represented myself (pro se)"],
+            help:"Matters for ineffective-assistance claims — only applies if you had counsel whose performance you're challenging."},
+          {id:"plea-date", label:"Date of plea:", type:"date", required:true, condition:{field:"case-resolution",equals:"Plea"},
+            help:"The date you entered your plea in court, not the later sentencing date."},
           {id:"trial-type", label:"What type of trial?", type:"decision", required:true, condition:{field:"case-resolution",equals:"Trial"},
-            options:["Jury Trial","Bench Trial (judge only)"], cite:""},
+            options:["Jury Trial","Bench Trial (judge only)"], cite:"",
+            help:"A bench trial has no jury — the judge alone decides guilt."},
           {id:"trial-outcome", label:"Trial outcome:", type:"decision", required:true, condition:{field:"case-resolution",equals:"Trial"},
             options:["Convicted as charged","Convicted of lesser offense","Mistrial / Hung jury","Convicted after appeal / retrial"]},
-          {id:"trial-date", label:"Date of trial:", type:"date", required:true, condition:{field:"case-resolution",equals:"Trial"}},
+          {id:"trial-date", label:"Date of trial:", type:"date", required:true, condition:{field:"case-resolution",equals:"Trial"},
+            help:"The date the trial concluded with a verdict, not when it started."},
           {id:"vop-basis", label:"Basis of violation:", type:"decision", required:true, condition:{field:"case-resolution",equals:"Violation of Probation"},
-            options:["New law violation","Technical violation (missed appointment, failed drug test)","Absconding","Multiple violations"]},
+            options:["New law violation","Technical violation (missed appointment, failed drug test)","Absconding","Multiple violations"],
+            help:"A technical violation is a rule-compliance issue (missed meeting, failed drug test); a new law violation means a new charge."},
           {id:"vop-date", label:"Date of violation / VOP filing:", type:"date", required:true, condition:{field:"case-resolution",equals:"Violation of Probation"}},
           {id:"dismissal-reason", label:"Reason for dismissal:", type:"decision", required:true, condition:{field:"case-resolution",equals:"Dismissal"},
-            options:["No information filed","Nolle prosequi (prosecution dropped)","Directed verdict","Successful motion to suppress","Other"]},
+            options:["No information filed","Nolle prosequi (prosecution dropped)","Directed verdict","Successful motion to suppress","Other"],
+            help:"Nolle prosequi means the State formally dropped the charges. A directed verdict means the judge ruled the evidence couldn't support a conviction."},
           {id:"dismissal-date", label:"Date of dismissal:", type:"date", required:true, condition:{field:"case-resolution",equals:"Dismissal"}},
-          {id:"offense",       label:"Primary Offense",type:"text",  required:true, placeholder:"e.g., Robbery with a Firearm"},
-          {id:"offense-statute",label:"Florida Statute",            type:"text",  required:false,placeholder:"e.g., F.S. § 812.13(2)(a)"},
-          {id:"conviction-date",label:"Date of Conviction / Judgment",  type:"date",  required:true},
-          {id:"sentence-date",  label:"Date of Sentencing",         type:"date",  required:true},
-          {id:"sentence-terms", label:"Sentence Imposed",           type:"text",  required:true, placeholder:"e.g., 15 years DOC + 5 years probation"},
+          {id:"offense",       label:"Primary Offense",type:"text",  required:true, placeholder:"e.g., Robbery with a Firearm",
+            help:"The lead charge you were convicted of — use the name from the judgment, not the original arrest charge if it changed."},
+          {id:"offense-statute",label:"Florida Statute",            type:"text",  required:false,placeholder:"e.g., F.S. § 812.13(2)(a)",
+            help:"Found on your judgment next to the offense. Helps cite the correct law in your motion, but the motion can still be drafted without it."},
+          {id:"conviction-date",label:"Date of Conviction / Judgment",  type:"date",  required:true,
+            help:"The date the court entered judgment — usually the same day as sentencing unless they were split into separate hearings."},
+          {id:"sentence-date",  label:"Date of Sentencing",         type:"date",  required:true,
+            help:"If your conviction became final without a direct appeal, this date (plus 30 days) is what starts your 2-year Rule 3.850 clock."},
+          {id:"sentence-terms", label:"Sentence Imposed",           type:"text",  required:true, placeholder:"e.g., 15 years DOC + 5 years probation",
+            help:"Summarize the full sentence — prison/jail time, probation, fines — as written on the judgment."},
           {id:"currently-incarcerated", label:"Are you currently incarcerated?", type:"decision", required:true,
-            options:["Yes — in DOC custody","No — on probation / supervision","No — sentence completed"]},
+            options:["Yes — in DOC custody","No — on probation / supervision","No — sentence completed"],
+            help:"Rule 3.850 relief is available whether or not you're still in custody, but this affects where the motion is filed and what relief makes sense."},
         ]
       },
       {
@@ -59,12 +79,18 @@ const FLOWS = {
         sub:"Select all grounds that apply to your case.",
         tip:{label:"LEGAL STANDARD — Strickland v. Washington (1984)", text:"For IAC, you must show deficiency AND prejudice."},
         fields:[
-          {id:"grounds-iac",   label:"Ineffective Assistance of Counsel",  type:"checkbox", detail:"Attorney's performance fell below an objective standard of reasonableness AND prejudiced the outcome"},
-          {id:"grounds-new",   label:"Newly Discovered Evidence",          type:"checkbox", detail:"Evidence not available at trial that would probably produce an acquittal"},
-          {id:"grounds-plea",  label:"Involuntary or Uninformed Plea",     type:"checkbox", detail:"Plea was not knowing, voluntary, and intelligent"},
-          {id:"grounds-sentence",label:"Illegal or Unconstitutional Sentence",type:"checkbox",detail:"Sentence exceeds statutory maximum or violates constitutional protections"},
-          {id:"grounds-brady", label:"Brady Violation",                    type:"checkbox", detail:"Prosecution withheld material evidence favorable to the defense"},
-          {id:"grounds-other", label:"Other Constitutional Violation",     type:"checkbox", detail:"Specify in the next section"},
+          {id:"grounds-iac",   label:"Ineffective Assistance of Counsel",  type:"checkbox", detail:"Attorney's performance fell below an objective standard of reasonableness AND prejudiced the outcome",
+            help:"The most common 3.850 ground. You must show both that counsel's performance was deficient and that it changed the outcome — Strickland v. Washington."},
+          {id:"grounds-new",   label:"Newly Discovered Evidence",          type:"checkbox", detail:"Evidence not available at trial that would probably produce an acquittal",
+            help:"Only applies if the evidence genuinely could not have been found earlier with reasonable diligence — not evidence you simply didn't use."},
+          {id:"grounds-plea",  label:"Involuntary or Uninformed Plea",     type:"checkbox", detail:"Plea was not knowing, voluntary, and intelligent",
+            help:"Use this if you weren't told the real consequences of your plea (e.g., deportation, sex-offender registration) or were pressured/misled into it."},
+          {id:"grounds-sentence",label:"Illegal or Unconstitutional Sentence",type:"checkbox",detail:"Sentence exceeds statutory maximum or violates constitutional protections",
+            help:"If the issue is only the sentence (not the conviction), Rule 3.800(a) may be a faster, no-deadline alternative — check the Tools tab."},
+          {id:"grounds-brady", label:"Brady Violation",                    type:"checkbox", detail:"Prosecution withheld material evidence favorable to the defense",
+            help:"Applies when the State had evidence helpful to your defense and didn't turn it over before trial or plea."},
+          {id:"grounds-other", label:"Other Constitutional Violation",     type:"checkbox", detail:"Specify in the next section",
+            help:"Use this for constitutional claims that don't fit the categories above — you'll describe the specific violation in the facts section."},
         ]
       },
       {
@@ -73,9 +99,12 @@ const FLOWS = {
         sub:"Describe the specific facts supporting your grounds for relief.",
         tip:{label:"WRITING GUIDANCE", text:"Each ground must be supported by specific facts, not just legal conclusions."},
         fields:[
-          {id:"facts-main",    label:"Statement of Facts",    type:"textarea", required:true,  placeholder:"Describe in detail the facts supporting each ground for relief you selected above."},
-          {id:"relief-sought", label:"Relief Requested",      type:"select", options:["Evidentiary Hearing","Vacation of Conviction","New Trial","Resentencing","Correction of Sentence","Other"], required:true},
-          {id:"prior-motions", label:"Have you filed a prior Rule 3.850 motion?", type:"select", options:["No — this is my first","Yes — previous motion was denied","Yes — previous motion was withdrawn"], required:true},
+          {id:"facts-main",    label:"Statement of Facts",    type:"textarea", required:true,  placeholder:"Describe in detail the facts supporting each ground for relief you selected above.",
+            help:"Write what happened, when, and who was involved — specific facts, not conclusions like 'my lawyer was bad.' Courts deny motions that only assert legal conclusions."},
+          {id:"relief-sought", label:"Relief Requested",      type:"select", options:["Evidentiary Hearing","Vacation of Conviction","New Trial","Resentencing","Correction of Sentence","Other"], required:true,
+            help:"What you're asking the court to do if your motion succeeds. An evidentiary hearing lets you present witnesses/evidence; the others are final outcomes."},
+          {id:"prior-motions", label:"Have you filed a prior Rule 3.850 motion?", type:"select", options:["No — this is my first","Yes — previous motion was denied","Yes — previous motion was withdrawn"], required:true,
+            help:"Florida limits successive 3.850 motions — a prior denied motion on the same grounds can bar a new one unless an exception applies."},
         ]
       },
       {
@@ -84,12 +113,17 @@ const FLOWS = {
         sub:"This information appears on the motion certificate of service and signature block.",
         tip:{label:"PRO SE NOTE", text:"As a pro se filer, you must sign the motion under penalty of perjury."},
         fields:[
-          {id:"filer-name",    label:"Your Full Name (as it appears on judgment)", type:"text", required:true},
-          {id:"dc-number",     label:"DC Number (if in DOC custody)",              type:"text", required:false, placeholder:"e.g., A12345"},
-          {id:"filer-address", label:"Mailing Address",                            type:"text", required:true, placeholder:"Current address or institution address"},
+          {id:"filer-name",    label:"Your Full Name (as it appears on judgment)", type:"text", required:true,
+            help:"Should match the name field from the Case Information step — used again here for the signature block."},
+          {id:"dc-number",     label:"DC Number (if in DOC custody)",              type:"text", required:false, placeholder:"e.g., A12345",
+            help:"Your Florida DOC inmate number, found on your DOC ID or mail. Leave blank if you're not currently in DOC custody."},
+          {id:"filer-address", label:"Mailing Address",                            type:"text", required:true, placeholder:"Current address or institution address",
+            help:"Where the court and State Attorney should send filings back to you — use your full institution address if incarcerated."},
           {id:"filer-city",    label:"City, State, ZIP",                           type:"text", required:true, placeholder:"e.g., Fort Lauderdale, FL 33301"},
-          {id:"state-atty-addr",label:"State Attorney's Office Address (for service)",type:"text",required:true, placeholder:"e.g., 201 SE 6th St, Fort Lauderdale, FL 33301"},
-          {id:"date-signed",   label:"Date",                                       type:"date", required:true},
+          {id:"state-atty-addr",label:"State Attorney's Office Address (for service)",type:"text",required:true, placeholder:"e.g., 201 SE 6th St, Fort Lauderdale, FL 33301",
+            help:"You must serve a copy on the State Attorney's office for the county of conviction — this address goes on the certificate of service."},
+          {id:"date-signed",   label:"Date",                                       type:"date", required:true,
+            help:"The date you're signing the motion — you're certifying under penalty of perjury that the facts stated are true as of this date."},
         ]
       }
     ]
@@ -107,11 +141,11 @@ const FLOWS = {
         sub:"Enter your case details as they appear on your judgment and sentence.",
         tip:{label:"KEY ADVANTAGE — No Deadline", text:"Unlike Rule 3.850, a 3.800(a) motion has NO time limit."},
         fields:[
-          {id:"county",    label:"County of Conviction", type:"text", required:true, placeholder:"e.g., Miami-Dade"},
-          {id:"case-num",  label:"Case Number",          type:"text", required:true},
-          {id:"def-name",  label:"Full Legal Name",      type:"text", required:true},
-          {id:"dc-number", label:"DC Number (if applicable)", type:"text", required:false},
-          {id:"judge",     label:"Sentencing Judge",     type:"text", required:false},
+          {id:"county",    label:"County of Conviction", type:"text", required:true, placeholder:"e.g., Miami-Dade", help:"The Florida county where you were convicted, not where you live now or are incarcerated."},
+          {id:"case-num",  label:"Case Number",          type:"text", required:true, help:"Copy this exactly from your judgment or sentencing order."},
+          {id:"def-name",  label:"Full Legal Name",      type:"text", required:true, help:"Use your name exactly as it appears on the judgment."},
+          {id:"dc-number", label:"DC Number (if applicable)", type:"text", required:false, help:"Your Florida DOC inmate number. Leave blank if you're not currently in DOC custody."},
+          {id:"judge",     label:"Sentencing Judge",     type:"text", required:false, help:"The judge who imposed the sentence — found on the judgment. Optional."},
         ]
       },
       {
@@ -120,12 +154,12 @@ const FLOWS = {
         sub:"Describe the sentence imposed and why it is illegal.",
         tip:{label:"WHAT MAKES A SENTENCE 'ILLEGAL'", text:"A sentence is illegal if it exceeds the statutory maximum or violates constitutional protections."},
         fields:[
-          {id:"offense",           label:"Offense Convicted Of",          type:"text",   required:true},
-          {id:"offense-statute",   label:"Florida Statute",               type:"text",   required:true, placeholder:"e.g., F.S. § 893.13"},
-          {id:"sentence-imposed",  label:"Sentence Imposed",              type:"text",   required:true, placeholder:"e.g., 20 years Florida DOC"},
-          {id:"max-sentence",      label:"Statutory Maximum for Offense", type:"text",   required:true, placeholder:"e.g., 15 years"},
-          {id:"illegal-basis",     label:"Basis of Illegality",          type:"select",  options:["Exceeds statutory maximum","Below mandatory minimum","Double jeopardy violation","Scoresheet calculation error","Habitual Offender designation improper","Other illegal basis"], required:true},
-          {id:"illegal-explain",   label:"Explain Why the Sentence Is Illegal", type:"textarea", required:true, placeholder:"Be specific: cite the statute that caps the sentence..."},
+          {id:"offense",           label:"Offense Convicted Of",          type:"text",   required:true, help:"The lead charge from the judgment — what you were actually convicted of, not the original arrest charge."},
+          {id:"offense-statute",   label:"Florida Statute",               type:"text",   required:true, placeholder:"e.g., F.S. § 893.13", help:"Found on your judgment next to the offense. Needed to identify the correct statutory maximum."},
+          {id:"sentence-imposed",  label:"Sentence Imposed",              type:"text",   required:true, placeholder:"e.g., 20 years Florida DOC", help:"The exact sentence the court imposed, as written on the judgment."},
+          {id:"max-sentence",      label:"Statutory Maximum for Offense", type:"text",   required:true, placeholder:"e.g., 15 years", help:"The highest sentence the law allows for this degree of offense — this is what your sentence is being compared against."},
+          {id:"illegal-basis",     label:"Basis of Illegality",          type:"select",  options:["Exceeds statutory maximum","Below mandatory minimum","Double jeopardy violation","Scoresheet calculation error","Habitual Offender designation improper","Other illegal basis"], required:true, help:"Pick the specific legal defect — this drives which argument and case law the motion cites."},
+          {id:"illegal-explain",   label:"Explain Why the Sentence Is Illegal", type:"textarea", required:true, placeholder:"Be specific: cite the statute that caps the sentence...", help:"Walk through the math or legal rule that makes the sentence illegal — courts deny vague claims that don't show the specific defect."},
         ]
       },
       {
@@ -134,8 +168,8 @@ const FLOWS = {
         sub:"State exactly what sentence correction you are asking the court to make.",
         tip:{label:"BE SPECIFIC", text:"Tell the court exactly what the correct sentence should be."},
         fields:[
-          {id:"relief-requested", label:"Specific Relief Requested", type:"textarea", required:true, placeholder:"e.g., 'Petitioner respectfully requests the Court correct the illegal sentence...'"},
-          {id:"filer-address",   label:"Your Mailing Address",      type:"text",     required:true},
+          {id:"relief-requested", label:"Specific Relief Requested", type:"textarea", required:true, placeholder:"e.g., 'Petitioner respectfully requests the Court correct the illegal sentence...'", help:"State the exact corrected sentence you want — a 3.800(a) motion that just says 'illegal' without naming the fix is often denied."},
+          {id:"filer-address",   label:"Your Mailing Address",      type:"text",     required:true, help:"Where the clerk will mail the court's order."},
           {id:"filer-city",      label:"City, State, ZIP",          type:"text",     required:true},
           {id:"date-signed",     label:"Date",                      type:"date",     required:true},
         ]
@@ -155,10 +189,10 @@ const FLOWS = {
         sub:"Florida has strict eligibility requirements.",
         tip:{label:"ONE CHANCE", text:"Florida allows only ONE sealing or expunction per lifetime."},
         fields:[
-          {id:"elig-prior-seal",     label:"Have you previously had a record sealed or expunged (any state)?", type:"select", options:["No — never","Yes — this may disqualify me"], required:true},
-          {id:"elig-convicted",      label:"Were you adjudicated guilty (convicted)?", type:"select", options:["No — adjudication was withheld","Yes — I was convicted"], required:true},
-          {id:"elig-charge-type",    label:"Type of charge to be sealed/expunged", type:"select", options:["Arrest only — charges never filed","Charges filed — case dismissed","Charges filed — nolle prosse","No information filed","Withhold of adjudication","Other"], required:true},
-          {id:"elig-disqualifying",  label:"Does the charge involve any of the following?", type:"select", options:["None of the below","Murder or manslaughter","Sexual offense","Child abuse","Robbery","Terrorism","Other disqualifying offense"], required:true},
+          {id:"elig-prior-seal",     label:"Have you previously had a record sealed or expunged (any state)?", type:"select", options:["No — never","Yes — this may disqualify me"], required:true, help:"Florida allows only one sealing or expungement per lifetime, ever, in any state — a prior one almost always disqualifies a new petition."},
+          {id:"elig-convicted",      label:"Were you adjudicated guilty (convicted)?", type:"select", options:["No — adjudication was withheld","Yes — I was convicted"], required:true, help:"Most convictions cannot be sealed or expunged — withhold of adjudication is what makes most petitions eligible."},
+          {id:"elig-charge-type",    label:"Type of charge to be sealed/expunged", type:"select", options:["Arrest only — charges never filed","Charges filed — case dismissed","Charges filed — nolle prosse","No information filed","Withhold of adjudication","Other"], required:true, help:"How the case ended controls whether you need sealing or expungement, and which one you qualify for."},
+          {id:"elig-disqualifying",  label:"Does the charge involve any of the following?", type:"select", options:["None of the below","Murder or manslaughter","Sexual offense","Child abuse","Robbery","Terrorism","Other disqualifying offense"], required:true, help:"These offense categories are permanently disqualifying under Florida law, regardless of how the case ended."},
         ]
       },
       {
@@ -167,12 +201,12 @@ const FLOWS = {
         sub:"Provide details about the specific record.",
         tip:{label:"SEALING vs. EXPUNGEMENT", text:"EXPUNGEMENT destroys records. SEALING hides records from public view."},
         fields:[
-          {id:"relief-type",    label:"Are you seeking sealing or expungement?", type:"select", options:["Sealing (F.S. § 943.059)","Expungement (F.S. § 943.0585)"], required:true},
-          {id:"arrest-date",    label:"Date of Arrest",           type:"date", required:true},
-          {id:"arrest-charge",  label:"Charge(s) to be Sealed/Expunged", type:"text", required:true, placeholder:"e.g., Possession of Cannabis"},
-          {id:"arresting-agency",label:"Arresting Agency",        type:"text", required:true, placeholder:"e.g., Broward County Sheriff's Office"},
+          {id:"relief-type",    label:"Are you seeking sealing or expungement?", type:"select", options:["Sealing (F.S. § 943.059)","Expungement (F.S. § 943.0585)"], required:true, help:"Expungement (charges dropped/acquitted) physically destroys the record; sealing (withhold of adjudication) hides it from public view but keeps it for law enforcement."},
+          {id:"arrest-date",    label:"Date of Arrest",           type:"date", required:true, help:"The date law enforcement took you into custody for this charge."},
+          {id:"arrest-charge",  label:"Charge(s) to be Sealed/Expunged", type:"text", required:true, placeholder:"e.g., Possession of Cannabis", help:"The exact charge(s) named on the arrest record, not necessarily the final charge filed."},
+          {id:"arresting-agency",label:"Arresting Agency",        type:"text", required:true, placeholder:"e.g., Broward County Sheriff's Office", help:"The police department or sheriff's office that made the arrest — needed to notify them of the order."},
           {id:"arrest-county",  label:"County of Arrest",         type:"text", required:true},
-          {id:"obt-number",     label:"OBT Number (if known)",    type:"text", required:false, placeholder:"From your criminal history report"},
+          {id:"obt-number",     label:"OBT Number (if known)",    type:"text", required:false, placeholder:"From your criminal history report", help:"The booking/tracking number on your FDLE criminal history report. Speeds up processing but not required to file."},
         ]
       },
       {
@@ -181,10 +215,10 @@ const FLOWS = {
         sub:"Before filing with the court, you must first obtain a Certificate of Eligibility from FDLE.",
         tip:{label:"REQUIRED FIRST STEP", text:"You CANNOT file without first obtaining a Certificate of Eligibility."},
         fields:[
-          {id:"fdle-cert-obtained", label:"Have you obtained your FDLE Certificate of Eligibility?", type:"select", options:["Yes — I have the certificate","No — I need to apply first","Applied — waiting for certificate"], required:true},
+          {id:"fdle-cert-obtained", label:"Have you obtained your FDLE Certificate of Eligibility?", type:"select", options:["Yes — I have the certificate","No — I need to apply first","Applied — waiting for certificate"], required:true, help:"The court cannot grant your petition without this certificate attached — apply to FDLE before drafting if you haven't already."},
           {id:"fdle-cert-date",     label:"Certificate Issue Date (if obtained)",  type:"date",  required:false},
-          {id:"fdle-cert-number",   label:"Certificate Number (if obtained)",      type:"text",  required:false},
-          {id:"atty-general-copy",  label:"Will you serve the Attorney General?",  type:"select", options:["Yes — required by statute","No — I need to review this requirement"], required:true},
+          {id:"fdle-cert-number",   label:"Certificate Number (if obtained)",      type:"text",  required:false, help:"Printed on the certificate FDLE sends you."},
+          {id:"atty-general-copy",  label:"Will you serve the Attorney General?",  type:"select", options:["Yes — required by statute","No — I need to review this requirement"], required:true, help:"Florida law requires serving a copy of the petition on the Office of the Attorney General."},
         ]
       },
       {
@@ -192,7 +226,7 @@ const FLOWS = {
         title:"Petitioner Information",
         sub:"Your personal information for the petition.",
         fields:[
-          {id:"pet-name",     label:"Full Legal Name",       type:"text", required:true},
+          {id:"pet-name",     label:"Full Legal Name",       type:"text", required:true, help:"Use your name exactly as it appears on the arrest record."},
           {id:"pet-dob",      label:"Date of Birth",         type:"date", required:true},
           {id:"pet-address",  label:"Current Address",       type:"text", required:true},
           {id:"pet-city",     label:"City, State, ZIP",      type:"text", required:true},
@@ -215,13 +249,13 @@ const FLOWS = {
         sub:"Enter your current probation details. You must have completed at least 50% of the term.",
         tip:{label:"YOUR RIGHT — Fla. Stat. § 948.04", text:"This is not a favor — it is a statutory entitlement."},
         fields:[
-          {id:"county",          label:"County of Supervision",      type:"text", required:true},
+          {id:"county",          label:"County of Supervision",      type:"text", required:true, help:"The county where your probation is supervised, not necessarily where you were convicted."},
           {id:"case-num",        label:"Case Number",                type:"text", required:true},
           {id:"def-name",        label:"Full Legal Name",            type:"text", required:true},
           {id:"offense",         label:"Conviction Offense",         type:"text", required:true},
-          {id:"prob-start",      label:"Probation Start Date",       type:"date", required:true},
+          {id:"prob-start",      label:"Probation Start Date",       type:"date", required:true, help:"Used to calculate what percentage of your term you've completed — you generally need at least half."},
           {id:"prob-end",        label:"Scheduled End Date",         type:"date", required:true},
-          {id:"prob-type",       label:"Type of Supervision",        type:"select", options:["Standard Probation","Community Control","Drug Offender Probation","Sex Offender Probation","Administrative Probation"], required:true},
+          {id:"prob-type",       label:"Type of Supervision",        type:"select", options:["Standard Probation","Community Control","Drug Offender Probation","Sex Offender Probation","Administrative Probation"], required:true, help:"Some supervision types (e.g., sex offender probation) have stricter early-termination limits than others."},
           {id:"po-name",         label:"Probation Officer Name",     type:"text", required:false},
           {id:"po-office",       label:"P.O. Office Address",        type:"text", required:false},
         ]
@@ -232,12 +266,12 @@ const FLOWS = {
         sub:"Document your compliance.",
         tip:{label:"THE EVIDENCE BOX", text:"Organized documentation wins."},
         fields:[
-          {id:"fees-paid",       label:"Are all supervision fees current?", type:"select", options:["Yes — all fees paid","Substantially paid","Payment plan established"], required:true},
-          {id:"restitution-status",label:"Restitution status", type:"select", options:["Paid in full","Payment plan — current","No restitution ordered"], required:true},
+          {id:"fees-paid",       label:"Are all supervision fees current?", type:"select", options:["Yes — all fees paid","Substantially paid","Payment plan established"], required:true, help:"Outstanding fees are one of the most common reasons courts deny early termination."},
+          {id:"restitution-status",label:"Restitution status", type:"select", options:["Paid in full","Payment plan — current","No restitution ordered"], required:true, help:"Unpaid restitution to a victim is a strong reason courts deny termination, even with otherwise perfect compliance."},
           {id:"drug-tests",      label:"Drug test compliance", type:"select", options:["All tests passed","Not required","One or more violations"], required:true},
-          {id:"employed",        label:"Employment status", type:"select", options:["Employed — full time","Employed — part time","Self-employed","Disability / unable to work","Actively seeking"], required:true},
+          {id:"employed",        label:"Employment status", type:"select", options:["Employed — full time","Employed — part time","Self-employed","Disability / unable to work","Actively seeking"], required:true, help:"Stable employment is one of the factors courts weigh most heavily in granting early termination."},
           {id:"community-service",label:"Community service hours (if ordered)", type:"text", required:false, placeholder:"e.g., 100 of 100 hours completed"},
-          {id:"violations",      label:"Any violations of probation on record?", type:"select", options:["No violations","One minor technical violation","Multiple violations"], required:true},
+          {id:"violations",      label:"Any violations of probation on record?", type:"select", options:["No violations","One minor technical violation","Multiple violations"], required:true, help:"Be honest here — courts check the record, and an undisclosed violation undermines your credibility on everything else."},
         ]
       },
       {
@@ -246,8 +280,8 @@ const FLOWS = {
         sub:"The P.O.'s position significantly affects outcomes.",
         tip:{label:"THE NO-OBJECTION STRATEGY", text:"A P.O. 'No Objection' letter helps significantly."},
         fields:[
-          {id:"po-position",     label:"P.O.'s position on early termination", type:"select", options:["P.O. recommends / no objection","P.O. neutral","P.O. objects","Unknown"], required:true},
-          {id:"po-letter",       label:"Do you have a written P.O. letter?", type:"select", options:["Yes — attaching as exhibit","No — verbal support only","No — P.O. did not provide one"], required:false},
+          {id:"po-position",     label:"P.O.'s position on early termination", type:"select", options:["P.O. recommends / no objection","P.O. neutral","P.O. objects","Unknown"], required:true, help:"Judges give significant weight to whether the supervising P.O. supports or opposes the request."},
+          {id:"po-letter",       label:"Do you have a written P.O. letter?", type:"select", options:["Yes — attaching as exhibit","No — verbal support only","No — P.O. did not provide one"], required:false, help:"A written letter carries more weight than a verbal statement and can be attached as an exhibit."},
         ]
       },
       {
@@ -256,8 +290,8 @@ const FLOWS = {
         sub:"State the specific facts supporting your petition.",
         tip:{label:"WHAT TO INCLUDE", text:"Highlight: percentage of term completed, all conditions met."},
         fields:[
-          {id:"facts",           label:"Statement Supporting Petition", type:"textarea", required:true, placeholder:"Petitioner has completed ___% of the probationary term..."},
-          {id:"alternative",     label:"If full termination is not granted, request:", type:"select", options:["Administrative Probation — no reporting","Reduction of remaining term","No alternative requested"], required:false},
+          {id:"facts",           label:"Statement Supporting Petition", type:"textarea", required:true, placeholder:"Petitioner has completed ___% of the probationary term...", help:"Lead with the percentage of the term completed and a summary of full compliance — specifics persuade more than general good-conduct claims."},
+          {id:"alternative",     label:"If full termination is not granted, request:", type:"select", options:["Administrative Probation — no reporting","Reduction of remaining term","No alternative requested"], required:false, help:"A fallback request gives the judge a middle option if they're not ready to grant full termination."},
           {id:"filer-address",   label:"Your Address",                    type:"text", required:true},
           {id:"filer-city",      label:"City, State, ZIP",                type:"text", required:true},
           {id:"date-signed",     label:"Date",                            type:"date", required:true},
@@ -281,10 +315,10 @@ const FLOWS = {
           {id:"county",        label:"County",                         type:"text",   required:true},
           {id:"case-num",      label:"Case Number",                    type:"text",   required:true},
           {id:"def-name",      label:"Full Legal Name",                type:"text",   required:true},
-          {id:"rest-amount",   label:"Total Restitution Ordered ($)",  type:"text",   required:true, placeholder:"e.g., $15,500.00"},
-          {id:"rest-paid",     label:"Amount Paid to Date ($)",        type:"text",   required:true, placeholder:"e.g., $2,200.00"},
+          {id:"rest-amount",   label:"Total Restitution Ordered ($)",  type:"text",   required:true, placeholder:"e.g., $15,500.00", help:"The full amount from the restitution order, not what's currently owed."},
+          {id:"rest-paid",     label:"Amount Paid to Date ($)",        type:"text",   required:true, placeholder:"e.g., $2,200.00", help:"Shows the court you've been making a genuine effort, even if the current payment amount is unaffordable."},
           {id:"rest-monthly",  label:"Current Monthly Payment Ordered",type:"text",   required:true, placeholder:"e.g., $250/month"},
-          {id:"rest-victim",   label:"Victim Name (if known)",         type:"text",   required:false},
+          {id:"rest-victim",   label:"Victim Name (if known)",         type:"text",   required:false, help:"Used for the certificate of service — the victim is entitled to notice of a modification request."},
         ]
       },
       {
@@ -293,14 +327,14 @@ const FLOWS = {
         sub:"Document your income and expenses.",
         tip:{label:"HARDSHIP WORKSHEET", text:"Courts must consider financial resources and dependent obligations."},
         fields:[
-          {id:"monthly-income",  label:"Gross Monthly Income ($)",        type:"text", required:true, placeholder:"All sources combined"},
+          {id:"monthly-income",  label:"Gross Monthly Income ($)",        type:"text", required:true, placeholder:"All sources combined", help:"Under Bearden v. Georgia, the court must weigh your actual ability to pay against the current payment amount."},
           {id:"income-source",   label:"Source of Income",                type:"text", required:true, placeholder:"e.g., Employment at [employer]"},
           {id:"monthly-rent",    label:"Monthly Rent / Housing ($)",      type:"text", required:true},
           {id:"monthly-food",    label:"Monthly Food / Utilities ($)",     type:"text", required:true},
           {id:"monthly-transport",label:"Transportation ($)",             type:"text", required:true},
           {id:"monthly-other",   label:"Other Essential Expenses ($)",    type:"text", required:false, placeholder:"Medical, childcare, court fees, etc."},
-          {id:"dependents",      label:"Number of Dependents",            type:"text", required:false, placeholder:"e.g., 2 children"},
-          {id:"modification-request",label:"Requested Modified Payment ($)",type:"text",required:true, placeholder:"e.g., $50/month"},
+          {id:"dependents",      label:"Number of Dependents",            type:"text", required:false, placeholder:"e.g., 2 children", help:"Courts must consider dependents you're financially responsible for when setting an affordable payment."},
+          {id:"modification-request",label:"Requested Modified Payment ($)",type:"text",required:true, placeholder:"e.g., $50/month", help:"Propose a specific, realistic number based on the income/expenses above — an open-ended request is harder for a judge to grant."},
         ]
       },
       {
@@ -309,8 +343,8 @@ const FLOWS = {
         sub:"Document every effort you have made to pay.",
         tip:{label:"CRITICAL", text:"Courts look for evidence you tried to pay even when you couldn't."},
         fields:[
-          {id:"efforts",       label:"Describe your bona fide efforts to pay", type:"textarea", required:true, placeholder:"e.g., Made consistent $50 monthly payments..."},
-          {id:"changed-circum",label:"What changed circumstances make payment impossible?", type:"textarea", required:true, placeholder:"e.g., Lost employment on [date]..."},
+          {id:"efforts",       label:"Describe your bona fide efforts to pay", type:"textarea", required:true, placeholder:"e.g., Made consistent $50 monthly payments...", help:"This is the core of a Bearden defense — the court can't revoke probation for nonpayment if you genuinely tried but couldn't afford the full amount."},
+          {id:"changed-circum",label:"What changed circumstances make payment impossible?", type:"textarea", required:true, placeholder:"e.g., Lost employment on [date]...", help:"Be specific about what changed since the original order was set — a job loss, medical issue, or new dependent."},
           {id:"filer-address", label:"Your Address",    type:"text", required:true},
           {id:"filer-city",    label:"City, State, ZIP",type:"text", required:true},
           {id:"date-signed",   label:"Date",            type:"date", required:true},
@@ -333,11 +367,11 @@ const FLOWS = {
         fields:[
           {id:"case-num",      label:"Case Number",             type:"text", required:true, placeholder:"e.g., 2019-CF-012345"},
           {id:"county",        label:"County / Trial Court",    type:"text", required:true, placeholder:"e.g., Broward"},
-          {id:"judgment-date", label:"Judgment / Order Date",   type:"date", required:true},
-          {id:"appeal-due",    label:"Notice of Appeal Due Date",type:"date", required:false},
+          {id:"judgment-date", label:"Judgment / Order Date",   type:"date", required:true, help:"The date the order or judgment you're appealing was entered — your 30-day Notice of Appeal clock starts here."},
+          {id:"appeal-due",    label:"Notice of Appeal Due Date",type:"date", required:false, help:"Generally 30 days after the judgment/order date under Fla. R. App. P. 9.110."},
           {id:"notice-filed-date", label:"Notice Filed Date", type:"date", required:false},
           {id:"record-due-date", label:"Record Due Date", type:"date", required:false},
-          {id:"appellate-dca", label:"Appellate District / Court", type:"select", required:true, options:["First District Court of Appeal","Second District Court of Appeal","Third District Court of Appeal","Fourth District Court of Appeal","Fifth District Court of Appeal","Florida Supreme Court / Other"]},
+          {id:"appellate-dca", label:"Appellate District / Court", type:"select", required:true, options:["First District Court of Appeal","Second District Court of Appeal","Third District Court of Appeal","Fourth District Court of Appeal","Fifth District Court of Appeal","Florida Supreme Court / Other"], help:"Determined by which county the trial court is in — each Florida county is assigned to one of five DCAs."},
           {id:"appellant-name",label:"Appellant Name",          type:"text", required:true, placeholder:"As it appears on the lower-court record"},
         ]
       },
@@ -347,8 +381,8 @@ const FLOWS = {
         sub:"State the errors you want reviewed.",
         tip:{label:"APPELLATE FOCUS", text:"An appellate court reviews legal error and preserved issues."},
         fields:[
-          {id:"issues-summary", label:"Primary Issues on Appeal", type:"textarea", required:true, placeholder:"List each issue separately..."},
-          {id:"preservation",    label:"How the Issue Was Preserved", type:"textarea", required:true, placeholder:"Identify the objection, motion, or argument..."},
+          {id:"issues-summary", label:"Primary Issues on Appeal", type:"textarea", required:true, placeholder:"List each issue separately...", help:"Appellate courts review legal errors, not factual disagreements — frame each issue as a specific ruling the trial court got wrong."},
+          {id:"preservation",    label:"How the Issue Was Preserved", type:"textarea", required:true, placeholder:"Identify the objection, motion, or argument...", help:"An issue not objected to at trial is usually waived on appeal — show exactly where and how you raised it below."},
           {id:"record-cites",    label:"Key Record References", type:"textarea", required:false, placeholder:"Transcript pages, hearing dates, etc."},
           {id:"relief-requested",label:"Requested Appellate Relief", type:"textarea", required:true, placeholder:"e.g., reversal, remand for new trial..."},
         ]
@@ -359,7 +393,7 @@ const FLOWS = {
         sub:"Track the record needed for appellate review.",
         tip:{label:"BUILD THE RECORD", text:"The appeal lives or dies on the record."},
         fields:[
-          {id:"transcript-status", label:"Transcript Status", type:"select", required:true, options:["Not ordered","Ordered","Partially received","Complete","Not required / record-only issue"]},
+          {id:"transcript-status", label:"Transcript Status", type:"select", required:true, options:["Not ordered","Ordered","Partially received","Complete","Not required / record-only issue"], help:"The appellate court can only review what's in the record — an issue without a transcript to support it usually can't be reviewed."},
           {id:"record-items",      label:"Record Items Needed", type:"textarea", required:true, placeholder:"Orders, hearing transcripts, exhibits..."},
           {id:"filing-status",     label:"Current Filing Status", type:"textarea", required:false, placeholder:"Notice filed, extensions, etc."},
           {id:"service-list",      label:"Service / Notice Recipients", type:"textarea", required:false, placeholder:"State Attorney, Clerk, opposing counsel..."},
@@ -396,7 +430,7 @@ const FLOWS = {
           {id:"county",        label:"County / Trial Court", type:"text", required:true, placeholder:"e.g., Broward"},
           {id:"appellant-name", label:"Appellant Name", type:"text", required:true, placeholder:"As it appears on the lower-court record"},
           {id:"appellate-dca", label:"Appellate District / Court", type:"select", required:true, options:["First District Court of Appeal","Second District Court of Appeal","Third District Court of Appeal","Fourth District Court of Appeal","Fifth District Court of Appeal","Florida Supreme Court / Other"]},
-          {id:"transcript-status", label:"Transcript Status", type:"select", required:true, options:["Not ordered","Ordered","Partially received","Complete","Not required / record-only issue"]},
+          {id:"transcript-status", label:"Transcript Status", type:"select", required:true, options:["Not ordered","Ordered","Partially received","Complete","Not required / record-only issue"], help:"You can't designate transcripts you haven't ordered yet — order them as early as possible since court reporters often take weeks."},
         ]
       },
       {
@@ -405,10 +439,10 @@ const FLOWS = {
         sub:"List the filings, transcripts, and exhibits to include.",
         tip:{label:"DESIGNATE WITH PRECISION", text:"Identify the exact hearing dates, motions, and orders."},
         fields:[
-          {id:"record-items", label:"Record Items to Include", type:"textarea", required:true, placeholder:"Orders, docket entries, hearing transcripts, exhibits..."},
+          {id:"record-items", label:"Record Items to Include", type:"textarea", required:true, placeholder:"Orders, docket entries, hearing transcripts, exhibits...", help:"Be exhaustive — if an order or exhibit isn't designated into the record, the appellate court generally can't consider it."},
           {id:"transcript-dates", label:"Transcript Dates Needed", type:"textarea", required:false, placeholder:"List the hearing dates needed..."},
           {id:"designation-filed", label:"Has the designation been filed?", type:"select", required:true, options:["Yes — designation filed","No — preparing now","Need help identifying items"]},
-          {id:"brief-due-date", label:"Initial Brief Due Date", type:"date", required:false},
+          {id:"brief-due-date", label:"Initial Brief Due Date", type:"date", required:false, help:"Generally 70 days after the notice of appeal under Fla. R. App. P. 9.140, but confirm against the actual docket."},
           {id:"extension-status", label:"Extension / Abeyance Status", type:"textarea", required:false},
           {id:"service-list", label:"Service / Notice Recipients", type:"textarea", required:false},
         ]
@@ -419,8 +453,8 @@ const FLOWS = {
         sub:"Map your issues into a working brief outline.",
         tip:{label:"BRIEF STRATEGY", text:"Start with the heading, issue statement, record cite, law, and remedy."},
         fields:[
-          {id:"issues-summary", label:"Primary Issues for the Brief", type:"textarea", required:true, placeholder:"List the appellate issues in order..."},
-          {id:"standard-review", label:"Standard of Review Notes", type:"textarea", required:false},
+          {id:"issues-summary", label:"Primary Issues for the Brief", type:"textarea", required:true, placeholder:"List the appellate issues in order...", help:"Order issues from strongest to weakest — courts give the most attention to the first issue raised."},
+          {id:"standard-review", label:"Standard of Review Notes", type:"textarea", required:false, help:"E.g., de novo, abuse of discretion, competent substantial evidence — this controls how much deference the trial court's ruling gets."},
           {id:"brief-outline", label:"Initial Brief Structure", type:"textarea", required:true, placeholder:"Intro, statement of case, issue headings, argument..."},
           {id:"relief-requested", label:"Requested Appellate Relief", type:"textarea", required:true, placeholder:"e.g., reversal, remand, resentencing..."},
         ]
@@ -455,9 +489,9 @@ const FLOWS = {
           {id:"case-num", label:"Case Number", type:"text", required:true, placeholder:"e.g., 2019-CF-012345"},
           {id:"appellate-dca", label:"Appellate District / Court", type:"select", required:true, options:["First District Court of Appeal","Second District Court of Appeal","Third District Court of Appeal","Fourth District Court of Appeal","Fifth District Court of Appeal","Florida Supreme Court / Other"]},
           {id:"appellant-name", label:"Appellant Name", type:"text", required:true, placeholder:"As it appears on the appellate docket"},
-          {id:"decision-date", label:"Decision / Opinion Date", type:"date", required:true},
-          {id:"rehearing-due-date", label:"Rehearing Due Date", type:"date", required:false},
-          {id:"mandate-date", label:"Mandate Date (if known)", type:"date", required:false},
+          {id:"decision-date", label:"Decision / Opinion Date", type:"date", required:true, help:"The date the appellate court issued its opinion — your rehearing deadline runs from this date, typically 15 days."},
+          {id:"rehearing-due-date", label:"Rehearing Due Date", type:"date", required:false, help:"Generally 15 days after the decision date under Fla. R. App. P. 9.330 — this deadline is strict."},
+          {id:"mandate-date", label:"Mandate Date (if known)", type:"date", required:false, help:"The mandate transfers the case back to the trial court — once it issues, the appellate court's involvement effectively ends."},
         ]
       },
       {
@@ -466,9 +500,9 @@ const FLOWS = {
         sub:"Explain why rehearing is being sought.",
         tip:{label:"WHAT REHEARING IS FOR", text:"Identify a specific point of law or fact the court overlooked."},
         fields:[
-          {id:"motion-type", label:"Requested Post-Decision Relief", type:"select", required:true, options:["Panel rehearing","Rehearing en banc","Clarification","Certification","Stay of mandate","No rehearing requested"]},
+          {id:"motion-type", label:"Requested Post-Decision Relief", type:"select", required:true, options:["Panel rehearing","Rehearing en banc","Clarification","Certification","Stay of mandate","No rehearing requested"], help:"Each type targets a different problem — rehearing argues the panel erred, clarification asks the court to explain an ambiguous ruling, certification asks it to send a question to a higher court."},
           {id:"motion-filed-date", label:"Motion Filed Date", type:"date", required:false},
-          {id:"rehearing-grounds", label:"Grounds for Relief", type:"textarea", required:true, placeholder:"State the exact issue the court overlooked..."},
+          {id:"rehearing-grounds", label:"Grounds for Relief", type:"textarea", required:true, placeholder:"State the exact issue the court overlooked...", help:"Rehearing is not a chance to re-argue the case — it must point to a specific point of law or fact the court actually overlooked or misapprehended."},
           {id:"record-cites", label:"Record / Opinion References", type:"textarea", required:false},
           {id:"preservation", label:"Preservation Notes", type:"textarea", required:false},
         ]
@@ -479,7 +513,7 @@ const FLOWS = {
         sub:"Track whether you need to stay the mandate.",
         tip:{label:"MANDATE CONTROL", text:"Once the mandate issues, the court's involvement narrows quickly."},
         fields:[
-          {id:"stay-request", label:"Do you want to stay the mandate?", type:"select", required:true, options:["Yes — stay requested","No — allow mandate to issue","Need to decide"]},
+          {id:"stay-request", label:"Do you want to stay the mandate?", type:"select", required:true, options:["Yes — stay requested","No — allow mandate to issue","Need to decide"], help:"Filing a timely motion for rehearing automatically stays the mandate — request a stay separately only if you need more time."},
           {id:"mandate-concern", label:"Why is a stay needed?", type:"textarea", required:false},
           {id:"next-step", label:"Next Filing / Next Step", type:"textarea", required:true, placeholder:"Rehearing motion, notice to higher court..."},
         ]
@@ -514,8 +548,8 @@ const FLOWS = {
           {id:"def-name", label:"Petitioner Name", type:"text", required:true, placeholder:"Name as used in the state case"},
           {id:"county", label:"Florida County of Conviction", type:"text", required:true, placeholder:"e.g., Broward"},
           {id:"case-num", label:"State Case Number", type:"text", required:true, placeholder:"e.g., 2019-CF-012345"},
-          {id:"judgment-date", label:"Judgment / Sentence Date", type:"date", required:true},
-          {id:"custody-status", label:"Current Custody Status", type:"select", required:true, options:["DOC custody","County jail custody","Probation / supervision","Parole / conditional release","Other state custody"]},
+          {id:"judgment-date", label:"Judgment / Sentence Date", type:"date", required:true, help:"Section 2254 has a 1-year federal filing deadline (AEDPA) that runs from when the state judgment became final — state postconviction filings can pause (toll) this clock."},
+          {id:"custody-status", label:"Current Custody Status", type:"select", required:true, options:["DOC custody","County jail custody","Probation / supervision","Parole / conditional release","Other state custody"], help:"Section 2254 requires you to be 'in custody' under the challenged judgment — probation and parole both count."},
         ]
       },
       {
@@ -525,9 +559,9 @@ const FLOWS = {
         tip:{label:"EXHAUSTION IS THE GATEKEEPER", text:"Federal court expects the claim to have been fairly presented first."},
         fields:[
           {id:"direct-appeal-status", label:"Direct Appeal Status", type:"select", required:true, options:["No direct appeal","Direct appeal pending","Direct appeal denied / affirmed","Direct appeal reversed in part","Mandate issued"]},
-          {id:"3850-status", label:"Rule 3.850 Status", type:"select", required:true, options:["Not filed","Filed and denied","Pending","Granted in part","Appeal taken / exhausted"]},
+          {id:"3850-status", label:"Rule 3.850 Status", type:"select", required:true, options:["Not filed","Filed and denied","Pending","Granted in part","Appeal taken / exhausted"], help:"Federal courts generally require every claim to have already gone through Rule 3.850 (and its appeal) before they'll hear it — this is the 'exhaustion' requirement."},
           {id:"3800-status", label:"Rule 3.800 Status", type:"select", required:false, options:["Not filed","Filed and denied","Pending","Granted in part","Appeal taken / exhausted"]},
-          {id:"state-remedies", label:"What state remedies have already been presented?", type:"textarea", required:true, placeholder:"List the state court filings..."},
+          {id:"state-remedies", label:"What state remedies have already been presented?", type:"textarea", required:true, placeholder:"List the state court filings...", help:"List every filing in order — the federal court checks whether each claim you're raising now was actually presented to the state courts first."},
         ]
       },
       {
@@ -536,7 +570,7 @@ const FLOWS = {
         sub:"State the federal constitutional claims clearly.",
         tip:{label:"MAKE THE FEDERAL QUESTION CLEAR", text:"Identify the exact constitutional right at issue."},
         fields:[
-          {id:"grounds-summary", label:"Grounds for Relief", type:"textarea", required:true, placeholder:"List the federal constitutional grounds..."},
+          {id:"grounds-summary", label:"Grounds for Relief", type:"textarea", required:true, placeholder:"List the federal constitutional grounds...", help:"Section 2254 only reaches violations of federal constitutional law — state-law-only claims (even if correct) aren't reviewable here."},
           {id:"supporting-facts", label:"Supporting Facts", type:"textarea", required:true, placeholder:"Explain the facts for each ground..."},
           {id:"record-cites", label:"State Record References", type:"textarea", required:false},
           {id:"relief-requested", label:"Requested Federal Relief", type:"textarea", required:true, placeholder:"Release, new trial, resentencing..."},
@@ -548,9 +582,9 @@ const FLOWS = {
         sub:"Point to the correct Florida federal district.",
         tip:{label:"FILE IN THE RIGHT COURT", text:"The county of conviction points to the correct district."},
         fields:[
-          {id:"federal-district", label:"Federal District", type:"select", required:true, options:["Northern District of Florida","Middle District of Florida","Southern District of Florida"]},
+          {id:"federal-district", label:"Federal District", type:"select", required:true, options:["Northern District of Florida","Middle District of Florida","Southern District of Florida"], help:"Determined by the county of conviction — each Florida county falls within one of the three federal districts."},
           {id:"federal-division", label:"Division / Courthouse", type:"select", required:true, options:["Tallahassee","Gainesville","Pensacola","Fort Myers","Jacksonville","Ocala","Orlando","Tampa","Miami","Fort Lauderdale","West Palm Beach","Fort Pierce","Key West"]},
-          {id:"limitations-notes", label:"Timing / Tolling Notes", type:"textarea", required:false},
+          {id:"limitations-notes", label:"Timing / Tolling Notes", type:"textarea", required:false, help:"Note any periods state postconviction motions were pending — those periods toll (pause) the 1-year AEDPA clock and matter if timeliness is challenged."},
           {id:"filer-address", label:"Mailing Address", type:"text", required:true},
           {id:"filer-city", label:"City, State, ZIP", type:"text", required:true},
         ]
@@ -570,7 +604,7 @@ const FLOWS = {
         sub:"Select the proceeding this packet is being prepared for.",
         tip:{label:"THE CLEMENCY BINDER STRATEGY", text:"Start building this binder on Day 1."},
         fields:[
-          {id:"purpose",      label:"This packet is for", type:"select", options:["Sentencing Hearing","Parole Hearing (FCOR)","Executive Clemency / RCR Application","Probation Violation Hearing","Early Termination Support","Other"], required:true},
+          {id:"purpose",      label:"This packet is for", type:"select", options:["Sentencing Hearing","Parole Hearing (FCOR)","Executive Clemency / RCR Application","Probation Violation Hearing","Early Termination Support","Other"], required:true, help:"The audience and standard differ by proceeding — a clemency board weighs different factors than a sentencing judge."},
           {id:"subject-name", label:"Full Legal Name",              type:"text",   required:true},
           {id:"dc-number",    label:"DC Number (if applicable)",    type:"text",   required:false},
           {id:"case-num",     label:"Case Number",                  type:"text",   required:false},
@@ -583,9 +617,9 @@ const FLOWS = {
         sub:"Humanize the person beyond the offense.",
         tip:{label:"WHAT WORKS", text:"Mitigation works when it paints a complete human portrait."},
         fields:[
-          {id:"background",     label:"Personal Background Summary", type:"textarea", required:true, placeholder:"Age, hometown, family background, education, work history..."},
-          {id:"family-role",    label:"Current Family Responsibilities", type:"textarea", required:false},
-          {id:"mental-health",  label:"Mental Health / Substance History", type:"textarea", required:false},
+          {id:"background",     label:"Personal Background Summary", type:"textarea", required:true, placeholder:"Age, hometown, family background, education, work history...", help:"Decision-makers respond to a complete person, not just the offense — include upbringing, hardships, and turning points."},
+          {id:"family-role",    label:"Current Family Responsibilities", type:"textarea", required:false, help:"Being a caregiver or sole provider is a factor boards and judges often weigh in your favor."},
+          {id:"mental-health",  label:"Mental Health / Substance History", type:"textarea", required:false, help:"Include only if relevant and you're comfortable disclosing it — framed as context and treatment progress, not an excuse."},
         ]
       },
       {
@@ -594,11 +628,11 @@ const FLOWS = {
         sub:"Document every program, certificate, achievement.",
         tip:{label:"EVIDENCE BOX", text:"Every certificate is a data point."},
         fields:[
-          {id:"education",     label:"Education Completed", type:"textarea", required:false},
-          {id:"programs",      label:"Programs / Treatment Completed", type:"textarea", required:false},
+          {id:"education",     label:"Education Completed", type:"textarea", required:false, help:"GED, vocational certificates, college credits — list everything, even partial progress."},
+          {id:"programs",      label:"Programs / Treatment Completed", type:"textarea", required:false, help:"Anger management, substance treatment, faith-based programs — completed programs are concrete evidence of change."},
           {id:"employment",    label:"Employment History", type:"textarea", required:false},
           {id:"community",     label:"Community Service / Volunteer Work", type:"textarea", required:false},
-          {id:"support-letters",label:"Letters of Support", type:"textarea", required:false},
+          {id:"support-letters",label:"Letters of Support", type:"textarea", required:false, help:"List who is providing letters (family, employer, clergy, counselor) — these can be attached as exhibits."},
           {id:"awards",        label:"Awards, Recognition, Achievements", type:"textarea", required:false},
         ]
       },
@@ -608,8 +642,8 @@ const FLOWS = {
         sub:"Describe understanding of the harm caused.",
         tip:{label:"AUTHENTICITY MATTERS", text:"Specific, authentic acknowledgment of harm."},
         fields:[
-          {id:"remorse",        label:"Statement of Responsibility and Remorse", type:"textarea", required:true, placeholder:"Acknowledge the specific harm caused..."},
-          {id:"plan",           label:"Reentry / Future Plan", type:"textarea", required:true, placeholder:"Housing plan, employment plan, support system..."},
+          {id:"remorse",        label:"Statement of Responsibility and Remorse", type:"textarea", required:true, placeholder:"Acknowledge the specific harm caused...", help:"Name the actual harm specifically — generic remorse statements read as less credible than acknowledging concrete impact."},
+          {id:"plan",           label:"Reentry / Future Plan", type:"textarea", required:true, placeholder:"Housing plan, employment plan, support system...", help:"A concrete plan (where you'll live, how you'll support yourself, who will help) signals lower risk of reoffending."},
           {id:"filer-address",  label:"Address",     type:"text", required:true},
           {id:"filer-city",     label:"City, State, ZIP", type:"text", required:true},
           {id:"date-signed",    label:"Date",        type:"date", required:true},
@@ -619,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '4821093-debug-log-persist';
+const APP_BUILD_ID = '9412063-charge-intel-explain';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -684,6 +718,11 @@ async function purgeStaleBuildState() {
 
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
+  // sw.js calls clients.claim() on activate, which fires controllerchange on
+  // a brand-new visit too (no controller -> this SW), not just on a real
+  // update. Only force-reload when an existing controller is being replaced,
+  // otherwise first-time visitors get a surprise reload mid-interaction.
+  const hadController = !!navigator.serviceWorker.controller;
   navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
@@ -697,9 +736,11 @@ function registerServiceWorker() {
         }
       });
     });
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
-    }, { once: true });
+    if (hadController) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      }, { once: true });
+    }
     reg.update().catch(() => {});
   }).catch(() => {});
 }
@@ -1681,6 +1722,10 @@ document.addEventListener('keydown', (event) => {
 
 // ── MOTION SELECTION ──
 function selectMotion(id, tile) {
+  if (tile.classList.contains('tile-blocked')) {
+    toast('Not available at your current case stage — see the note on the tile.');
+    return;
+  }
   document.querySelectorAll('.motion-tile').forEach(t=>t.classList.remove('selected'));
   tile.classList.add('selected');
   currentMotion = id;
@@ -1769,6 +1814,31 @@ function motionStageCaption(id) {
     "2254": "FEDERAL HABEAS / COLLATERAL REVIEW",
   };
   return stages[id] || "";
+}
+
+// The earliest case stage (per CASE_STATES) where this motion is an
+// available remedy rather than a blocked one.
+function motionUnlockStage(id) {
+  for (const key of STATE_ORDERS) {
+    const ctx = CASE_STATES[key];
+    if (ctx.remedies && ctx.remedies.includes(id)) return ctx.label;
+  }
+  return '';
+}
+
+// Surfaces the existing motionPathNote()/motionStageCaption() copy directly
+// on each motion tile so "what is this and when do I use it" is visible
+// before the user has to click in to find out.
+function renderMotionTileNotes() {
+  document.querySelectorAll('.motion-tile').forEach(tile => {
+    const id = tile.getAttribute('data-motion');
+    const noteEl = tile.querySelector('.tile-path-note');
+    if (!noteEl) return;
+    const stage = motionStageCaption(id);
+    const note = motionPathNote(id);
+    noteEl.innerHTML = (stage ? '<span class="tile-stage">' + esc(stage) + '</span>' : '') +
+      (note ? '<span class="tile-path-text">' + esc(note) + '</span>' : '');
+  });
 }
 
 // ── RENDER FUNCTIONS ──
@@ -2348,18 +2418,33 @@ function calcDeadline() {
   if(!el||!el.value||!res) return;
   const start = new Date(el.value+'T12:00:00');
   const rules = {
-    appeal:{ kind:'days', amount:30, label:'Notice of Appeal deadline' },
-    '3850':{ kind:'years', amount:2, label:'Rule 3.850 deadline (2 years)' },
-    '3800':{ kind:'none', amount:0, label:'Rule 3.800(a) — no deadline' },
-    rehearing:{ kind:'days', amount:15, label:'Motion for Rehearing deadline' },
-    clarification:{ kind:'days', amount:15, label:'Motion for Clarification deadline' },
-    mandate:{ kind:'days', amount:30, label:'Mandate issuance (approx.)' },
-    discretionary:{ kind:'days', amount:30, label:'Discretionary Review deadline' }
+    appeal:{ kind:'days', amount:30, label:'Notice of Appeal deadline',
+      citation:'Fla. R. App. P. 9.110(b)',
+      why:'A direct appeal must be filed within 30 days of the rendition of the order or judgment being appealed, or the appellate court loses jurisdiction to hear it.' },
+    '3850':{ kind:'years', amount:2, label:'Rule 3.850 deadline (2 years)',
+      citation:'Fla. R. Crim. P. 3.850(b)',
+      why:'A postconviction motion must be filed within 2 years of the judgment and sentence becoming final (typically when the direct-appeal mandate issues, or 30 days after sentencing if no appeal was taken). Narrow exceptions exist for newly discovered evidence, retroactive changes in the law, and illegal sentences — see Rule 3.850(b)(1)-(3).' },
+    '3800':{ kind:'none', amount:0, label:'Rule 3.800(a) — no deadline',
+      citation:'Fla. R. Crim. P. 3.800(a)',
+      why:'A motion to correct an illegal sentence attacks the sentence itself (e.g., exceeding the statutory maximum), not the conviction, so the legislature placed no time limit on raising it.' },
+    rehearing:{ kind:'days', amount:15, label:'Motion for Rehearing deadline',
+      citation:'Fla. R. App. P. 9.330(a)',
+      why:'A motion for rehearing must be filed within 15 days of the appellate court\'s order or opinion to give the court a chance to correct a claimed error before the case becomes final.' },
+    clarification:{ kind:'days', amount:15, label:'Motion for Clarification deadline',
+      citation:'Fla. R. App. P. 9.330(a)',
+      why:'Motions for clarification share the same 15-day window and procedure as motions for rehearing under Rule 9.330 — both ask the court to revisit its opinion before mandate issues.' },
+    mandate:{ kind:'days', amount:30, label:'Mandate issuance (approx.)',
+      citation:'Fla. R. App. P. 9.340',
+      why:'The mandate (the order that finalizes the appellate decision and returns jurisdiction to the trial court) generally issues 15 days after the time for rehearing expires — roughly 30 days after the opinion, though the clerk controls the exact date.' },
+    discretionary:{ kind:'days', amount:30, label:'Discretionary Review deadline',
+      citation:'Fla. R. App. P. 9.120(b)',
+      why:'A notice to invoke the Florida Supreme Court\'s discretionary jurisdiction must be filed within 30 days of the district court of appeal\'s decision, the same 30-day window as a direct appeal.' }
   };
   const rule = rules[type];
   if(!rule) return;
   if(rule.kind === 'none') {
-    res.innerHTML = `<div class="calc-result highlight"><div class="label">${esc(rule.label)}</div><div class="value" style="color:var(--teal)">No time limit</div><div class="note">A Rule 3.800(a) motion to correct an illegal sentence can be filed at any time. There is no statutory deadline.</div></div>`;
+    res.innerHTML = `<div class="calc-result highlight"><div class="label">${esc(rule.label)}</div><div class="value" style="color:var(--teal)">No time limit</div><div class="note">A Rule 3.800(a) motion to correct an illegal sentence can be filed at any time. There is no statutory deadline.</div></div>
+    <div class="calc-result"><div class="label">Why this rule applies</div><div class="note"><strong>${esc(rule.citation)}.</strong> ${esc(rule.why)}</div></div>`;
     return;
   }
   const deadline = computeFloridaDeadline(start, rule);
@@ -2373,7 +2458,11 @@ function calcDeadline() {
     <div class="calc-result highlight">
       <div class="label">${esc(rule.label)}</div>
       <div class="value">${deadline.adjusted.toLocaleDateString('en-US',options)}</div>
-      <div class="note">${rule.kind === 'years' ? '2 calendar years' : `${rule.amount} calendar days`} under Florida Rule 2.514. ${shifted ? `Extended from ${deadline.original.toLocaleDateString('en-US',options)} because the last day fell on a weekend or legal holiday. ` : ''}Local clerk or chief-judge closure days can still move the deadline. ${deadline.adjusted<new Date()?'⚠ This deadline may have passed.':'This deadline is in the future.'}</div>
+      <div class="note">${rule.kind === 'years' ? '2 calendar years' : `${rule.amount} calendar days`} from the trigger date, computed under Fla. R. Gen. Prac. &amp; Jud. Admin. 2.514. ${shifted ? `Extended from ${deadline.original.toLocaleDateString('en-US',options)} because the last day fell on a weekend or legal holiday. ` : ''}Local clerk or chief-judge closure days can still move the deadline. ${deadline.adjusted<new Date()?'⚠ This deadline may have passed.':'This deadline is in the future.'}</div>
+    </div>
+    <div class="calc-result">
+      <div class="label">Why this rule applies</div>
+      <div class="note"><strong>${esc(rule.citation)}.</strong> ${esc(rule.why)}</div>
     </div>`;
 }
 
@@ -3085,6 +3174,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. Crim. P. 3.191',
     states: ['FIRST_APPEARANCE', 'PRETRIAL'],
     icon: '⏱️',
+    why: 'Demanding speedy trial forces the state to try you within 60 days, but it also cuts off your own time to investigate and prepare a defense — most attorneys only recommend it in specific situations.',
     depends: ['arrest-date'],
     calc: function(a) {
       const d = parseDate(a['arrest-date']);
@@ -3099,6 +3189,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. Stat. § 903.046',
     states: ['ARREST', 'FIRST_APPEARANCE', 'PRETRIAL'],
     icon: '🔓',
+    why: 'Florida requires bail to be set at first appearance, generally within 24 hours of arrest — if that window passed without a bond being set, you may have grounds to push for an emergency hearing.',
     depends: ['arrest-date'],
     calc: function(a) {
       const d = parseDate(a['arrest-date']);
@@ -3114,6 +3205,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. App. P. 9.140(b)(3)',
     states: ['SENTENCED'],
     icon: '📝',
+    why: 'This 30-day deadline is jurisdictional, not just procedural — miss it and the appellate court has no power to hear your case at all, no matter how strong your arguments are.',
     depends: ['sentence-date'],
     calc: function(a) {
       const d = parseDate(a['sentence-date']);
@@ -3130,6 +3222,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. App. P. 9.110(d)',
     states: ['DIRECT_APPEAL'],
     icon: '📄',
+    why: 'The initial brief is where your actual legal arguments get made — missing this deadline (without an extension) risks the appeal being dismissed for failure to prosecute before a judge ever reaches the merits.',
     depends: ['appeal-filed-date'],
     calc: function(a) {
       const d = parseDate(a['appeal-filed-date']);
@@ -3144,6 +3237,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. App. P. 9.330',
     states: ['DIRECT_APPEAL'],
     icon: '🔄',
+    why: 'This is the last chance to get the same panel to reconsider before the opinion becomes final and the mandate issues — once mandate issues, the case returns to the trial court and this window closes for good.',
     depends: ['appeal-opinion-date'],
     calc: function(a) {
       const d = parseDate(a['appeal-opinion-date']);
@@ -3158,6 +3252,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. Crim. P. 3.850(b)',
     states: ['FINALIZED', 'POSTCONVICTION'],
     icon: '⚖️',
+    why: 'This is the core postconviction deadline. Miss it without a recognized exception — newly discovered evidence, an illegal sentence, or a retroactive change in the law — and you generally lose the ability to raise these claims at all, even if they\'re meritorious.',
     depends: ['conviction-date'],
     calc: function(a) {
       const d = parseDate(a['conviction-date']);
@@ -3176,6 +3271,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. Crim. P. 3.800(c)',
     states: ['SENTENCED'],
     icon: '📦',
+    why: 'Rule 3.800(c) lets the judge reduce a sentence purely as a matter of mercy — no legal error required — but the court loses jurisdiction to do this 60 days after sentencing, so this window is unforgiving once it closes.',
     depends: ['sentence-date'],
     calc: function(a) {
       const d = parseDate(a['sentence-date']);
@@ -3190,6 +3286,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. Stat. § 948.04',
     states: ['SENTENCED', 'FINALIZED', 'POSTCONVICTION'],
     icon: '🗓️',
+    why: 'Courts can end probation early once roughly half the term is served with good compliance — there\'s no automatic deadline here, but tracking this date helps you ask the court at the right time instead of too early or not at all.',
     depends: ['probation-term-months', 'sentence-date'],
     calc: function(a) {
       const term = parseInt(a['probation-term-months']);
@@ -3207,6 +3304,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. Stat. § 948.06',
     states: ['SENTENCED', 'FINALIZED', 'POSTCONVICTION'],
     icon: '🚨',
+    why: 'Florida requires a violation-of-probation hearing within a reasonable time after a violation is alleged — long unexplained delays in scheduling that hearing can sometimes be challenged as a due-process problem.',
     depends: ['violation-date'],
     calc: function(a) {
       const d = parseDate(a['violation-date']);
@@ -3222,6 +3320,7 @@ const DEADLINE_DEFS = {
     statute: '28 U.S.C. § 2244(d)(1)',
     states: ['FINALIZED', 'FEDERAL_HABEAS'],
     icon: '⚡',
+    why: 'This is the federal habeas clock — separate from, and stricter than, your state deadlines. Missing it usually closes the door to federal review entirely, unless you can show equitable tolling (diligence plus an extraordinary circumstance that prevented timely filing).',
     depends: ['conviction-date'],
     calc: function(a) {
       const d = parseDate(a['conviction-date']);
@@ -3238,6 +3337,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. Stat. § 943.0585',
     states: ['REENTRY'],
     icon: '🔒',
+    why: 'Florida requires this waiting period (or a qualifying dismissal/nolle prosequi) before FDLE will issue the certificate of eligibility you need before a court will even consider sealing or expunging the record.',
     depends: ['disposition-date'],
     calc: function(a) {
       const d = parseDate(a['disposition-date']);
@@ -3258,6 +3358,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. Const. Art. IV, § 8',
     states: ['FINALIZED', 'POSTCONVICTION', 'REENTRY'],
     icon: '🕊️',
+    why: 'Executive clemency can restore rights that even a successful expungement can\'t reach, but the Governor\'s clemency rules require this minimum waiting period from sentencing before an application will even be accepted for review.',
     depends: ['sentence-date'],
     calc: function(a) {
       const d = parseDate(a['sentence-date']);
@@ -3273,6 +3374,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. Crim. P. 3.800(a)',
     states: ['SENTENCED', 'DIRECT_APPEAL', 'FINALIZED', 'POSTCONVICTION'],
     icon: '📜',
+    why: 'A sentence above the statutory maximum is void on its face, so Rule 3.800(a) sets no time limit — illegality isn\'t something a filing deadline can cure, and this claim survives even years later.',
     depends: ['sentence-imposed', 'max-sentence'],
     calc: function(a) {
       const imposed = a['sentence-imposed'] || '';
@@ -3405,6 +3507,7 @@ function renderDeadlineCard(d) {
         '<div class="dl-card-statute">' + (d.statute || '') + '</div>' +
         '<div class="dl-card-note">' + d.note + '</div>' +
         (d.remedy ? '<div class="dl-card-remedy">→ ' + d.remedy + '</div>' : '') +
+        (d.why ? '<div class="dl-card-why">' + d.why + '</div>' : '') +
       '</div>' +
       (d.status !== 'unknown' && d.status !== 'safe'
         ? '<div class="dl-card-count" style="color:' + barColor + '">' +
@@ -3471,7 +3574,13 @@ function filterMotionsByState() {
 
   // No case data → show all remedies
   if (!caseSession && !currentMotion) {
-    tiles.forEach(tile => { tile.style.display = ''; tile.classList.remove('tile-blocked'); });
+    tiles.forEach(tile => {
+      tile.style.display = '';
+      tile.classList.remove('tile-blocked');
+      tile.removeAttribute('aria-disabled');
+      const blockedNote = tile.querySelector('.tile-blocked-note');
+      if (blockedNote) blockedNote.style.display = 'none';
+    });
     const existingMsg = grid.querySelector('.state-empty-msg');
     if (existingMsg) existingMsg.style.display = 'none';
     return;
@@ -3484,12 +3593,22 @@ function filterMotionsByState() {
 
   tiles.forEach(tile => {
     const mid = tile.getAttribute('data-motion');
+    const blockedNote = tile.querySelector('.tile-blocked-note');
     if (blockedIds.includes(mid)) {
       tile.classList.add('tile-blocked');
-      tile.style.display = 'none';
+      tile.style.display = '';
+      tile.setAttribute('aria-disabled', 'true');
+      if (blockedNote) {
+        const unlockStage = motionUnlockStage(mid);
+        blockedNote.innerHTML = '🔒 Not available yet — ' + esc(ctx.note) +
+          (unlockStage ? ' <span class="tile-unlock">Available at: ' + esc(unlockStage) + '</span>' : '');
+        blockedNote.style.display = '';
+      }
     } else {
       tile.classList.remove('tile-blocked');
       tile.style.display = '';
+      tile.removeAttribute('aria-disabled');
+      if (blockedNote) blockedNote.style.display = 'none';
       visibleCount++;
     }
   });
@@ -3859,6 +3978,7 @@ function renderCountyIntel(c) {
   // Bond culture
   html += '<div class="county-intel-card">' +
     '<div class="ci-card-header"><span class="ci-card-ico">💰</span>Bond Culture</div>' +
+    '<div class="ci-card-sub">How this county tends to set bail — useful if you\'re weighing a bond reduction motion.</div>' +
     '<div class="ci-card-body">' +
     '<div class="ci-row"><span class="ci-row-label">Tendency</span><span class="ci-row-val">' + esc(d.bondCulture.tendency) + '</span></div>' +
     '<div class="ci-row"><span class="ci-row-label">Typical Range</span><span class="ci-row-val">' + esc(d.bondCulture.typicalRange) + '</span></div>' +
@@ -3877,6 +3997,7 @@ function renderCountyIntel(c) {
   ];
   html += '<div class="county-intel-card">' +
     '<div class="ci-card-header"><span class="ci-card-ico">🔄</span>Diversion Programs</div>' +
+    '<div class="ci-card-sub">Completing one of these can resolve a case without a conviction — worth asking about before pleading.</div>' +
     '<div class="ci-card-body"><div class="ci-diversion-grid">' +
     divItems.map(i => '<div class="ci-diversion-item' + (div[i.k] ? '' : ' dim') + '"><span class="ci-div-icon">' + (div[i.k] ? '✅' : '❌') + '</span><span>' + i.l + '</span></div>').join('') +
     '</div></div></div>';
@@ -3884,6 +4005,7 @@ function renderCountyIntel(c) {
   // Sentencing patterns
   html += '<div class="county-intel-card">' +
     '<div class="ci-card-header"><span class="ci-card-ico">⚖️</span>Sentencing Patterns</div>' +
+    '<div class="ci-card-sub">General tendencies, not a prediction for your case — actual sentences depend on your scoresheet and the judge.</div>' +
     '<div class="ci-card-body">' +
     '<div class="ci-row"><span class="ci-row-label">Tendency</span><span class="ci-row-val">' + esc(d.sentencingPatterns.tendency) + '</span></div>' +
     '<div class="ci-row"><span class="ci-row-label">Drug Sentences</span><span class="ci-row-val">' + esc(d.sentencingPatterns.drugSentences) + '</span></div>' +
@@ -3895,6 +4017,7 @@ function renderCountyIntel(c) {
   if (d.specialtyCourts && d.specialtyCourts.length) {
     html += '<div class="county-intel-card">' +
       '<div class="ci-card-header"><span class="ci-card-ico">🏛️</span>Specialty Courts</div>' +
+      '<div class="ci-card-sub">Alternative dockets that may apply depending on the offense or circumstances — ask the clerk or your attorney if one fits.</div>' +
       '<div class="ci-card-body"><ul class="ci-list">' +
       d.specialtyCourts.map(s => '<li>' + esc(s) + '</li>').join('') +
       '</ul></div></div>';
@@ -3911,6 +4034,7 @@ function renderCountyIntel(c) {
   if (d.localAdminOrders && d.localAdminOrders.length) {
     html += '<div class="county-intel-card">' +
       '<div class="ci-card-header"><span class="ci-card-ico">📋</span>Local Admin Orders</div>' +
+      '<div class="ci-card-sub">Local rules on top of the statewide rules — missing one of these can get an otherwise-correct filing bounced.</div>' +
       '<div class="ci-card-body"><ul class="ci-list">' +
       d.localAdminOrders.map(a => '<li>' + esc(a) + '</li>').join('') +
       '</ul></div></div>';
@@ -3920,6 +4044,7 @@ function renderCountyIntel(c) {
   if (d.uniqueRules && d.uniqueRules.length) {
     html += '<div class="county-intel-card">' +
       '<div class="ci-card-header"><span class="ci-card-ico">📌</span>Local Rules & Culture</div>' +
+      '<div class="ci-card-sub">Practical, unwritten things attorneys who practice here would tell you.</div>' +
       '<div class="ci-card-body"><ul class="ci-list">' +
       d.uniqueRules.map(r => '<li>' + esc(r) + '</li>').join('') +
       '</ul></div></div>';
@@ -3928,12 +4053,14 @@ function renderCountyIntel(c) {
   // SAO + Reentry
   html += '<div class="county-intel-card">' +
     '<div class="ci-card-header"><span class="ci-card-ico">👤</span>Key Offices</div>' +
+    '<div class="ci-card-sub">Who\'s prosecuting and who provides public defense in this county.</div>' +
     '<div class="ci-card-body"><div class="ci-row"><span class="ci-row-label">State Attorney</span><span class="ci-row-val">' + esc(d.recommendedSAList?.[0] || 'N/A') + '</span></div>' +
     '<div class="ci-row"><span class="ci-row-label">Public Defender</span><span class="ci-row-val">' + esc(d.recommendedSAList?.[1] || 'N/A') + '</span></div></div></div>';
 
   if (d.reentryResources && d.reentryResources.length) {
     html += '<div class="county-intel-card">' +
       '<div class="ci-card-header"><span class="ci-card-ico">🤝</span>Reentry Resources</div>' +
+      '<div class="ci-card-sub">Local organizations that help with housing, employment, and record relief after a case closes.</div>' +
       '<div class="ci-card-body"><ul class="ci-list">' +
       d.reentryResources.map(r => '<li>' + esc(r) + '</li>').join('') +
       '</ul></div></div>';
@@ -4041,11 +4168,23 @@ function renderChargeSearchResults(query) {
 
     results.innerHTML = matches.map(function (hit) {
       const c = hit.charge;
+      const degClass = c.degree.includes('Capital') ? 'capital' : c.degree.includes('Life') ? 'life' : c.degree.includes('F1') ? 'f1' : 'f2';
+      const maxPenalty = c.sentencing && c.sentencing.maxPenalty ? c.sentencing.maxPenalty : '';
+      const levels = typeof getThreatLevels === 'function' ? getThreatLevels(c, chargeTimeline) : [];
+      const topThreat = levels.find(l => l.severity === 'critical') || levels.find(l => l.severity === 'danger') || null;
       return (
         '<button type="button" class="charge-ac-item" data-charge-idx="' + hit.idx + '">' +
-          '<span class="charge-ac-name">' + safeText(c.name) + '</span>' +
-          '<span class="charge-ac-statute">' + safeText(c.statute) + '</span>' +
-          '<span class="charge-ac-degree">' + safeText(c.degree) + '</span>' +
+          '<div class="charge-ac-row">' +
+            '<span class="charge-ac-name">' + safeText(c.name) + '</span>' +
+            '<span class="charge-ac-degree ' + degClass + '">' + safeText(c.degree) + '</span>' +
+            '<span class="charge-ac-statute">' + safeText(c.statute) + '</span>' +
+          '</div>' +
+          (maxPenalty || topThreat ? (
+            '<div class="charge-ac-meta">' +
+              (maxPenalty ? '<span class="charge-ac-penalty">⚖ Max: ' + safeText(maxPenalty) + '</span>' : '') +
+              (topThreat ? '<span class="charge-ac-threat ' + topThreat.severity + '">' + safeText(topThreat.label) + '</span>' : '') +
+            '</div>'
+          ) : '') +
         '</button>'
       );
     }).join('');
@@ -4285,39 +4424,39 @@ function getPrevRelevantQ(fromIdx) {
 function getEligibilityQ(motionId) {
   const map = {
     "3850": [
-      {id:"elig-3850-1", label:"Has it been more than 2 years since your conviction became final?", warningIf:"yes"},
-      {id:"elig-3850-2", label:"Have you filed a 3.850 motion before?", warningIf:"yes"},
-      {id:"elig-3850-3", label:"Is your claim based on newly discovered evidence or an illegal sentence?", warningIf:"no"},
+      {id:"elig-3850-1", label:"Has it been more than 2 years since your conviction became final?", warningIf:"yes", why:"Rule 3.850(b) generally requires filing within 2 years of the judgment becoming final. Past that window, you need a narrow exception — newly discovered evidence, a retroactive change in the law, or an illegal sentence — or the motion can be dismissed as untimely."},
+      {id:"elig-3850-2", label:"Have you filed a 3.850 motion before?", warningIf:"yes", why:"Florida treats most claims as waived if they could have been raised in an earlier 3.850 motion. A second or 'successive' motion must explain why this claim couldn't have been brought the first time."},
+      {id:"elig-3850-3", label:"Is your claim based on newly discovered evidence or an illegal sentence?", warningIf:"no", why:"If you're outside the 2-year window and your claim isn't newly discovered evidence or an illegal sentence, you likely don't qualify for one of the few recognized exceptions to the deadline."},
     ],
     "3800": [
-      {id:"elig-3800-1", label:"Is your sentence above the legal maximum, below the required minimum, or otherwise illegal?", warningIf:"no"},
-      {id:"elig-3800-2", label:"Has a direct appeal been decided?", warningIf:"no"},
+      {id:"elig-3800-1", label:"Is your sentence above the legal maximum, below the required minimum, or otherwise illegal?", warningIf:"no", why:"Rule 3.800(a) only corrects sentences that are actually illegal (exceed the statutory max, fall below a mandatory minimum, etc.) — it can't be used to argue the sentence was merely unfair or harsh."},
+      {id:"elig-3800-2", label:"Has a direct appeal been decided?", warningIf:"no", why:"A 3.800(a) motion can usually proceed even while an appeal is pending, but coordinate the two so the trial court isn't asked to rule on something the appellate court already controls."},
     ],
     "expunge": [
-      {id:"elig-exp-1", label:"Have you ever had a record sealed or expunged before?", warningIf:"yes"},
-      {id:"elig-exp-2", label:"Were you adjudicated guilty or was adjudication withheld?", warningIf:"yes"},
+      {id:"elig-exp-1", label:"Have you ever had a record sealed or expunged before?", warningIf:"yes", why:"Florida allows only one sealing or expungement per lifetime, in any state. A prior one is usually a hard disqualifier for a new petition."},
+      {id:"elig-exp-2", label:"Were you adjudicated guilty or was adjudication withheld?", warningIf:"yes", why:"Most sealing and expungement relief requires that adjudication was withheld — an actual conviction (adjudication of guilt) is disqualifying in nearly all cases."},
     ],
     "terminate": [
-      {id:"elig-term-1", label:"Have you completed at least 50% of your probation?", warningIf:"no"},
-      {id:"elig-term-2", label:"Are all special conditions completed?", warningIf:"no"},
+      {id:"elig-term-1", label:"Have you completed at least 50% of your probation?", warningIf:"no", why:"Fla. Stat. § 948.04 generally expects at least half the supervision term served before a court will consider early termination."},
+      {id:"elig-term-2", label:"Are all special conditions completed?", warningIf:"no", why:"Outstanding special conditions (treatment programs, fees, restitution) are one of the most common reasons courts deny early termination, even with good overall compliance."},
     ],
     "restitution": [
-      {id:"elig-rest-1", label:"Do you have a documented change in financial circumstances?", warningIf:"no"},
-      {id:"elig-rest-2", label:"Have you made any payments toward restitution?", warningIf:"no"},
+      {id:"elig-rest-1", label:"Do you have a documented change in financial circumstances?", warningIf:"no", why:"Under Bearden v. Georgia, courts modify restitution based on an inability to pay caused by a genuine change in circumstances — without one, there's less for the court to act on."},
+      {id:"elig-rest-2", label:"Have you made any payments toward restitution?", warningIf:"no", why:"Courts look for evidence of good-faith effort to pay. No payment history makes it harder to show the failure to pay wasn't willful."},
     ],
     "mitigation": [],
     "appeal": [
-      {id:"elig-app-1", label:"Has the final judgment or order been entered?", warningIf:"no"},
-      {id:"elig-app-2", label:"Are you within the appeal deadline?", warningIf:"no"},
+      {id:"elig-app-1", label:"Has the final judgment or order been entered?", warningIf:"no", why:"An appeal generally can't be filed until there's a final, appealable order — filing too early can be dismissed as premature."},
+      {id:"elig-app-2", label:"Are you within the appeal deadline?", warningIf:"no", why:"The Notice of Appeal deadline (usually 30 days from the judgment) is jurisdictional — missing it typically forfeits the right to a direct appeal entirely."},
     ],
     "appeal-record": [],
     "appeal-rehearing": [
-      {id:"elig-rh-1", label:"Has the appellate court issued an opinion?", warningIf:"no"},
-      {id:"elig-rh-2", label:"Are you within the rehearing deadline?", warningIf:"no"},
+      {id:"elig-rh-1", label:"Has the appellate court issued an opinion?", warningIf:"no", why:"A rehearing motion challenges a specific decision the court already made — there's nothing to seek rehearing on until an opinion or order issues."},
+      {id:"elig-rh-2", label:"Are you within the rehearing deadline?", warningIf:"no", why:"The rehearing deadline (typically 15 days from the decision) is strict, and once it passes the mandate can issue, ending the appellate court's involvement."},
     ],
     "2254": [
-      {id:"elig-2254-1", label:"Have you exhausted your state court remedies?", warningIf:"no"},
-      {id:"elig-2254-2", label:"Is there a federal constitutional issue in your case?", warningIf:"no"},
+      {id:"elig-2254-1", label:"Have you exhausted your state court remedies?", warningIf:"no", why:"Federal courts generally require every claim to have already been presented to Florida's courts (through Rule 3.850 and its appeal) before they'll hear it — an unexhausted claim is typically dismissed."},
+      {id:"elig-2254-2", label:"Is there a federal constitutional issue in your case?", warningIf:"no", why:"Section 2254 only reaches violations of federal constitutional law. A claim based solely on state law, even if correct, isn't something a federal habeas court can grant relief on."},
     ],
   };
   return map[motionId] || [];
@@ -4350,7 +4489,7 @@ function renderEligibility() {
     html += '<button class="elig-btn'+(val==='no'?' selected-no':'')+'" onclick="eligAnswer(\''+q.id+'\',\'no\')">No</button>';
     html += '</div>';
     if(showWarning) {
-      html += '<div class="elig-warning">You may face challenges with this factor, but you can still continue.</div>';
+      html += '<div class="elig-warning">'+esc(q.why || 'You may face challenges with this factor, but you can still continue.')+'</div>';
     } else if(val !== undefined) {
       html += '<div class="elig-ok">Good — noted.</div>';
     }
@@ -4473,9 +4612,7 @@ function renderQuestion(dir) {
   document.getElementById('q-progress-fill').style.width = pct + '%';
 
   // Mini progress
-  document.getElementById('q-progress-mini').innerHTML = 'Question <span>'+(visibleIdx)+'</span> of <span>'+visibleCount+'</span> · You\'re <span>'+pct+'%</span> done';
-  document.getElementById('q-total').textContent = visibleCount;
-  document.getElementById('q-pct').textContent = pct + '%';
+  document.getElementById('q-progress-mini').innerHTML = 'Question <span>'+(visibleIdx)+'</span> of <span id="q-total">'+visibleCount+'</span> · You\'re <span id="q-pct">'+pct+'%</span> done';
 
   // Back/Next buttons
   const hasPrev = getPrevRelevantQ(currentQ) >= 0;
@@ -4526,7 +4663,13 @@ function renderQuestion(dir) {
     inputHtml = '<input type="'+(q.type||'text')+'" id="q-field" class="field-input" placeholder="'+esc(q.placeholder||'')+'" value="'+esc(saved)+'" oninput="saveCurrentAnswer()">';
   }
 
-  // Why this matters
+  // Field-specific help, shown inline (no toggle needed — it's short and answers "what is this asking").
+  let fieldHelpHtml = '';
+  if(q.help) {
+    fieldHelpHtml = '<div class="q-field-help">ⓘ '+esc(q.help)+'</div>';
+  }
+
+  // Why this matters (step-level — broader context than the field help above)
   let whyHtml = '';
   if(q._tip && q._tip.text) {
     whyHtml = '<div class="q-why"><div class="q-why-toggle" onclick="toggleWhy(this)">ⓘ Why this matters</div><div class="q-why-content">'+esc(q._tip.text)+'</div></div>';
@@ -4538,7 +4681,7 @@ function renderQuestion(dir) {
     reassurance = 'You\'re doing great — just a few more questions.';
   }
 
-  card.innerHTML = sectionTag + condBadge + '<div class="q-question">'+esc(q.label)+'</div>' + inputHtml + whyHtml + '<div class="q-reassurance">'+reassurance+'</div>';
+  card.innerHTML = sectionTag + condBadge + '<div class="q-question">'+esc(q.label)+'</div>' + fieldHelpHtml + inputHtml + whyHtml + '<div class="q-reassurance">'+reassurance+'</div>';
 
   renderEmotionalIntel();
 
@@ -6975,6 +7118,7 @@ function buildCaseProfile(motionId, a, e) {
       violations: /multiple/i.test(a.violations||''),
       priorsExposure: /yes|disqualify/i.test((e['elig-exp-1']||a['elig-prior-seal']||'')),
     },
+    facts: facts,
     raw: a, eligRaw: e,
   };
 }
@@ -6987,7 +7131,7 @@ function evaluateCase(motionId, answers, eligAnswers) {
     sentencingAlerts: [], proceduralObstacles: [],
   };
   const pushAlert = function(type, item) { (result[type]||(result[type]=[])).push(item); };
-  var r = result; var pf = p.flags; var po = p.offense; var ps = p.sentence; var pp = p.procedure;
+  var r = result; var pf = p.flags; var po = p.offense; var ps = p.sentence; var pp = p.procedure; var facts = p.facts || ''; var a = p.raw || {}; var e = p.eligRaw || {};
   var score = 0;
 
   // ── SENTENCING EXPOSURE RULES ──
@@ -8281,6 +8425,7 @@ async function bootstrapApp() {
   if (versionBadge) versionBadge.textContent = 'Build ' + (window.APP_VERSION || 'unknown');
 
   // ── BOOT ──
+  renderMotionTileNotes();
   renderRights();
   renderAppeals();
   renderCourts();
