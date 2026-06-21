@@ -40,6 +40,10 @@ test('quick search returns results for a legal term', async ({ page }) => {
   const errors = collectPageErrors(page);
   await page.goto('/');
   await page.fill('#quick-search', 'habeas');
-  await expect(page.locator('#qs-results.open')).toBeVisible();
+  // The search is debounced (150ms) before it runs and toggles the open class.
+  await page.waitForFunction(
+    () => document.getElementById('qs-results')?.classList.contains('open'),
+    { timeout: 10000 }
+  );
   expect(errors, errors.join('\n')).toEqual([]);
 });
