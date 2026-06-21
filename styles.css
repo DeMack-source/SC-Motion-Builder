@@ -3387,6 +3387,8 @@ body.low-distraction #tabnav { display: none; }
 .intel-header { display:flex;align-items:center;gap:10px;margin-bottom:14px }
 .intel-header .section-title { margin:0 }
 .intel-subtitle { font-size:10px;color:var(--muted);margin-top:2px }
+.intel-explain { font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:14px }
+.intel-card-sub-label { font-size:9.5px;color:var(--muted);line-height:1.4;margin:-4px 0 8px }
 .intel-risk-bar { height:6px;border-radius:3px;background:var(--border);overflow:hidden;margin:10px 0 14px;position:relative }
 .intel-risk-fill { height:100%;border-radius:3px;transition:width .6s ease }
 .intel-risk-fill--critical { background:linear-gradient(90deg,var(--red),#f97316) }
