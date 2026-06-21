@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '1648207-eligibility-why';
+const APP_BUILD_ID = '2274915-county-intel-explain';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -3964,6 +3964,7 @@ function renderCountyIntel(c) {
   // Bond culture
   html += '<div class="county-intel-card">' +
     '<div class="ci-card-header"><span class="ci-card-ico">💰</span>Bond Culture</div>' +
+    '<div class="ci-card-sub">How this county tends to set bail — useful if you\'re weighing a bond reduction motion.</div>' +
     '<div class="ci-card-body">' +
     '<div class="ci-row"><span class="ci-row-label">Tendency</span><span class="ci-row-val">' + esc(d.bondCulture.tendency) + '</span></div>' +
     '<div class="ci-row"><span class="ci-row-label">Typical Range</span><span class="ci-row-val">' + esc(d.bondCulture.typicalRange) + '</span></div>' +
@@ -3982,6 +3983,7 @@ function renderCountyIntel(c) {
   ];
   html += '<div class="county-intel-card">' +
     '<div class="ci-card-header"><span class="ci-card-ico">🔄</span>Diversion Programs</div>' +
+    '<div class="ci-card-sub">Completing one of these can resolve a case without a conviction — worth asking about before pleading.</div>' +
     '<div class="ci-card-body"><div class="ci-diversion-grid">' +
     divItems.map(i => '<div class="ci-diversion-item' + (div[i.k] ? '' : ' dim') + '"><span class="ci-div-icon">' + (div[i.k] ? '✅' : '❌') + '</span><span>' + i.l + '</span></div>').join('') +
     '</div></div></div>';
@@ -3989,6 +3991,7 @@ function renderCountyIntel(c) {
   // Sentencing patterns
   html += '<div class="county-intel-card">' +
     '<div class="ci-card-header"><span class="ci-card-ico">⚖️</span>Sentencing Patterns</div>' +
+    '<div class="ci-card-sub">General tendencies, not a prediction for your case — actual sentences depend on your scoresheet and the judge.</div>' +
     '<div class="ci-card-body">' +
     '<div class="ci-row"><span class="ci-row-label">Tendency</span><span class="ci-row-val">' + esc(d.sentencingPatterns.tendency) + '</span></div>' +
     '<div class="ci-row"><span class="ci-row-label">Drug Sentences</span><span class="ci-row-val">' + esc(d.sentencingPatterns.drugSentences) + '</span></div>' +
@@ -4000,6 +4003,7 @@ function renderCountyIntel(c) {
   if (d.specialtyCourts && d.specialtyCourts.length) {
     html += '<div class="county-intel-card">' +
       '<div class="ci-card-header"><span class="ci-card-ico">🏛️</span>Specialty Courts</div>' +
+      '<div class="ci-card-sub">Alternative dockets that may apply depending on the offense or circumstances — ask the clerk or your attorney if one fits.</div>' +
       '<div class="ci-card-body"><ul class="ci-list">' +
       d.specialtyCourts.map(s => '<li>' + esc(s) + '</li>').join('') +
       '</ul></div></div>';
@@ -4016,6 +4020,7 @@ function renderCountyIntel(c) {
   if (d.localAdminOrders && d.localAdminOrders.length) {
     html += '<div class="county-intel-card">' +
       '<div class="ci-card-header"><span class="ci-card-ico">📋</span>Local Admin Orders</div>' +
+      '<div class="ci-card-sub">Local rules on top of the statewide rules — missing one of these can get an otherwise-correct filing bounced.</div>' +
       '<div class="ci-card-body"><ul class="ci-list">' +
       d.localAdminOrders.map(a => '<li>' + esc(a) + '</li>').join('') +
       '</ul></div></div>';
@@ -4025,6 +4030,7 @@ function renderCountyIntel(c) {
   if (d.uniqueRules && d.uniqueRules.length) {
     html += '<div class="county-intel-card">' +
       '<div class="ci-card-header"><span class="ci-card-ico">📌</span>Local Rules & Culture</div>' +
+      '<div class="ci-card-sub">Practical, unwritten things attorneys who practice here would tell you.</div>' +
       '<div class="ci-card-body"><ul class="ci-list">' +
       d.uniqueRules.map(r => '<li>' + esc(r) + '</li>').join('') +
       '</ul></div></div>';
@@ -4033,12 +4039,14 @@ function renderCountyIntel(c) {
   // SAO + Reentry
   html += '<div class="county-intel-card">' +
     '<div class="ci-card-header"><span class="ci-card-ico">👤</span>Key Offices</div>' +
+    '<div class="ci-card-sub">Who\'s prosecuting and who provides public defense in this county.</div>' +
     '<div class="ci-card-body"><div class="ci-row"><span class="ci-row-label">State Attorney</span><span class="ci-row-val">' + esc(d.recommendedSAList?.[0] || 'N/A') + '</span></div>' +
     '<div class="ci-row"><span class="ci-row-label">Public Defender</span><span class="ci-row-val">' + esc(d.recommendedSAList?.[1] || 'N/A') + '</span></div></div></div>';
 
   if (d.reentryResources && d.reentryResources.length) {
     html += '<div class="county-intel-card">' +
       '<div class="ci-card-header"><span class="ci-card-ico">🤝</span>Reentry Resources</div>' +
+      '<div class="ci-card-sub">Local organizations that help with housing, employment, and record relief after a case closes.</div>' +
       '<div class="ci-card-body"><ul class="ci-list">' +
       d.reentryResources.map(r => '<li>' + esc(r) + '</li>').join('') +
       '</ul></div></div>';
