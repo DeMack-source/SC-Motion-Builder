@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '7734201-wizard-field-help';
+const APP_BUILD_ID = '3196480-fix-evaluatecase-refs';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -7096,6 +7096,7 @@ function buildCaseProfile(motionId, a, e) {
       violations: /multiple/i.test(a.violations||''),
       priorsExposure: /yes|disqualify/i.test((e['elig-exp-1']||a['elig-prior-seal']||'')),
     },
+    facts: facts,
     raw: a, eligRaw: e,
   };
 }
@@ -7108,7 +7109,7 @@ function evaluateCase(motionId, answers, eligAnswers) {
     sentencingAlerts: [], proceduralObstacles: [],
   };
   const pushAlert = function(type, item) { (result[type]||(result[type]=[])).push(item); };
-  var r = result; var pf = p.flags; var po = p.offense; var ps = p.sentence; var pp = p.procedure;
+  var r = result; var pf = p.flags; var po = p.offense; var ps = p.sentence; var pp = p.procedure; var facts = p.facts || ''; var a = p.raw || {}; var e = p.eligRaw || {};
   var score = 0;
 
   // ── SENTENCING EXPOSURE RULES ──
