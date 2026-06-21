@@ -619,7 +619,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '3351717-charge-search-fix';
+const APP_BUILD_ID = '4821093-debug-log-persist';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -8138,12 +8138,33 @@ function installMobileDebugPanel() {
   var isDebug = /debug=1/.test(location.search) || /Android|iPhone|iPad/i.test(navigator.userAgent);
   if (!isDebug || document.getElementById('mobile-debug-panel')) return;
 
+  var STORAGE_KEY = 'sc-motion-debug-log';
+
+  function loadPersistedLogs() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function persistLogs(entries) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    } catch (_) {
+      // best-effort only
+    }
+  }
+
+  var previousSessionLogs = loadPersistedLogs();
   var logs = [];
 
   function pushLog(type, message) {
     var entry = '[' + new Date().toLocaleTimeString() + '] ' + type + ': ' + message;
     logs.push(entry);
     if (logs.length > 20) logs.shift();
+    persistLogs(logs);
     render();
   }
 
@@ -8171,18 +8192,32 @@ function installMobileDebugPanel() {
       document.body.appendChild(panel);
     }
 
+    var previousBlock = previousSessionLogs.length
+      ? '<div style="opacity:.65;margin-bottom:6px;">-- from before last reload --</div>' +
+        '<pre style="white-space:pre-wrap;margin:0 0 8px;">' + previousSessionLogs.join('\n') + '</pre>' +
+        '<hr style="border-color:rgba(255,255,255,.15)">'
+      : '';
+
     panel.innerHTML =
       '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">' +
         '<strong style="flex:1;">Mobile Debug</strong>' +
         '<button id="copy-mobile-debug" type="button">Copy</button>' +
+        '<button id="clear-mobile-debug" type="button">Clear</button>' +
         '<button id="close-mobile-debug" type="button">Close</button>' +
       '</div>' +
       '<div>Build: ' + (window.APP_VERSION || 'missing') + '</div>' +
       '<div>Viewport: ' + innerWidth + 'x' + innerHeight + '</div>' +
       '<hr style="border-color:rgba(255,255,255,.15)">' +
+      previousBlock +
       '<pre style="white-space:pre-wrap;margin:0;">' + (logs.join('\n') || 'No errors captured yet.') + '</pre>';
 
     document.getElementById('close-mobile-debug').onclick = function() { panel.remove(); };
+    document.getElementById('clear-mobile-debug').onclick = function() {
+      previousSessionLogs = [];
+      logs = [];
+      persistLogs(logs);
+      render();
+    };
     document.getElementById('copy-mobile-debug').onclick = async function() {
       var text = [
         'APP_VERSION=' + (window.APP_VERSION || 'missing'),
@@ -8190,8 +8225,11 @@ function installMobileDebugPanel() {
         'UA=' + navigator.userAgent,
         'VIEWPORT=' + innerWidth + 'x' + innerHeight,
         '',
+        previousSessionLogs.length ? '-- from before last reload --' : '',
+        previousSessionLogs.join('\n'),
+        '',
         logs.join('\n') || 'No errors captured.'
-      ].join('\n');
+      ].filter(Boolean).join('\n');
       await navigator.clipboard.writeText(text);
     };
   }
