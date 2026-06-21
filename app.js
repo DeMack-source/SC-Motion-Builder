@@ -11,12 +11,18 @@ const FLOWS = {
         sub:"Provide the basic case details exactly as they appear on your court documents.",
         tip:{label:"PRO TIP — Fla. R. Crim. P. 3.850(c)", text:"Your case number must match the exact format on your judgment."},
         fields:[
-          {id:"county",      label:"County of Conviction",     type:"text",   required:true,  placeholder:"e.g., Broward", cite:""},
-          {id:"case-num",    label:"Case Number",               type:"text",   required:true,  placeholder:"e.g., 2019-CF-012345"},
-          {id:"judge",       label:"Presiding Judge",           type:"text",   required:false, placeholder:"e.g., Hon. [Last Name]"},
-          {id:"prosecutor",  label:"State Attorney (optional)", type:"text",   required:false, placeholder:""},
-          {id:"def-name",    label:"Your Full Legal Name",      type:"text",   required:true,  placeholder:"As it appears on the judgment"},
-          {id:"def-dob",     label:"Date of Birth",             type:"date",   required:true},
+          {id:"county",      label:"County of Conviction",     type:"text",   required:true,  placeholder:"e.g., Broward", cite:"",
+            help:"The Florida county where you were convicted — not where you currently live or are incarcerated."},
+          {id:"case-num",    label:"Case Number",               type:"text",   required:true,  placeholder:"e.g., 2019-CF-012345",
+            help:"Copy this exactly from your judgment or sentencing order. A mismatched case number is a common reason clerks reject filings."},
+          {id:"judge",       label:"Presiding Judge",           type:"text",   required:false, placeholder:"e.g., Hon. [Last Name]",
+            help:"The judge who handled your trial or accepted your plea — found on the judgment. Leave blank if unsure; it's optional."},
+          {id:"prosecutor",  label:"State Attorney (optional)", type:"text",   required:false, placeholder:"",
+            help:"The Assistant State Attorney who prosecuted your case, if named on any of your court paperwork. Not required to file."},
+          {id:"def-name",    label:"Your Full Legal Name",      type:"text",   required:true,  placeholder:"As it appears on the judgment",
+            help:"Use your name exactly as it appears on the judgment, including any suffix — this becomes the case caption."},
+          {id:"def-dob",     label:"Date of Birth",             type:"date",   required:true,
+            help:"Used to identify you in the court record alongside your case number."},
         ]
       },
       {
@@ -27,30 +33,44 @@ const FLOWS = {
         fields:[
           {id:"case-resolution", label:"Was this case resolved by:", type:"decision", required:true,
             options:["Plea","Trial","Violation of Probation","Dismissal"],
-            cite:""},
+            cite:"",
+            help:"This determines which follow-up questions apply and which deadline starts your 2-year clock under Rule 3.850(b)."},
           {id:"plea-type", label:"What type of plea?", type:"decision", required:true, condition:{field:"case-resolution",equals:"Plea"},
-            options:["Guilty Plea","No Contest / Nolo Contendere","Alford Plea","Open Plea (no agreement)"]},
+            options:["Guilty Plea","No Contest / Nolo Contendere","Alford Plea","Open Plea (no agreement)"],
+            help:"An Alford plea means you maintained innocence but agreed the State had enough evidence to convict. An open plea means you pleaded without a negotiated sentence."},
           {id:"plea-counsel", label:"Did you have a lawyer at the plea?", type:"decision", required:true, condition:{field:"case-resolution",equals:"Plea"},
-            options:["Yes — retained private attorney","Yes — public defender","Yes — court-appointed counsel","No — I represented myself (pro se)"]},
-          {id:"plea-date", label:"Date of plea:", type:"date", required:true, condition:{field:"case-resolution",equals:"Plea"}},
+            options:["Yes — retained private attorney","Yes — public defender","Yes — court-appointed counsel","No — I represented myself (pro se)"],
+            help:"Matters for ineffective-assistance claims — only applies if you had counsel whose performance you're challenging."},
+          {id:"plea-date", label:"Date of plea:", type:"date", required:true, condition:{field:"case-resolution",equals:"Plea"},
+            help:"The date you entered your plea in court, not the later sentencing date."},
           {id:"trial-type", label:"What type of trial?", type:"decision", required:true, condition:{field:"case-resolution",equals:"Trial"},
-            options:["Jury Trial","Bench Trial (judge only)"], cite:""},
+            options:["Jury Trial","Bench Trial (judge only)"], cite:"",
+            help:"A bench trial has no jury — the judge alone decides guilt."},
           {id:"trial-outcome", label:"Trial outcome:", type:"decision", required:true, condition:{field:"case-resolution",equals:"Trial"},
             options:["Convicted as charged","Convicted of lesser offense","Mistrial / Hung jury","Convicted after appeal / retrial"]},
-          {id:"trial-date", label:"Date of trial:", type:"date", required:true, condition:{field:"case-resolution",equals:"Trial"}},
+          {id:"trial-date", label:"Date of trial:", type:"date", required:true, condition:{field:"case-resolution",equals:"Trial"},
+            help:"The date the trial concluded with a verdict, not when it started."},
           {id:"vop-basis", label:"Basis of violation:", type:"decision", required:true, condition:{field:"case-resolution",equals:"Violation of Probation"},
-            options:["New law violation","Technical violation (missed appointment, failed drug test)","Absconding","Multiple violations"]},
+            options:["New law violation","Technical violation (missed appointment, failed drug test)","Absconding","Multiple violations"],
+            help:"A technical violation is a rule-compliance issue (missed meeting, failed drug test); a new law violation means a new charge."},
           {id:"vop-date", label:"Date of violation / VOP filing:", type:"date", required:true, condition:{field:"case-resolution",equals:"Violation of Probation"}},
           {id:"dismissal-reason", label:"Reason for dismissal:", type:"decision", required:true, condition:{field:"case-resolution",equals:"Dismissal"},
-            options:["No information filed","Nolle prosequi (prosecution dropped)","Directed verdict","Successful motion to suppress","Other"]},
+            options:["No information filed","Nolle prosequi (prosecution dropped)","Directed verdict","Successful motion to suppress","Other"],
+            help:"Nolle prosequi means the State formally dropped the charges. A directed verdict means the judge ruled the evidence couldn't support a conviction."},
           {id:"dismissal-date", label:"Date of dismissal:", type:"date", required:true, condition:{field:"case-resolution",equals:"Dismissal"}},
-          {id:"offense",       label:"Primary Offense",type:"text",  required:true, placeholder:"e.g., Robbery with a Firearm"},
-          {id:"offense-statute",label:"Florida Statute",            type:"text",  required:false,placeholder:"e.g., F.S. § 812.13(2)(a)"},
-          {id:"conviction-date",label:"Date of Conviction / Judgment",  type:"date",  required:true},
-          {id:"sentence-date",  label:"Date of Sentencing",         type:"date",  required:true},
-          {id:"sentence-terms", label:"Sentence Imposed",           type:"text",  required:true, placeholder:"e.g., 15 years DOC + 5 years probation"},
+          {id:"offense",       label:"Primary Offense",type:"text",  required:true, placeholder:"e.g., Robbery with a Firearm",
+            help:"The lead charge you were convicted of — use the name from the judgment, not the original arrest charge if it changed."},
+          {id:"offense-statute",label:"Florida Statute",            type:"text",  required:false,placeholder:"e.g., F.S. § 812.13(2)(a)",
+            help:"Found on your judgment next to the offense. Helps cite the correct law in your motion, but the motion can still be drafted without it."},
+          {id:"conviction-date",label:"Date of Conviction / Judgment",  type:"date",  required:true,
+            help:"The date the court entered judgment — usually the same day as sentencing unless they were split into separate hearings."},
+          {id:"sentence-date",  label:"Date of Sentencing",         type:"date",  required:true,
+            help:"If your conviction became final without a direct appeal, this date (plus 30 days) is what starts your 2-year Rule 3.850 clock."},
+          {id:"sentence-terms", label:"Sentence Imposed",           type:"text",  required:true, placeholder:"e.g., 15 years DOC + 5 years probation",
+            help:"Summarize the full sentence — prison/jail time, probation, fines — as written on the judgment."},
           {id:"currently-incarcerated", label:"Are you currently incarcerated?", type:"decision", required:true,
-            options:["Yes — in DOC custody","No — on probation / supervision","No — sentence completed"]},
+            options:["Yes — in DOC custody","No — on probation / supervision","No — sentence completed"],
+            help:"Rule 3.850 relief is available whether or not you're still in custody, but this affects where the motion is filed and what relief makes sense."},
         ]
       },
       {
@@ -59,12 +79,18 @@ const FLOWS = {
         sub:"Select all grounds that apply to your case.",
         tip:{label:"LEGAL STANDARD — Strickland v. Washington (1984)", text:"For IAC, you must show deficiency AND prejudice."},
         fields:[
-          {id:"grounds-iac",   label:"Ineffective Assistance of Counsel",  type:"checkbox", detail:"Attorney's performance fell below an objective standard of reasonableness AND prejudiced the outcome"},
-          {id:"grounds-new",   label:"Newly Discovered Evidence",          type:"checkbox", detail:"Evidence not available at trial that would probably produce an acquittal"},
-          {id:"grounds-plea",  label:"Involuntary or Uninformed Plea",     type:"checkbox", detail:"Plea was not knowing, voluntary, and intelligent"},
-          {id:"grounds-sentence",label:"Illegal or Unconstitutional Sentence",type:"checkbox",detail:"Sentence exceeds statutory maximum or violates constitutional protections"},
-          {id:"grounds-brady", label:"Brady Violation",                    type:"checkbox", detail:"Prosecution withheld material evidence favorable to the defense"},
-          {id:"grounds-other", label:"Other Constitutional Violation",     type:"checkbox", detail:"Specify in the next section"},
+          {id:"grounds-iac",   label:"Ineffective Assistance of Counsel",  type:"checkbox", detail:"Attorney's performance fell below an objective standard of reasonableness AND prejudiced the outcome",
+            help:"The most common 3.850 ground. You must show both that counsel's performance was deficient and that it changed the outcome — Strickland v. Washington."},
+          {id:"grounds-new",   label:"Newly Discovered Evidence",          type:"checkbox", detail:"Evidence not available at trial that would probably produce an acquittal",
+            help:"Only applies if the evidence genuinely could not have been found earlier with reasonable diligence — not evidence you simply didn't use."},
+          {id:"grounds-plea",  label:"Involuntary or Uninformed Plea",     type:"checkbox", detail:"Plea was not knowing, voluntary, and intelligent",
+            help:"Use this if you weren't told the real consequences of your plea (e.g., deportation, sex-offender registration) or were pressured/misled into it."},
+          {id:"grounds-sentence",label:"Illegal or Unconstitutional Sentence",type:"checkbox",detail:"Sentence exceeds statutory maximum or violates constitutional protections",
+            help:"If the issue is only the sentence (not the conviction), Rule 3.800(a) may be a faster, no-deadline alternative — check the Tools tab."},
+          {id:"grounds-brady", label:"Brady Violation",                    type:"checkbox", detail:"Prosecution withheld material evidence favorable to the defense",
+            help:"Applies when the State had evidence helpful to your defense and didn't turn it over before trial or plea."},
+          {id:"grounds-other", label:"Other Constitutional Violation",     type:"checkbox", detail:"Specify in the next section",
+            help:"Use this for constitutional claims that don't fit the categories above — you'll describe the specific violation in the facts section."},
         ]
       },
       {
@@ -73,9 +99,12 @@ const FLOWS = {
         sub:"Describe the specific facts supporting your grounds for relief.",
         tip:{label:"WRITING GUIDANCE", text:"Each ground must be supported by specific facts, not just legal conclusions."},
         fields:[
-          {id:"facts-main",    label:"Statement of Facts",    type:"textarea", required:true,  placeholder:"Describe in detail the facts supporting each ground for relief you selected above."},
-          {id:"relief-sought", label:"Relief Requested",      type:"select", options:["Evidentiary Hearing","Vacation of Conviction","New Trial","Resentencing","Correction of Sentence","Other"], required:true},
-          {id:"prior-motions", label:"Have you filed a prior Rule 3.850 motion?", type:"select", options:["No — this is my first","Yes — previous motion was denied","Yes — previous motion was withdrawn"], required:true},
+          {id:"facts-main",    label:"Statement of Facts",    type:"textarea", required:true,  placeholder:"Describe in detail the facts supporting each ground for relief you selected above.",
+            help:"Write what happened, when, and who was involved — specific facts, not conclusions like 'my lawyer was bad.' Courts deny motions that only assert legal conclusions."},
+          {id:"relief-sought", label:"Relief Requested",      type:"select", options:["Evidentiary Hearing","Vacation of Conviction","New Trial","Resentencing","Correction of Sentence","Other"], required:true,
+            help:"What you're asking the court to do if your motion succeeds. An evidentiary hearing lets you present witnesses/evidence; the others are final outcomes."},
+          {id:"prior-motions", label:"Have you filed a prior Rule 3.850 motion?", type:"select", options:["No — this is my first","Yes — previous motion was denied","Yes — previous motion was withdrawn"], required:true,
+            help:"Florida limits successive 3.850 motions — a prior denied motion on the same grounds can bar a new one unless an exception applies."},
         ]
       },
       {
@@ -84,12 +113,17 @@ const FLOWS = {
         sub:"This information appears on the motion certificate of service and signature block.",
         tip:{label:"PRO SE NOTE", text:"As a pro se filer, you must sign the motion under penalty of perjury."},
         fields:[
-          {id:"filer-name",    label:"Your Full Name (as it appears on judgment)", type:"text", required:true},
-          {id:"dc-number",     label:"DC Number (if in DOC custody)",              type:"text", required:false, placeholder:"e.g., A12345"},
-          {id:"filer-address", label:"Mailing Address",                            type:"text", required:true, placeholder:"Current address or institution address"},
+          {id:"filer-name",    label:"Your Full Name (as it appears on judgment)", type:"text", required:true,
+            help:"Should match the name field from the Case Information step — used again here for the signature block."},
+          {id:"dc-number",     label:"DC Number (if in DOC custody)",              type:"text", required:false, placeholder:"e.g., A12345",
+            help:"Your Florida DOC inmate number, found on your DOC ID or mail. Leave blank if you're not currently in DOC custody."},
+          {id:"filer-address", label:"Mailing Address",                            type:"text", required:true, placeholder:"Current address or institution address",
+            help:"Where the court and State Attorney should send filings back to you — use your full institution address if incarcerated."},
           {id:"filer-city",    label:"City, State, ZIP",                           type:"text", required:true, placeholder:"e.g., Fort Lauderdale, FL 33301"},
-          {id:"state-atty-addr",label:"State Attorney's Office Address (for service)",type:"text",required:true, placeholder:"e.g., 201 SE 6th St, Fort Lauderdale, FL 33301"},
-          {id:"date-signed",   label:"Date",                                       type:"date", required:true},
+          {id:"state-atty-addr",label:"State Attorney's Office Address (for service)",type:"text",required:true, placeholder:"e.g., 201 SE 6th St, Fort Lauderdale, FL 33301",
+            help:"You must serve a copy on the State Attorney's office for the county of conviction — this address goes on the certificate of service."},
+          {id:"date-signed",   label:"Date",                                       type:"date", required:true,
+            help:"The date you're signing the motion — you're certifying under penalty of perjury that the facts stated are true as of this date."},
         ]
       }
     ]
@@ -619,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '6620173-charge-search-consequences';
+const APP_BUILD_ID = '7734201-wizard-field-help';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -4556,9 +4590,7 @@ function renderQuestion(dir) {
   document.getElementById('q-progress-fill').style.width = pct + '%';
 
   // Mini progress
-  document.getElementById('q-progress-mini').innerHTML = 'Question <span>'+(visibleIdx)+'</span> of <span>'+visibleCount+'</span> · You\'re <span>'+pct+'%</span> done';
-  document.getElementById('q-total').textContent = visibleCount;
-  document.getElementById('q-pct').textContent = pct + '%';
+  document.getElementById('q-progress-mini').innerHTML = 'Question <span>'+(visibleIdx)+'</span> of <span id="q-total">'+visibleCount+'</span> · You\'re <span id="q-pct">'+pct+'%</span> done';
 
   // Back/Next buttons
   const hasPrev = getPrevRelevantQ(currentQ) >= 0;
@@ -4609,7 +4641,13 @@ function renderQuestion(dir) {
     inputHtml = '<input type="'+(q.type||'text')+'" id="q-field" class="field-input" placeholder="'+esc(q.placeholder||'')+'" value="'+esc(saved)+'" oninput="saveCurrentAnswer()">';
   }
 
-  // Why this matters
+  // Field-specific help, shown inline (no toggle needed — it's short and answers "what is this asking").
+  let fieldHelpHtml = '';
+  if(q.help) {
+    fieldHelpHtml = '<div class="q-field-help">ⓘ '+esc(q.help)+'</div>';
+  }
+
+  // Why this matters (step-level — broader context than the field help above)
   let whyHtml = '';
   if(q._tip && q._tip.text) {
     whyHtml = '<div class="q-why"><div class="q-why-toggle" onclick="toggleWhy(this)">ⓘ Why this matters</div><div class="q-why-content">'+esc(q._tip.text)+'</div></div>';
@@ -4621,7 +4659,7 @@ function renderQuestion(dir) {
     reassurance = 'You\'re doing great — just a few more questions.';
   }
 
-  card.innerHTML = sectionTag + condBadge + '<div class="q-question">'+esc(q.label)+'</div>' + inputHtml + whyHtml + '<div class="q-reassurance">'+reassurance+'</div>';
+  card.innerHTML = sectionTag + condBadge + '<div class="q-question">'+esc(q.label)+'</div>' + fieldHelpHtml + inputHtml + whyHtml + '<div class="q-reassurance">'+reassurance+'</div>';
 
   renderEmotionalIntel();
 
