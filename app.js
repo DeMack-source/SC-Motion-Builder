@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '9412063-charge-intel-explain';
+const APP_BUILD_ID = '1957284-fix-casesummary-groups-crash';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -1452,18 +1452,18 @@ function renderTimelineInto(container, parent, stages) {
 
 // ── RIGHTS DATA ──
 const RIGHTS = [
-  {t:"No Automatic Employment Denial",     s:"Fla. Stat. § 112.011",         d:"Employers/licensing boards CANNOT automatically reject you solely for a felony."},
-  {t:"Right to a Payment Plan",            s:"Fla. Stat. § 28.246",          d:"The Clerk is REQUIRED to offer a payment plan."},
-  {t:"Protection Against Imprisonment for Poverty", s:"§ 948.06(5) / Bearden v. Georgia",d:"Courts cannot revoke probation solely for inability to pay."},
-  {t:"Right to Early Termination Petition",s:"Fla. Stat. § 948.04",          d:"At 50% of probation, you have the statutory right to petition."},
-  {t:"Restitution Modification",           s:"Fla. Stat. § 775.089",         d:"Courts must consider financial resources and dependent obligations."},
-  {t:"Voting Rights Restoration",          s:"Art. VI, § 4 / Amendment 4",   d:"Voting rights automatically restored upon completion of ALL terms."},
-  {t:"Expungement / Record Sealing",       s:"§ 943.0585 / § 943.059",       d:"Sealed records need not be disclosed on most job applications."},
-  {t:"Restoration of Civil Rights",        s:"Florida Rules of Executive Clemency",d:"5-7 years post-supervision: jury service, public office, licensing."},
-  {t:"Disqualification Exemption",         s:"Fla. Stat. § 435.07",          d:"Apply for a formal individual assessment for licensed professions."},
-  {t:"Sentence Modification",              s:"Fla. R. Crim. P. 3.800",       d:"File to correct illegal sentences — no deadline."},
-  {t:"Veterans: VA Healthcare Access",     s:"38 U.S.C. / VA Policy",        d:"Criminal records do NOT automatically disqualify veterans from VA healthcare."},
-  {t:"SO: Mandatory Transition Plan",      s:"Fla. Stat. § 947.1405",        d:"Release officers MUST provide a written transition plan."},
+  {t:"No Automatic Employment Denial",     s:"Fla. Stat. § 112.011",         d:"Employers/licensing boards CANNOT automatically reject you solely for a felony.", why:"If you're turned down for a job or license and the only reason given is the conviction itself, that denial is illegal on its face — the employer/board must show the conviction is directly related to the job's duties. Ask for the denial in writing and cite this statute when you appeal it."},
+  {t:"Right to a Payment Plan",            s:"Fla. Stat. § 28.246",          d:"The Clerk is REQUIRED to offer a payment plan.", why:"Courts and clerks sometimes act like fines/court costs are due in full immediately. They're not — you can demand a payment plan instead of risking a warrant or license suspension for nonpayment you can't make in one lump sum."},
+  {t:"Protection Against Imprisonment for Poverty", s:"§ 948.06(5) / Bearden v. Georgia",d:"Courts cannot revoke probation solely for inability to pay.", why:"Before probation can be revoked for missed payments, the court must find the failure to pay was willful, not just that you fell behind. If you genuinely can't afford it, that's a defense at the violation hearing — not an automatic violation."},
+  {t:"Right to Early Termination Petition",s:"Fla. Stat. § 948.04",          d:"At 50% of probation, you have the statutory right to petition.", why:"Probation doesn't have to run its full length if you've stayed compliant. Filing this petition at the halfway mark can end supervision early and remove the ongoing risk of a technical violation."},
+  {t:"Restitution Modification",           s:"Fla. Stat. § 775.089",         d:"Courts must consider financial resources and dependent obligations.", why:"A restitution order set at sentencing isn't frozen forever — if your financial circumstances change, you can petition the court to adjust the amount or payment schedule rather than defaulting silently."},
+  {t:"Voting Rights Restoration",          s:"Art. VI, § 4 / Amendment 4",   d:"Voting rights automatically restored upon completion of ALL terms.", why:"\"Automatic\" doesn't mean the state notifies you — most people have to register themselves once every term (incarceration, probation, parole, and restitution/fees tied to the sentence) is actually complete. Confirm eligibility before registering to avoid a separate charge for voting while ineligible."},
+  {t:"Expungement / Record Sealing",       s:"§ 943.0585 / § 943.059",       d:"Sealed records need not be disclosed on most job applications.", why:"A sealed record can lawfully be answered \"no\" on most private-employer applications asking about convictions — this is often the single biggest lever for clearing the employment barrier, but eligibility is one-shot in a lifetime for most offenses, so timing and accuracy of the petition matter."},
+  {t:"Restoration of Civil Rights",        s:"Florida Rules of Executive Clemency",d:"5-7 years post-supervision: jury service, public office, licensing.", why:"This is separate from voting rights (restored automatically under Amendment 4) — civil rights like serving on a jury, holding public office, or certain professional licensing still require a clemency application even after your sentence is fully done."},
+  {t:"Disqualification Exemption",         s:"Fla. Stat. § 435.07",          d:"Apply for a formal individual assessment for licensed professions.", why:"Many licensing boards (healthcare, childcare, etc.) automatically flag a felony, but the law gives you the right to request an individualized exemption review instead of accepting an automatic disqualification — this is a separate filing you have to affirmatively request."},
+  {t:"Sentence Modification",              s:"Fla. R. Crim. P. 3.800",       d:"File to correct illegal sentences — no deadline.", why:"Unlike most post-conviction motions, a 3.800 claim for an illegal sentence (one that exceeds the statutory maximum or otherwise violates law) has no filing deadline — it can be raised years later if the sentence itself was never legal to begin with."},
+  {t:"Veterans: VA Healthcare Access",     s:"38 U.S.C. / VA Policy",        d:"Criminal records do NOT automatically disqualify veterans from VA healthcare.", why:"Don't assume a felony conviction cuts off VA benefits — eligibility for VA healthcare turns on discharge status, not criminal history. If you've been told otherwise by a clinic or office, that determination is worth appealing."},
+  {t:"SO: Mandatory Transition Plan",      s:"Fla. Stat. § 947.1405",        d:"Release officers MUST provide a written transition plan.", why:"If you're being released under sexual offender supervision conditions and weren't given a written transition plan covering housing, registration, and reporting requirements before release, that's a statutory failure you can raise with your supervising officer or the court."},
 ];
 
 const COURTS = [
@@ -1586,34 +1586,34 @@ const FEDERAL_DISTRICTS = [
 
 // ── GLOSSARY ──
 const GLOSSARY = [
-  {t:"Appeal", d:"A request to a higher court to review a lower court's decision."},
+  {t:"Appeal", d:"A request to a higher court to review a lower court's decision.", key:true},
   {t:"Appellant", d:"The party who files an appeal."},
   {t:"Appellee", d:"The party responding to an appeal (usually the State)."},
-  {t:"Brief", d:"A written legal argument submitted to the court explaining why the decision should be upheld or reversed."},
-  {t:"Certificate of Appealability", d:"Required before a federal appeal can proceed in habeas cases. Shows the petitioner made a substantial constitutional claim."},
+  {t:"Brief", d:"A written legal argument submitted to the court explaining why the decision should be upheld or reversed.", key:true},
+  {t:"Certificate of Appealability", d:"Required before a federal appeal can proceed in habeas cases. Shows the petitioner made a substantial constitutional claim.", key:true},
   {t:"Constitutional Right", d:"A right guaranteed by the U.S. Constitution, such as due process, effective assistance of counsel, or protection against self-incrimination."},
-  {t:"Direct Appeal", d:"The first appeal as of right after a final judgment. In Florida, the Notice of Appeal must be filed within 30 days."},
+  {t:"Direct Appeal", d:"The first appeal as of right after a final judgment. In Florida, the Notice of Appeal must be filed within 30 days.", key:true},
   {t:"En Banc", d:"A hearing before all judges of a court, rather than a panel of three. Usually reserved for significant legal questions."},
-  {t:"Evidentiary Hearing", d:"A court hearing where evidence (witnesses, documents) is presented to resolve factual disputes."},
-  {t:"Exhaustion of Remedies", d:"The requirement that a state prisoner must pursue all available state court remedies before seeking federal habeas relief."},
+  {t:"Evidentiary Hearing", d:"A court hearing where evidence (witnesses, documents) is presented to resolve factual disputes.", key:true},
+  {t:"Exhaustion of Remedies", d:"The requirement that a state prisoner must pursue all available state court remedies before seeking federal habeas relief.", key:true},
   {t:"Final Order", d:"A court order that ends the case on its merits, leaving nothing further for the court to decide."},
-  {t:"Habeas Corpus", d:"A legal action challenging the legality of a person's detention. In Florida, post-conviction motions serve this function."},
-  {t:"Ineffective Assistance of Counsel", d:"A claim that trial counsel's performance fell below reasonable professional standards and prejudiced the outcome. Strickland v. Washington."},
-  {t:"Jurisdiction", d:"The court's legal authority to hear a case. Without jurisdiction, any order is void."},
+  {t:"Habeas Corpus", d:"A legal action challenging the legality of a person's detention. In Florida, post-conviction motions serve this function.", key:true},
+  {t:"Ineffective Assistance of Counsel", d:"A claim that trial counsel's performance fell below reasonable professional standards and prejudiced the outcome. Strickland v. Washington.", key:true},
+  {t:"Jurisdiction", d:"The court's legal authority to hear a case. Without jurisdiction, any order is void.", key:true},
   {t:"Mandate", d:"The official communication from an appellate court to the trial court advising of the appeal's outcome."},
-  {t:"Notice of Appeal", d:"A formal document filed with the clerk stating the intent to appeal. In Florida, due within 30 days of the order."},
+  {t:"Notice of Appeal", d:"A formal document filed with the clerk stating the intent to appeal. In Florida, due within 30 days of the order.", key:true},
   {t:"Per Curiam", d:"A Latin term meaning 'by the court.' A unanimous opinion issued by the court collectively rather than by a named judge."},
   {t:"Petitioner", d:"The party filing a petition for review (in post-conviction or habeas cases)."},
-  {t:"Post-Conviction", d:"Legal proceedings that occur after a criminal conviction becomes final, challenging the legality of the conviction or sentence."},
-  {t:"Pro Se", d:"Representing yourself in court without a lawyer."},
+  {t:"Post-Conviction", d:"Legal proceedings that occur after a criminal conviction becomes final, challenging the legality of the conviction or sentence.", key:true},
+  {t:"Pro Se", d:"Representing yourself in court without a lawyer.", key:true},
   {t:"Record on Appeal", d:"The official collection of all documents, filings, transcripts, and exhibits from the trial court sent to the appellate court."},
   {t:"Remand", d:"When an appellate court sends a case back to the trial court for further proceedings consistent with the opinion."},
   {t:"Respondent", d:"The party responding to a petition (typically the State in post-conviction cases)."},
   {t:"Standard of Review", d:"The level of deference an appellate court gives to the lower court's decision. Common standards include de novo, abuse of discretion, and competent substantial evidence."},
   {t:"Stay", d:"A court order temporarily halting proceedings. Often requested to stop an execution while an appeal is pending."},
-  {t:"Summary Denial", d:"When a trial court denies a post-conviction motion without holding an evidentiary hearing."},
+  {t:"Summary Denial", d:"When a trial court denies a post-conviction motion without holding an evidentiary hearing.", key:true},
   {t:"Writ of Certiorari", d:"A discretionary review by the U.S. Supreme Court. Very few petitions are granted."},
-  {t:"Writ of Habeas Corpus (28 U.S.C. § 2254)", d:"The federal statute that allows state prisoners to challenge their detention on federal constitutional grounds."},
+  {t:"Writ of Habeas Corpus (28 U.S.C. § 2254)", d:"The federal statute that allows state prisoners to challenge their detention on federal constitutional grounds.", key:true},
   {t:"Default Judgment", d:"A judgment entered against a party who fails to respond to a pleading within the required time."},
   {t:"Summary Judgment", d:"A decision made without a full trial when there is no genuine dispute about the material facts."},
   {t:"Interlocutory Order", d:"A temporary or preliminary order that does not finally resolve the case. Generally not appealable until a final judgment."},
@@ -1621,8 +1621,8 @@ const GLOSSARY = [
   {t:"Venue", d:"The geographic location where a case is heard. Proper venue is usually where the crime occurred."},
   {t:"Prosecutorial Misconduct", d:"Improper conduct by a prosecutor that violates the defendant's right to a fair trial."},
   {t:"Harmless Error", d:"An error that did not affect the outcome of the case and therefore does not warrant reversal."},
-  {t:"Plain Error", d:"A clear and obvious error that affected substantial rights, reviewable even if not raised at trial."},
-  {t:"Fundamental Error", d:"An error that goes to the very foundation of the case and renders the proceeding invalid."},
+  {t:"Plain Error", d:"A clear and obvious error that affected substantial rights, reviewable even if not raised at trial.", key:true},
+  {t:"Fundamental Error", d:"An error that goes to the very foundation of the case and renders the proceeding invalid.", key:true},
 ];
 
 // ── UTILITY ──
@@ -1845,7 +1845,7 @@ function renderMotionTileNotes() {
 function renderRights() {
   const list = document.getElementById('rights-list');
   if(!list) return;
-  list.innerHTML = RIGHTS.map(r=>`<div class="lib-card" style="margin-bottom:10px"><div class="lib-title">${esc(r.t)}</div><div class="lib-statute">${esc(r.s)}</div><div class="lib-desc">${esc(r.d)}</div></div>`).join('');
+  list.innerHTML = RIGHTS.map(r=>`<div class="lib-card" style="margin-bottom:10px"><div class="lib-title">${esc(r.t)}</div><div class="lib-statute">${esc(r.s)}</div><div class="lib-desc">${esc(r.d)}</div>${r.why ? `<div class="lib-why">${esc(r.why)}</div>` : ''}</div>`).join('');
 }
 
 // ═══════════════════════════════════════════════
@@ -2077,13 +2077,26 @@ function renderReentry() {
   const caps = computeCapabilities(charge, session);
   const statusLabels = { preserved:'Preserved', restricted:'Restricted', forfeited:'Forfeited', needsAction:'Action Needed', varies:'Varies' };
   const statusColors = { preserved:'var(--green)', restricted:'var(--gold)', forfeited:'var(--red)', needsAction:'var(--sky)', varies:'var(--muted)' };
+  const statusDefs = {
+    preserved: 'Fully intact right now — no application, waiting period, or court action needed.',
+    restricted: 'Not banned outright, but limited in specific ways (who decides, what conditions apply) — read the item for the exact limit.',
+    forfeited: 'Lost as a direct result of the felony conviction — only comes back through executive clemency or, in some cases, a successful seal/expunge.',
+    needsAction: 'Depends on something you have to actively do or address (an attorney consult, a deadline, a status check) — not automatic either way.',
+    varies: 'No fixed statewide rule — the outcome depends on the specific agency, county, or board reviewing your case.',
+  };
 
   html += '<div class="reentry-section"><div class="reentry-section-title">🔍 What You Can Still Legally Do</div>' +
     '<div class="reentry-cap-summary">' +
     Object.entries(caps.counts).filter(([k,v]) => v > 0).map(([k,v]) =>
-      '<span class="reentry-cap-stat" style="--stat-color:' + (statusColors[k] || 'var(--muted)') + '">' +
+      '<span class="reentry-cap-stat" style="--stat-color:' + (statusColors[k] || 'var(--muted)') + '" title="' + esc(statusDefs[k] || '') + '">' +
       '<span class="reentry-cap-stat-num">' + v + '</span> ' + statusLabels[k] +
       '</span>'
+    ).join('') +
+    '</div>' +
+    '<div class="reentry-legend">' +
+    Object.entries(caps.counts).filter(([k,v]) => v > 0).map(([k]) =>
+      '<div class="reentry-legend-row"><span class="reentry-legend-term" style="color:' + (statusColors[k] || 'var(--muted)') + '">' + statusLabels[k] + '</span>' +
+      '<span class="reentry-legend-def">' + esc(statusDefs[k] || '') + '</span></div>'
     ).join('') +
     '</div>' +
     '<div class="reentry-cap-grid">' +
@@ -2467,21 +2480,28 @@ function calcDeadline() {
 }
 
 // ── GLOSSARY ──
+function glossarySort(a, b) {
+  if (!!a.key !== !!b.key) return a.key ? -1 : 1;
+  return a.t.localeCompare(b.t);
+}
+function renderGlossaryList(terms) {
+  return terms.map(g=>`<div class="glossary-term${g.key ? ' key-term' : ''}"><div class="term">${esc(g.t)}${g.key ? '<span class="key-term-badge" title="Comes up constantly in pro se postconviction and appellate filings — worth knowing cold.">ESSENTIAL</span>' : ''}</div><div class="def">${esc(g.d)}</div></div>`).join('');
+}
 function renderGlossary() {
   const list = document.getElementById('glossary-list');
   const count = document.getElementById('glossary-count');
   if(!list) return;
   if(count) count.textContent = `${GLOSSARY.length} terms`;
-  list.innerHTML = GLOSSARY.map(g=>`<div class="glossary-term"><div class="term">${esc(g.t)}</div><div class="def">${esc(g.d)}</div></div>`).join('');
+  list.innerHTML = renderGlossaryList([...GLOSSARY].sort(glossarySort));
 }
 function filterGlossary(val) {
   const list = document.getElementById('glossary-list');
   const count = document.getElementById('glossary-count');
   if(!list) return;
   const term = (val||'').trim().toLowerCase();
-  const filtered = GLOSSARY.filter(g => !term || g.t.toLowerCase().includes(term) || g.d.toLowerCase().includes(term));
+  const filtered = GLOSSARY.filter(g => !term || g.t.toLowerCase().includes(term) || g.d.toLowerCase().includes(term)).sort(glossarySort);
   if(count) count.textContent = `${filtered.length} of ${GLOSSARY.length} terms`;
-  list.innerHTML = filtered.map(g=>`<div class="glossary-term"><div class="term">${esc(g.t)}</div><div class="def">${esc(g.d)}</div></div>`).join('');
+  list.innerHTML = renderGlossaryList(filtered);
   if(!filtered.length) list.innerHTML = `<div class="no-drafts">No terms match that search.</div>`;
 }
 
@@ -3826,9 +3846,10 @@ function renderRiskBadges(c, tl) {
   if (!levels.length) { grid.innerHTML = ''; return; }
   grid.innerHTML = levels.map(l => {
     const iconMap = { critical: '🔴', danger: '🟠', warning: '🟡', safe: '🟢' };
-    return '<div class="risk-badge '+l.severity+'" title="'+esc(l.detail)+'">'+
+    return '<div class="risk-badge '+l.severity+'" title="'+esc(l.detail)+'" onclick="this.classList.toggle(\'open\')">'+
       '<span class="rb-icon">'+(iconMap[l.severity]||'⚪')+'</span>'+
       '<span class="rb-label">'+esc(l.label)+'</span>'+
+      '<div class="rb-detail">'+esc(l.detail)+'</div>'+
     '</div>';
   }).join('');
 }
@@ -3877,6 +3898,42 @@ function renderCountdowns(c, tl) {
   }
 }
 
+const MOTION_EXPLANATIONS = [
+  { keywords: ['suppress', 'suppression'], text: 'Asks the court to exclude evidence (statements, physical evidence, search results) obtained in violation of constitutional rights — if granted, the state can\'t use that evidence at trial.' },
+  { keywords: ['bond hearing', 'bond reduction', 'pretrial detention'], text: 'Asks the court to set, lower, or reconsider conditions of pretrial release so you aren\'t held in jail solely because you can\'t afford bail.' },
+  { keywords: ['change of venue'], text: 'Asks to move the trial to a different county, typically because local media coverage or community ties make it unlikely you can get an impartial jury where the case is currently filed.' },
+  { keywords: ['speedy trial'], text: 'Invokes your constitutional and statutory right to a trial within a fixed time — forces the state to either go to trial promptly or risk the charge being discharged.' },
+  { keywords: ['competency'], text: 'Asks the court to determine whether you are mentally competent to understand the proceedings and assist in your own defense — if found incompetent, the case pauses until competency is restored.' },
+  { keywords: ['severance', 'sever'], text: 'Asks to separate your case from a co-defendant\'s (or separate multiple charges against you) so each is tried on its own, preventing evidence against someone else from prejudicing your trial.' },
+  { keywords: ['franks hearing'], text: 'Challenges the truthfulness of a search warrant affidavit — if the affidavit contained false statements or omissions needed to establish probable cause, evidence from that warrant can be suppressed.' },
+  { keywords: ['discovery'], text: 'Forces the state to turn over evidence, witness lists, and reports it\'s required to disclose — used when the prosecution is sitting on material the defense is entitled to see.' },
+  { keywords: ['psychological evaluation', 'psych'], text: 'Requests a mental-health evaluation relevant to competency, sanity at the time of the offense, or mitigation at sentencing.' },
+  { keywords: ['forensic examination', 'independent lab', 'independent toxicology', 'drug analysis', 'pcr lab', 'fire investigation'], text: 'Requests independent testing of physical evidence (drugs, DNA, blood) rather than relying solely on the state lab\'s results, which can be challenged or contradicted by a second analysis.' },
+  { keywords: ['identification', 'lineup'], text: 'Challenges an eyewitness identification procedure (lineup, photo array, showup) as unreliable or unconstitutionally suggestive, which can get the identification excluded or undermined at trial.' },
+  { keywords: ['grand jury transcript'], text: 'Requests access to grand jury proceedings to check for inconsistencies between grand jury testimony and trial testimony, or procedural defects in how the indictment was obtained.' },
+  { keywords: ['cell tower', 'surveillance video'], text: 'Challenges the reliability, chain of custody, or admissibility of location/video evidence the state intends to use to place you at the scene.' },
+  { keywords: ['dcf records', 'medical records', 'confidential informant'], text: 'Seeks access to records or information the state or a third party is withholding that could be relevant to credibility, motive, or an alternate explanation for the charge.' },
+  { keywords: ['motion in limine'], text: 'Asks the court to rule, before trial starts, that certain evidence (often prior bad acts) be excluded as unfairly prejudicial rather than waiting to object once the jury has already heard it.' },
+  { keywords: ['lesser included'], text: 'Asks the judge to instruct the jury on a less serious charge contained within the charged offense, giving jurors a middle option besides full conviction or full acquittal.' },
+  { keywords: ['constructive possession'], text: 'Challenges whether the state can actually prove you had knowledge and control over contraband you didn\'t physically have on you — a common gap in possession cases.' },
+  { keywords: ['medical marijuana'], text: 'Raises a legal-use defense where applicable, asserting the substance or conduct was authorized under Florida\'s medical marijuana program.' },
+  { keywords: ['dui investigation', 'bac results'], text: 'Challenges the procedures used during a DUI stop and breath/blood testing — improper administration or calibration issues can get BAC results thrown out.' },
+];
+
+function explainCriticalMotion(label) {
+  const lower = (label || '').toLowerCase();
+  const match = MOTION_EXPLANATIONS.find(e => e.keywords.some(k => lower.includes(k)));
+  return match ? match.text : 'A pretrial motion relevant to this charge\'s posture — discuss with counsel how it applies to your specific facts.';
+}
+
+function showMotionDetail(el) {
+  const detail = document.getElementById('ci-motions-detail');
+  if (!detail) return;
+  const label = el.dataset.motion || '';
+  detail.innerHTML = '<strong>'+esc(label)+':</strong> '+esc(explainCriticalMotion(label));
+  detail.classList.add('open');
+}
+
 function renderChargeMotions(c) {
   const el = document.getElementById('ci-motions');
   const tl = chargeTimeline;
@@ -3887,7 +3944,7 @@ function renderChargeMotions(c) {
   const buildMotions = CHARGE_MOTION_MAP[c.name] || ['3850'];
 
   let html = motions.slice(0, 5).map(m => {
-    return '<span class="charge-motion-chip">'+esc(m)+'</span>';
+    return '<span class="charge-motion-chip" data-motion="'+esc(m)+'" onclick="showMotionDetail(this)">'+esc(m)+'</span>';
   }).join('');
 
   html += buildMotions.map(mid => {
@@ -3897,6 +3954,8 @@ function renderChargeMotions(c) {
   }).join('');
 
   el.innerHTML = html;
+  const detail = document.getElementById('ci-motions-detail');
+  if (detail) { detail.innerHTML = ''; detail.classList.remove('open'); }
 }
 
 function renderStrategic(c) {
@@ -7865,6 +7924,8 @@ function renderCaseSummary() {
   }
   section.style.display = 'block';
   cmdOpen('cf-h');
+
+  var groups = [];
 
   // Person
   var pRows = [];
