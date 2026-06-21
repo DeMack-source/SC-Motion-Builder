@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '6390218-motion-chip-explain';
+const APP_BUILD_ID = '8517403-reentry-status-legend';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -2077,13 +2077,26 @@ function renderReentry() {
   const caps = computeCapabilities(charge, session);
   const statusLabels = { preserved:'Preserved', restricted:'Restricted', forfeited:'Forfeited', needsAction:'Action Needed', varies:'Varies' };
   const statusColors = { preserved:'var(--green)', restricted:'var(--gold)', forfeited:'var(--red)', needsAction:'var(--sky)', varies:'var(--muted)' };
+  const statusDefs = {
+    preserved: 'Fully intact right now — no application, waiting period, or court action needed.',
+    restricted: 'Not banned outright, but limited in specific ways (who decides, what conditions apply) — read the item for the exact limit.',
+    forfeited: 'Lost as a direct result of the felony conviction — only comes back through executive clemency or, in some cases, a successful seal/expunge.',
+    needsAction: 'Depends on something you have to actively do or address (an attorney consult, a deadline, a status check) — not automatic either way.',
+    varies: 'No fixed statewide rule — the outcome depends on the specific agency, county, or board reviewing your case.',
+  };
 
   html += '<div class="reentry-section"><div class="reentry-section-title">🔍 What You Can Still Legally Do</div>' +
     '<div class="reentry-cap-summary">' +
     Object.entries(caps.counts).filter(([k,v]) => v > 0).map(([k,v]) =>
-      '<span class="reentry-cap-stat" style="--stat-color:' + (statusColors[k] || 'var(--muted)') + '">' +
+      '<span class="reentry-cap-stat" style="--stat-color:' + (statusColors[k] || 'var(--muted)') + '" title="' + esc(statusDefs[k] || '') + '">' +
       '<span class="reentry-cap-stat-num">' + v + '</span> ' + statusLabels[k] +
       '</span>'
+    ).join('') +
+    '</div>' +
+    '<div class="reentry-legend">' +
+    Object.entries(caps.counts).filter(([k,v]) => v > 0).map(([k]) =>
+      '<div class="reentry-legend-row"><span class="reentry-legend-term" style="color:' + (statusColors[k] || 'var(--muted)') + '">' + statusLabels[k] + '</span>' +
+      '<span class="reentry-legend-def">' + esc(statusDefs[k] || '') + '</span></div>'
     ).join('') +
     '</div>' +
     '<div class="reentry-cap-grid">' +
