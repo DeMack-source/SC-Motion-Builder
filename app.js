@@ -619,7 +619,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '4821093-debug-log-persist';
+const APP_BUILD_ID = '5103772-sw-claim-reload-fix';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -684,6 +684,11 @@ async function purgeStaleBuildState() {
 
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
+  // sw.js calls clients.claim() on activate, which fires controllerchange on
+  // a brand-new visit too (no controller -> this SW), not just on a real
+  // update. Only force-reload when an existing controller is being replaced,
+  // otherwise first-time visitors get a surprise reload mid-interaction.
+  const hadController = !!navigator.serviceWorker.controller;
   navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
@@ -697,9 +702,11 @@ function registerServiceWorker() {
         }
       });
     });
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
-    }, { once: true });
+    if (hadController) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      }, { once: true });
+    }
     reg.update().catch(() => {});
   }).catch(() => {});
 }
