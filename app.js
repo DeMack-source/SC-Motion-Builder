@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '9374128-recommended-motion-badge';
+const APP_BUILD_ID = '6019283-journey-map';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -4709,6 +4709,29 @@ function syncQuestionProgressFallback() {
   if (pctEl) pctEl.textContent = pct + '%';
 }
 
+// Visualizes the whole flow.steps sequence as a row of "gates" — lets the
+// user see how many stages stand between them and filing, not just the
+// current question's place within the current stage.
+function renderJourneyMap() {
+  const wrap = document.getElementById('journey-map');
+  if (!wrap) return;
+  const flow = currentMotion ? FLOWS[currentMotion] : null;
+  if (!flow || !questions.length) {
+    wrap.style.display = 'none';
+    wrap.innerHTML = '';
+    return;
+  }
+  const currentStepIndex = questions[currentQ] ? questions[currentQ]._stepIndex : 0;
+  wrap.style.display = 'flex';
+  wrap.innerHTML = flow.steps.map((step, i) => {
+    const state = i < currentStepIndex ? 'done' : i === currentStepIndex ? 'current' : 'upcoming';
+    return '<div class="journey-gate journey-gate--' + state + '" title="' + esc(step.title) + '">' +
+      '<div class="journey-gate-dot">' + (state === 'done' ? '✓' : (i + 1)) + '</div>' +
+      '<div class="journey-gate-label">' + esc(step.title) + '</div>' +
+      '</div>';
+  }).join('<div class="journey-gate-line"></div>');
+}
+
 function setQuestionIdleState() {
   const label = document.getElementById('q-progress-label');
   const mini = document.getElementById('q-progress-mini');
@@ -4722,6 +4745,7 @@ function setQuestionIdleState() {
   if (fill) fill.style.width = '0%';
   if (total) total.textContent = '0';
   if (pctInline) pctInline.textContent = '0%';
+  renderJourneyMap();
 }
 
 // ── RENDER SINGLE QUESTION ──
@@ -4749,6 +4773,7 @@ function renderQuestion(dir) {
   document.getElementById('q-progress-label').textContent = stepTag+'Question '+(visibleIdx)+' of '+visibleCount+' — '+(flow ? flow.tag : '');
   document.getElementById('q-progress-pct').textContent = pct + '%';
   document.getElementById('q-progress-fill').style.width = pct + '%';
+  renderJourneyMap();
 
   // Mini progress
   document.getElementById('q-progress-mini').innerHTML = 'Question <span>'+(visibleIdx)+'</span> of <span id="q-total">'+visibleCount+'</span> · You\'re <span id="q-pct">'+pct+'%</span> done';
