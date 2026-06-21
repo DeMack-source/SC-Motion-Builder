@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '7261049-tap-risk-detail';
+const APP_BUILD_ID = '4128375-rights-why-matters';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -1452,18 +1452,18 @@ function renderTimelineInto(container, parent, stages) {
 
 // ── RIGHTS DATA ──
 const RIGHTS = [
-  {t:"No Automatic Employment Denial",     s:"Fla. Stat. § 112.011",         d:"Employers/licensing boards CANNOT automatically reject you solely for a felony."},
-  {t:"Right to a Payment Plan",            s:"Fla. Stat. § 28.246",          d:"The Clerk is REQUIRED to offer a payment plan."},
-  {t:"Protection Against Imprisonment for Poverty", s:"§ 948.06(5) / Bearden v. Georgia",d:"Courts cannot revoke probation solely for inability to pay."},
-  {t:"Right to Early Termination Petition",s:"Fla. Stat. § 948.04",          d:"At 50% of probation, you have the statutory right to petition."},
-  {t:"Restitution Modification",           s:"Fla. Stat. § 775.089",         d:"Courts must consider financial resources and dependent obligations."},
-  {t:"Voting Rights Restoration",          s:"Art. VI, § 4 / Amendment 4",   d:"Voting rights automatically restored upon completion of ALL terms."},
-  {t:"Expungement / Record Sealing",       s:"§ 943.0585 / § 943.059",       d:"Sealed records need not be disclosed on most job applications."},
-  {t:"Restoration of Civil Rights",        s:"Florida Rules of Executive Clemency",d:"5-7 years post-supervision: jury service, public office, licensing."},
-  {t:"Disqualification Exemption",         s:"Fla. Stat. § 435.07",          d:"Apply for a formal individual assessment for licensed professions."},
-  {t:"Sentence Modification",              s:"Fla. R. Crim. P. 3.800",       d:"File to correct illegal sentences — no deadline."},
-  {t:"Veterans: VA Healthcare Access",     s:"38 U.S.C. / VA Policy",        d:"Criminal records do NOT automatically disqualify veterans from VA healthcare."},
-  {t:"SO: Mandatory Transition Plan",      s:"Fla. Stat. § 947.1405",        d:"Release officers MUST provide a written transition plan."},
+  {t:"No Automatic Employment Denial",     s:"Fla. Stat. § 112.011",         d:"Employers/licensing boards CANNOT automatically reject you solely for a felony.", why:"If you're turned down for a job or license and the only reason given is the conviction itself, that denial is illegal on its face — the employer/board must show the conviction is directly related to the job's duties. Ask for the denial in writing and cite this statute when you appeal it."},
+  {t:"Right to a Payment Plan",            s:"Fla. Stat. § 28.246",          d:"The Clerk is REQUIRED to offer a payment plan.", why:"Courts and clerks sometimes act like fines/court costs are due in full immediately. They're not — you can demand a payment plan instead of risking a warrant or license suspension for nonpayment you can't make in one lump sum."},
+  {t:"Protection Against Imprisonment for Poverty", s:"§ 948.06(5) / Bearden v. Georgia",d:"Courts cannot revoke probation solely for inability to pay.", why:"Before probation can be revoked for missed payments, the court must find the failure to pay was willful, not just that you fell behind. If you genuinely can't afford it, that's a defense at the violation hearing — not an automatic violation."},
+  {t:"Right to Early Termination Petition",s:"Fla. Stat. § 948.04",          d:"At 50% of probation, you have the statutory right to petition.", why:"Probation doesn't have to run its full length if you've stayed compliant. Filing this petition at the halfway mark can end supervision early and remove the ongoing risk of a technical violation."},
+  {t:"Restitution Modification",           s:"Fla. Stat. § 775.089",         d:"Courts must consider financial resources and dependent obligations.", why:"A restitution order set at sentencing isn't frozen forever — if your financial circumstances change, you can petition the court to adjust the amount or payment schedule rather than defaulting silently."},
+  {t:"Voting Rights Restoration",          s:"Art. VI, § 4 / Amendment 4",   d:"Voting rights automatically restored upon completion of ALL terms.", why:"\"Automatic\" doesn't mean the state notifies you — most people have to register themselves once every term (incarceration, probation, parole, and restitution/fees tied to the sentence) is actually complete. Confirm eligibility before registering to avoid a separate charge for voting while ineligible."},
+  {t:"Expungement / Record Sealing",       s:"§ 943.0585 / § 943.059",       d:"Sealed records need not be disclosed on most job applications.", why:"A sealed record can lawfully be answered \"no\" on most private-employer applications asking about convictions — this is often the single biggest lever for clearing the employment barrier, but eligibility is one-shot in a lifetime for most offenses, so timing and accuracy of the petition matter."},
+  {t:"Restoration of Civil Rights",        s:"Florida Rules of Executive Clemency",d:"5-7 years post-supervision: jury service, public office, licensing.", why:"This is separate from voting rights (restored automatically under Amendment 4) — civil rights like serving on a jury, holding public office, or certain professional licensing still require a clemency application even after your sentence is fully done."},
+  {t:"Disqualification Exemption",         s:"Fla. Stat. § 435.07",          d:"Apply for a formal individual assessment for licensed professions.", why:"Many licensing boards (healthcare, childcare, etc.) automatically flag a felony, but the law gives you the right to request an individualized exemption review instead of accepting an automatic disqualification — this is a separate filing you have to affirmatively request."},
+  {t:"Sentence Modification",              s:"Fla. R. Crim. P. 3.800",       d:"File to correct illegal sentences — no deadline.", why:"Unlike most post-conviction motions, a 3.800 claim for an illegal sentence (one that exceeds the statutory maximum or otherwise violates law) has no filing deadline — it can be raised years later if the sentence itself was never legal to begin with."},
+  {t:"Veterans: VA Healthcare Access",     s:"38 U.S.C. / VA Policy",        d:"Criminal records do NOT automatically disqualify veterans from VA healthcare.", why:"Don't assume a felony conviction cuts off VA benefits — eligibility for VA healthcare turns on discharge status, not criminal history. If you've been told otherwise by a clinic or office, that determination is worth appealing."},
+  {t:"SO: Mandatory Transition Plan",      s:"Fla. Stat. § 947.1405",        d:"Release officers MUST provide a written transition plan.", why:"If you're being released under sexual offender supervision conditions and weren't given a written transition plan covering housing, registration, and reporting requirements before release, that's a statutory failure you can raise with your supervising officer or the court."},
 ];
 
 const COURTS = [
@@ -1845,7 +1845,7 @@ function renderMotionTileNotes() {
 function renderRights() {
   const list = document.getElementById('rights-list');
   if(!list) return;
-  list.innerHTML = RIGHTS.map(r=>`<div class="lib-card" style="margin-bottom:10px"><div class="lib-title">${esc(r.t)}</div><div class="lib-statute">${esc(r.s)}</div><div class="lib-desc">${esc(r.d)}</div></div>`).join('');
+  list.innerHTML = RIGHTS.map(r=>`<div class="lib-card" style="margin-bottom:10px"><div class="lib-title">${esc(r.t)}</div><div class="lib-statute">${esc(r.s)}</div><div class="lib-desc">${esc(r.d)}</div>${r.why ? `<div class="lib-why">${esc(r.why)}</div>` : ''}</div>`).join('');
 }
 
 // ═══════════════════════════════════════════════
