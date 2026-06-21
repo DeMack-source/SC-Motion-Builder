@@ -23,6 +23,11 @@ vanilla JS, and CSS deployed as a GitHub Pages PWA.
 | `styles.css` | All styling, loaded directly by `index.html`. |
 | `fl-motion-builder.html` | Legacy/standalone self-contained build (own inline `<style>`, ~2000 lines). Not linked from `index.html` or `app.js`; only referenced in `sw.js`'s precache list. Treat as a fossil unless told otherwise — don't assume it's kept in sync with `app.js`/`app-shell.html`.
 | `motion-manifest.json`, `app.json` | PWA manifest and app metadata. |
+| `tests/smoke.spec.js` | Playwright smoke tests (app boot, charge search hit/no-results, quick search) — see "Automated tests" below. |
+| `playwright.config.js` | Serves the static site via `python3 -m http.server 4173` for tests (the app needs HTTP, not `file://`, same reason as local dev). |
+| `package.json` / `package-lock.json` | Only used for the Playwright dev dependency and `npm test`. The app itself still has no build step / bundler. |
+| `.github/workflows/smoke-test.yml` | Runs the Playwright suite on every PR into `main` and every push to `main`. |
+| `.github/workflows/deploy-gh-pages.yml` | Auto-syncs `gh-pages` to `main` on every push to `main` — see the `gh-pages` gotcha below. |
 
 ## Critical gotcha: classic scripts don't auto-attach to `window`
 
@@ -42,13 +47,15 @@ Merging a fix into `main` does **not** by itself make it live. Confirmed by
 inspecting the "pages build and deployment" workflow runs via the GitHub
 API — Pages only rebuilds when `gh-pages` itself receives a new commit.
 
-**After merging any fix into `main` that needs to go live, you must also
-fast-forward `gh-pages` to `main`** (e.g. open a PR with `head=main`,
-`base=gh-pages`, and merge it). Forgetting this step is the single most
-likely reason "the fix didn't work" when the live site still shows old
-behavior — check `window.APP_VERSION` / the `app.js?v=...` query string in
-the browser console against what's actually on `main` before assuming the
-code fix itself is wrong.
+**As of `.github/workflows/deploy-gh-pages.yml`, this is now automatic** —
+every push to `main` fast-forwards `gh-pages` via `peaceiris/actions-gh-pages@v4`
+(requires `permissions: contents: write` in the workflow). Before that
+workflow existed, this required a manual PR (`head=main`, `base=gh-pages`).
+If the live site ever shows stale behavior again, check this workflow's run
+history first — confirm it actually ran and succeeded on the latest `main`
+push — before assuming the code fix itself is wrong. Also check
+`window.APP_VERSION` / the `app.js?v=...` query string in the browser
+console against what's actually on `main`.
 
 ## Three layers of caching to bust together
 
@@ -65,6 +72,27 @@ When shipping a fix to `app.js`, `app-shell.html`, or `charges.js`, bump
 `purgeStaleBuildState()` in `app.js` also compares `localStorage`'s stored
 build id against `APP_BUILD_ID` to detect stale clients — keep it in mind if
 debugging "fix didn't take" reports.
+
+## Critical gotcha: service worker `clients.claim()` vs. the `controllerchange` reload
+
+`sw.js` calls `self.skipWaiting()` on install and `self.clients.claim()` on
+activate, so it takes control of any open page immediately. The problem:
+`navigator.serviceWorker.addEventListener('controllerchange', ...)` fires
+on that *first-ever* claim too, not just when a new SW version replaces an
+old one. `registerServiceWorker()` (`app.js`, near line 685) used to
+unconditionally `window.location.reload()` on `controllerchange`, which
+meant brand-new visitors (no prior controller) could get a surprise
+full-page reload mid-interaction — wiping in-progress form/search input.
+This silently broke the Playwright quick-search smoke test (the page
+reloaded right after `fill()`, before the debounced search ran, so the
+assertion just hung).
+
+Fix in place: capture `hadController = !!navigator.serviceWorker.controller`
+*before* calling `register()`, and only attach the reload-on-controllerchange
+listener if `hadController` was true — i.e. only reload when an existing SW
+is actually being replaced, not on initial install. If you touch
+`registerServiceWorker()` or `sw.js`'s activate handler again, preserve this
+distinction.
 
 ## App boot sequence
 
@@ -115,21 +143,42 @@ debugging "fix didn't take" reports.
 - **You must serve the app over HTTP to develop it** (e.g. `python3 -m
   http.server` from the repo root) — opening `index.html` via `file://`
   breaks the `fetch('app-shell.html')` call in `bootstrapApp()`.
-- There is no automated test suite. Verify changes by loading the app in a
-  real browser and exercising the affected feature (search, wizard step,
-  deadline calculator, etc.) and watching the console for errors.
-- GitHub Actions: none custom — the only workflow in the repo is GitHub's
-  built-in dynamic `pages-build-deployment`, triggered by pushes to
-  `gh-pages`.
+- Still verify changes manually too: load the app in a real browser and
+  exercise the affected feature (search, wizard step, deadline calculator,
+  etc.) and watch the console for errors — the smoke suite is narrow (boot,
+  charge search, quick search) and won't catch most regressions.
+- GitHub Actions: `smoke-test.yml` (Playwright, on PRs/pushes to `main`) and
+  `deploy-gh-pages.yml` (auto-sync to `gh-pages`, on pushes to `main`), plus
+  GitHub's built-in dynamic `pages-build-deployment` triggered by pushes to
+  `gh-pages` itself.
+
+## Automated tests
+
+- `npm install && npx playwright install --with-deps chromium && npm test`
+  runs the Playwright suite (`tests/smoke.spec.js`) against the static site
+  served by `playwright.config.js`'s `webServer` (`python3 -m http.server
+  4173`) — this is real HTTP, so it exercises the same `fetch('app-shell.html')`
+  boot path as production, unlike `file://`.
+- Coverage is intentionally narrow: app boots without console/page errors,
+  charge search returns a hit and a no-results state, quick search opens a
+  results panel. These specifically target the failure class this repo has
+  shipped before (init-timing bugs, undeclared globals, stale caching, and
+  now the SW-reload bug above) — not general feature coverage.
+- Sandboxed/offline dev environments may not be able to download Playwright's
+  browser binaries (network egress to `cdn.playwright.dev` is commonly
+  blocked) — in that case reason about the fix from source and rely on the
+  GitHub Actions run (real network access) as the actual first execution.
 
 ## Git / PR conventions observed in this repo
 
 - Feature/fix work happens on a dedicated branch (e.g.
   `claude/sc-motionbuilder-search-bars-TvRLM`), not directly on `main`.
-- PRs are opened from that branch into `main` and merged there first.
-- **A second sync step (PR from `main` into `gh-pages`) is required to
-  actually deploy** — see the gotcha above. Don't consider a fix "done" from
-  the user's perspective until `gh-pages` has been fast-forwarded too.
+- PRs are opened from that branch into `main`, as drafts by default, and
+  merged there once CI (`smoke-test.yml`) is green.
+- Deploys to `gh-pages` now happen automatically on merge via
+  `deploy-gh-pages.yml` — see the gotcha above. No manual sync step needed
+  anymore, but it's still worth confirming the workflow actually ran/succeeded
+  if a fix doesn't appear live.
 - Keep commits small and scoped to one fix each with a descriptive message
   explaining *why*, not just what — this repo's history relies on that to
   reconstruct intent later (see commits like `4f27329`, `099258a`, `6156582`).
