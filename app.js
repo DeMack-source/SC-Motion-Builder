@@ -619,7 +619,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '8451926-deadline-rule-basis';
+const APP_BUILD_ID = '6620173-charge-search-consequences';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -4112,11 +4112,23 @@ function renderChargeSearchResults(query) {
 
     results.innerHTML = matches.map(function (hit) {
       const c = hit.charge;
+      const degClass = c.degree.includes('Capital') ? 'capital' : c.degree.includes('Life') ? 'life' : c.degree.includes('F1') ? 'f1' : 'f2';
+      const maxPenalty = c.sentencing && c.sentencing.maxPenalty ? c.sentencing.maxPenalty : '';
+      const levels = typeof getThreatLevels === 'function' ? getThreatLevels(c, chargeTimeline) : [];
+      const topThreat = levels.find(l => l.severity === 'critical') || levels.find(l => l.severity === 'danger') || null;
       return (
         '<button type="button" class="charge-ac-item" data-charge-idx="' + hit.idx + '">' +
-          '<span class="charge-ac-name">' + safeText(c.name) + '</span>' +
-          '<span class="charge-ac-statute">' + safeText(c.statute) + '</span>' +
-          '<span class="charge-ac-degree">' + safeText(c.degree) + '</span>' +
+          '<div class="charge-ac-row">' +
+            '<span class="charge-ac-name">' + safeText(c.name) + '</span>' +
+            '<span class="charge-ac-degree ' + degClass + '">' + safeText(c.degree) + '</span>' +
+            '<span class="charge-ac-statute">' + safeText(c.statute) + '</span>' +
+          '</div>' +
+          (maxPenalty || topThreat ? (
+            '<div class="charge-ac-meta">' +
+              (maxPenalty ? '<span class="charge-ac-penalty">⚖ Max: ' + safeText(maxPenalty) + '</span>' : '') +
+              (topThreat ? '<span class="charge-ac-threat ' + topThreat.severity + '">' + safeText(topThreat.label) + '</span>' : '') +
+            '</div>'
+          ) : '') +
         '</button>'
       );
     }).join('');
