@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '8023651-intel-panel-explain';
+const APP_BUILD_ID = '1648207-eligibility-why';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -4402,39 +4402,39 @@ function getPrevRelevantQ(fromIdx) {
 function getEligibilityQ(motionId) {
   const map = {
     "3850": [
-      {id:"elig-3850-1", label:"Has it been more than 2 years since your conviction became final?", warningIf:"yes"},
-      {id:"elig-3850-2", label:"Have you filed a 3.850 motion before?", warningIf:"yes"},
-      {id:"elig-3850-3", label:"Is your claim based on newly discovered evidence or an illegal sentence?", warningIf:"no"},
+      {id:"elig-3850-1", label:"Has it been more than 2 years since your conviction became final?", warningIf:"yes", why:"Rule 3.850(b) generally requires filing within 2 years of the judgment becoming final. Past that window, you need a narrow exception — newly discovered evidence, a retroactive change in the law, or an illegal sentence — or the motion can be dismissed as untimely."},
+      {id:"elig-3850-2", label:"Have you filed a 3.850 motion before?", warningIf:"yes", why:"Florida treats most claims as waived if they could have been raised in an earlier 3.850 motion. A second or 'successive' motion must explain why this claim couldn't have been brought the first time."},
+      {id:"elig-3850-3", label:"Is your claim based on newly discovered evidence or an illegal sentence?", warningIf:"no", why:"If you're outside the 2-year window and your claim isn't newly discovered evidence or an illegal sentence, you likely don't qualify for one of the few recognized exceptions to the deadline."},
     ],
     "3800": [
-      {id:"elig-3800-1", label:"Is your sentence above the legal maximum, below the required minimum, or otherwise illegal?", warningIf:"no"},
-      {id:"elig-3800-2", label:"Has a direct appeal been decided?", warningIf:"no"},
+      {id:"elig-3800-1", label:"Is your sentence above the legal maximum, below the required minimum, or otherwise illegal?", warningIf:"no", why:"Rule 3.800(a) only corrects sentences that are actually illegal (exceed the statutory max, fall below a mandatory minimum, etc.) — it can't be used to argue the sentence was merely unfair or harsh."},
+      {id:"elig-3800-2", label:"Has a direct appeal been decided?", warningIf:"no", why:"A 3.800(a) motion can usually proceed even while an appeal is pending, but coordinate the two so the trial court isn't asked to rule on something the appellate court already controls."},
     ],
     "expunge": [
-      {id:"elig-exp-1", label:"Have you ever had a record sealed or expunged before?", warningIf:"yes"},
-      {id:"elig-exp-2", label:"Were you adjudicated guilty or was adjudication withheld?", warningIf:"yes"},
+      {id:"elig-exp-1", label:"Have you ever had a record sealed or expunged before?", warningIf:"yes", why:"Florida allows only one sealing or expungement per lifetime, in any state. A prior one is usually a hard disqualifier for a new petition."},
+      {id:"elig-exp-2", label:"Were you adjudicated guilty or was adjudication withheld?", warningIf:"yes", why:"Most sealing and expungement relief requires that adjudication was withheld — an actual conviction (adjudication of guilt) is disqualifying in nearly all cases."},
     ],
     "terminate": [
-      {id:"elig-term-1", label:"Have you completed at least 50% of your probation?", warningIf:"no"},
-      {id:"elig-term-2", label:"Are all special conditions completed?", warningIf:"no"},
+      {id:"elig-term-1", label:"Have you completed at least 50% of your probation?", warningIf:"no", why:"Fla. Stat. § 948.04 generally expects at least half the supervision term served before a court will consider early termination."},
+      {id:"elig-term-2", label:"Are all special conditions completed?", warningIf:"no", why:"Outstanding special conditions (treatment programs, fees, restitution) are one of the most common reasons courts deny early termination, even with good overall compliance."},
     ],
     "restitution": [
-      {id:"elig-rest-1", label:"Do you have a documented change in financial circumstances?", warningIf:"no"},
-      {id:"elig-rest-2", label:"Have you made any payments toward restitution?", warningIf:"no"},
+      {id:"elig-rest-1", label:"Do you have a documented change in financial circumstances?", warningIf:"no", why:"Under Bearden v. Georgia, courts modify restitution based on an inability to pay caused by a genuine change in circumstances — without one, there's less for the court to act on."},
+      {id:"elig-rest-2", label:"Have you made any payments toward restitution?", warningIf:"no", why:"Courts look for evidence of good-faith effort to pay. No payment history makes it harder to show the failure to pay wasn't willful."},
     ],
     "mitigation": [],
     "appeal": [
-      {id:"elig-app-1", label:"Has the final judgment or order been entered?", warningIf:"no"},
-      {id:"elig-app-2", label:"Are you within the appeal deadline?", warningIf:"no"},
+      {id:"elig-app-1", label:"Has the final judgment or order been entered?", warningIf:"no", why:"An appeal generally can't be filed until there's a final, appealable order — filing too early can be dismissed as premature."},
+      {id:"elig-app-2", label:"Are you within the appeal deadline?", warningIf:"no", why:"The Notice of Appeal deadline (usually 30 days from the judgment) is jurisdictional — missing it typically forfeits the right to a direct appeal entirely."},
     ],
     "appeal-record": [],
     "appeal-rehearing": [
-      {id:"elig-rh-1", label:"Has the appellate court issued an opinion?", warningIf:"no"},
-      {id:"elig-rh-2", label:"Are you within the rehearing deadline?", warningIf:"no"},
+      {id:"elig-rh-1", label:"Has the appellate court issued an opinion?", warningIf:"no", why:"A rehearing motion challenges a specific decision the court already made — there's nothing to seek rehearing on until an opinion or order issues."},
+      {id:"elig-rh-2", label:"Are you within the rehearing deadline?", warningIf:"no", why:"The rehearing deadline (typically 15 days from the decision) is strict, and once it passes the mandate can issue, ending the appellate court's involvement."},
     ],
     "2254": [
-      {id:"elig-2254-1", label:"Have you exhausted your state court remedies?", warningIf:"no"},
-      {id:"elig-2254-2", label:"Is there a federal constitutional issue in your case?", warningIf:"no"},
+      {id:"elig-2254-1", label:"Have you exhausted your state court remedies?", warningIf:"no", why:"Federal courts generally require every claim to have already been presented to Florida's courts (through Rule 3.850 and its appeal) before they'll hear it — an unexhausted claim is typically dismissed."},
+      {id:"elig-2254-2", label:"Is there a federal constitutional issue in your case?", warningIf:"no", why:"Section 2254 only reaches violations of federal constitutional law. A claim based solely on state law, even if correct, isn't something a federal habeas court can grant relief on."},
     ],
   };
   return map[motionId] || [];
@@ -4467,7 +4467,7 @@ function renderEligibility() {
     html += '<button class="elig-btn'+(val==='no'?' selected-no':'')+'" onclick="eligAnswer(\''+q.id+'\',\'no\')">No</button>';
     html += '</div>';
     if(showWarning) {
-      html += '<div class="elig-warning">You may face challenges with this factor, but you can still continue.</div>';
+      html += '<div class="elig-warning">'+esc(q.why || 'You may face challenges with this factor, but you can still continue.')+'</div>';
     } else if(val !== undefined) {
       html += '<div class="elig-ok">Good — noted.</div>';
     }
