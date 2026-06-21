@@ -2455,7 +2455,7 @@ body.low-distraction #tabnav { display: none; }
 .risk-badge {
   padding: 8px 10px; border-radius: 8px; text-align: center;
   font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.5px;
-  line-height: 1.4; text-transform: uppercase; cursor: help;
+  line-height: 1.4; text-transform: uppercase; cursor: pointer;
 }
 .risk-badge.critical { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
 .risk-badge.danger { background: rgba(251,191,36,0.12); color: #fb923c; border: 1px solid rgba(251,191,36,0.25); }
@@ -2463,6 +2463,13 @@ body.low-distraction #tabnav { display: none; }
 .risk-badge.safe { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
 .risk-badge .rb-icon { display: block; font-size: 14px; margin-bottom: 4px; }
 .risk-badge .rb-label { display: block; font-weight: 700; }
+.risk-badge .rb-detail {
+  display: none; text-align: left; text-transform: none; letter-spacing: normal;
+  font-family: var(--font-body); font-size: 10px; font-weight: 400;
+  line-height: 1.5; margin-top: 6px; padding-top: 6px;
+  border-top: 1px dashed currentColor; opacity: 0.85;
+}
+.risk-badge.open .rb-detail { display: block; }
 
 /* Intel body sections */
 .charge-intel-body { padding: 0 18px 18px; }

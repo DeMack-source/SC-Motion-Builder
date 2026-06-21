@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '5083761-appellate-court-explain';
+const APP_BUILD_ID = '7261049-tap-risk-detail';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -3826,9 +3826,10 @@ function renderRiskBadges(c, tl) {
   if (!levels.length) { grid.innerHTML = ''; return; }
   grid.innerHTML = levels.map(l => {
     const iconMap = { critical: '🔴', danger: '🟠', warning: '🟡', safe: '🟢' };
-    return '<div class="risk-badge '+l.severity+'" title="'+esc(l.detail)+'">'+
+    return '<div class="risk-badge '+l.severity+'" title="'+esc(l.detail)+'" onclick="this.classList.toggle(\'open\')">'+
       '<span class="rb-icon">'+(iconMap[l.severity]||'⚪')+'</span>'+
       '<span class="rb-label">'+esc(l.label)+'</span>'+
+      '<div class="rb-detail">'+esc(l.detail)+'</div>'+
     '</div>';
   }).join('');
 }
