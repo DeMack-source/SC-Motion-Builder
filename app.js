@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '8517403-reentry-status-legend';
+const APP_BUILD_ID = '3047619-glossary-essential-flag';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -1586,34 +1586,34 @@ const FEDERAL_DISTRICTS = [
 
 // ── GLOSSARY ──
 const GLOSSARY = [
-  {t:"Appeal", d:"A request to a higher court to review a lower court's decision."},
+  {t:"Appeal", d:"A request to a higher court to review a lower court's decision.", key:true},
   {t:"Appellant", d:"The party who files an appeal."},
   {t:"Appellee", d:"The party responding to an appeal (usually the State)."},
-  {t:"Brief", d:"A written legal argument submitted to the court explaining why the decision should be upheld or reversed."},
-  {t:"Certificate of Appealability", d:"Required before a federal appeal can proceed in habeas cases. Shows the petitioner made a substantial constitutional claim."},
+  {t:"Brief", d:"A written legal argument submitted to the court explaining why the decision should be upheld or reversed.", key:true},
+  {t:"Certificate of Appealability", d:"Required before a federal appeal can proceed in habeas cases. Shows the petitioner made a substantial constitutional claim.", key:true},
   {t:"Constitutional Right", d:"A right guaranteed by the U.S. Constitution, such as due process, effective assistance of counsel, or protection against self-incrimination."},
-  {t:"Direct Appeal", d:"The first appeal as of right after a final judgment. In Florida, the Notice of Appeal must be filed within 30 days."},
+  {t:"Direct Appeal", d:"The first appeal as of right after a final judgment. In Florida, the Notice of Appeal must be filed within 30 days.", key:true},
   {t:"En Banc", d:"A hearing before all judges of a court, rather than a panel of three. Usually reserved for significant legal questions."},
-  {t:"Evidentiary Hearing", d:"A court hearing where evidence (witnesses, documents) is presented to resolve factual disputes."},
-  {t:"Exhaustion of Remedies", d:"The requirement that a state prisoner must pursue all available state court remedies before seeking federal habeas relief."},
+  {t:"Evidentiary Hearing", d:"A court hearing where evidence (witnesses, documents) is presented to resolve factual disputes.", key:true},
+  {t:"Exhaustion of Remedies", d:"The requirement that a state prisoner must pursue all available state court remedies before seeking federal habeas relief.", key:true},
   {t:"Final Order", d:"A court order that ends the case on its merits, leaving nothing further for the court to decide."},
-  {t:"Habeas Corpus", d:"A legal action challenging the legality of a person's detention. In Florida, post-conviction motions serve this function."},
-  {t:"Ineffective Assistance of Counsel", d:"A claim that trial counsel's performance fell below reasonable professional standards and prejudiced the outcome. Strickland v. Washington."},
-  {t:"Jurisdiction", d:"The court's legal authority to hear a case. Without jurisdiction, any order is void."},
+  {t:"Habeas Corpus", d:"A legal action challenging the legality of a person's detention. In Florida, post-conviction motions serve this function.", key:true},
+  {t:"Ineffective Assistance of Counsel", d:"A claim that trial counsel's performance fell below reasonable professional standards and prejudiced the outcome. Strickland v. Washington.", key:true},
+  {t:"Jurisdiction", d:"The court's legal authority to hear a case. Without jurisdiction, any order is void.", key:true},
   {t:"Mandate", d:"The official communication from an appellate court to the trial court advising of the appeal's outcome."},
-  {t:"Notice of Appeal", d:"A formal document filed with the clerk stating the intent to appeal. In Florida, due within 30 days of the order."},
+  {t:"Notice of Appeal", d:"A formal document filed with the clerk stating the intent to appeal. In Florida, due within 30 days of the order.", key:true},
   {t:"Per Curiam", d:"A Latin term meaning 'by the court.' A unanimous opinion issued by the court collectively rather than by a named judge."},
   {t:"Petitioner", d:"The party filing a petition for review (in post-conviction or habeas cases)."},
-  {t:"Post-Conviction", d:"Legal proceedings that occur after a criminal conviction becomes final, challenging the legality of the conviction or sentence."},
-  {t:"Pro Se", d:"Representing yourself in court without a lawyer."},
+  {t:"Post-Conviction", d:"Legal proceedings that occur after a criminal conviction becomes final, challenging the legality of the conviction or sentence.", key:true},
+  {t:"Pro Se", d:"Representing yourself in court without a lawyer.", key:true},
   {t:"Record on Appeal", d:"The official collection of all documents, filings, transcripts, and exhibits from the trial court sent to the appellate court."},
   {t:"Remand", d:"When an appellate court sends a case back to the trial court for further proceedings consistent with the opinion."},
   {t:"Respondent", d:"The party responding to a petition (typically the State in post-conviction cases)."},
   {t:"Standard of Review", d:"The level of deference an appellate court gives to the lower court's decision. Common standards include de novo, abuse of discretion, and competent substantial evidence."},
   {t:"Stay", d:"A court order temporarily halting proceedings. Often requested to stop an execution while an appeal is pending."},
-  {t:"Summary Denial", d:"When a trial court denies a post-conviction motion without holding an evidentiary hearing."},
+  {t:"Summary Denial", d:"When a trial court denies a post-conviction motion without holding an evidentiary hearing.", key:true},
   {t:"Writ of Certiorari", d:"A discretionary review by the U.S. Supreme Court. Very few petitions are granted."},
-  {t:"Writ of Habeas Corpus (28 U.S.C. § 2254)", d:"The federal statute that allows state prisoners to challenge their detention on federal constitutional grounds."},
+  {t:"Writ of Habeas Corpus (28 U.S.C. § 2254)", d:"The federal statute that allows state prisoners to challenge their detention on federal constitutional grounds.", key:true},
   {t:"Default Judgment", d:"A judgment entered against a party who fails to respond to a pleading within the required time."},
   {t:"Summary Judgment", d:"A decision made without a full trial when there is no genuine dispute about the material facts."},
   {t:"Interlocutory Order", d:"A temporary or preliminary order that does not finally resolve the case. Generally not appealable until a final judgment."},
@@ -1621,8 +1621,8 @@ const GLOSSARY = [
   {t:"Venue", d:"The geographic location where a case is heard. Proper venue is usually where the crime occurred."},
   {t:"Prosecutorial Misconduct", d:"Improper conduct by a prosecutor that violates the defendant's right to a fair trial."},
   {t:"Harmless Error", d:"An error that did not affect the outcome of the case and therefore does not warrant reversal."},
-  {t:"Plain Error", d:"A clear and obvious error that affected substantial rights, reviewable even if not raised at trial."},
-  {t:"Fundamental Error", d:"An error that goes to the very foundation of the case and renders the proceeding invalid."},
+  {t:"Plain Error", d:"A clear and obvious error that affected substantial rights, reviewable even if not raised at trial.", key:true},
+  {t:"Fundamental Error", d:"An error that goes to the very foundation of the case and renders the proceeding invalid.", key:true},
 ];
 
 // ── UTILITY ──
@@ -2480,21 +2480,28 @@ function calcDeadline() {
 }
 
 // ── GLOSSARY ──
+function glossarySort(a, b) {
+  if (!!a.key !== !!b.key) return a.key ? -1 : 1;
+  return a.t.localeCompare(b.t);
+}
+function renderGlossaryList(terms) {
+  return terms.map(g=>`<div class="glossary-term${g.key ? ' key-term' : ''}"><div class="term">${esc(g.t)}${g.key ? '<span class="key-term-badge" title="Comes up constantly in pro se postconviction and appellate filings — worth knowing cold.">ESSENTIAL</span>' : ''}</div><div class="def">${esc(g.d)}</div></div>`).join('');
+}
 function renderGlossary() {
   const list = document.getElementById('glossary-list');
   const count = document.getElementById('glossary-count');
   if(!list) return;
   if(count) count.textContent = `${GLOSSARY.length} terms`;
-  list.innerHTML = GLOSSARY.map(g=>`<div class="glossary-term"><div class="term">${esc(g.t)}</div><div class="def">${esc(g.d)}</div></div>`).join('');
+  list.innerHTML = renderGlossaryList([...GLOSSARY].sort(glossarySort));
 }
 function filterGlossary(val) {
   const list = document.getElementById('glossary-list');
   const count = document.getElementById('glossary-count');
   if(!list) return;
   const term = (val||'').trim().toLowerCase();
-  const filtered = GLOSSARY.filter(g => !term || g.t.toLowerCase().includes(term) || g.d.toLowerCase().includes(term));
+  const filtered = GLOSSARY.filter(g => !term || g.t.toLowerCase().includes(term) || g.d.toLowerCase().includes(term)).sort(glossarySort);
   if(count) count.textContent = `${filtered.length} of ${GLOSSARY.length} terms`;
-  list.innerHTML = filtered.map(g=>`<div class="glossary-term"><div class="term">${esc(g.t)}</div><div class="def">${esc(g.d)}</div></div>`).join('');
+  list.innerHTML = renderGlossaryList(filtered);
   if(!filtered.length) list.innerHTML = `<div class="no-drafts">No terms match that search.</div>`;
 }
 
