@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '7402851-case-num-format-hint';
+const APP_BUILD_ID = '5193847-field-help-intake-progressive';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -3648,6 +3648,14 @@ function filterMotionsByState() {
   }
 }
 
+// Reveals the case-number/name/DOB fields once a county has been entered —
+// progressive disclosure so the intake form reads as one question at a time
+// instead of four blank fields at once.
+function revealIntakeProgressive(el) {
+  const wrap = document.getElementById('intake-progressive');
+  if (wrap) wrap.style.display = (el.value || '').trim() ? 'block' : 'none';
+}
+
 function openIntake(chargeName) {
   const overlay = document.getElementById('intake-form');
   if (!overlay) return;
@@ -3664,6 +3672,7 @@ function openIntake(chargeName) {
     document.getElementById('intake-def-name').value = '';
     document.getElementById('intake-dob').value = '';
   }
+  revealIntakeProgressive(document.getElementById('intake-county'));
   intakeDirty = false;
   overlay.classList.add('open');
 }
@@ -3925,6 +3934,46 @@ function explainCriticalMotion(label) {
   const lower = (label || '').toLowerCase();
   const match = MOTION_EXPLANATIONS.find(e => e.keywords.some(k => lower.includes(k)));
   return match ? match.text : 'A pretrial motion relevant to this charge\'s posture — discuss with counsel how it applies to your specific facts.';
+}
+
+// Plain-language fallback for wizard fields that have no authored q.help —
+// keyword-matched against field id/label, same pattern as MOTION_EXPLANATIONS.
+// Deliberately doesn't cover self-explanatory fields (name, address, phone,
+// plain dates) — a fallback there would be noise, not help.
+const FIELD_HELP_FALLBACKS = [
+  { keywords: ['case-num'], text: 'The number assigned to your case by the clerk\'s office — found on your judgment, sentencing order, or docket. Usually formatted YYYY-CF-XXXXXX.' },
+  { keywords: ['county'], text: 'The county where your case was originally filed and decided — this determines which circuit court and appellate district apply, not where you live now.' },
+  { keywords: ['direct-appeal-status'], text: 'Whether your direct appeal — the one automatic appeal everyone gets after conviction — is still pending, already decided, or was never filed. This changes which deadlines and exceptions apply to you now.' },
+  { keywords: ['3800-status'], text: 'Whether you\'ve already filed a Rule 3.800 motion (used to correct an illegal sentence) and what happened to it.' },
+  { keywords: ['supporting-facts'], text: 'Write what actually happened in your own words — dates, names, specifics. The court reads this to understand your claim before it ever reads a legal citation.' },
+  { keywords: ['record-cites'], text: 'Page or transcript references in your case record (e.g., "Tr. 45" or "R. 112") that back up what you\'re claiming. If you don\'t have exact citations yet, describe what you remember and where it likely is.' },
+  { keywords: ['relief-requested'], text: 'What you\'re actually asking the court to do — vacate the conviction, reduce the sentence, order a new hearing, etc. Be specific; vague requests are easier to deny.' },
+  { keywords: ['federal-division'], text: 'Which division of the federal district court should handle your case — usually based on the county where you were convicted.' },
+  { keywords: ['trial-outcome'], text: 'How the underlying criminal case ended — convicted at trial, pled guilty, etc. This shapes which motions are even available to you.' },
+  { keywords: ['vop-date'], text: 'The date your violation of probation was filed or alleged — this starts the clock for your response deadlines.' },
+  { keywords: ['fdle-cert-date'], text: 'The date the Florida Department of Law Enforcement issued your certificate of eligibility, if you already have one. Leave blank if you haven\'t applied yet.' },
+  { keywords: ['drug-tests'], text: 'Whether you\'ve been passing your required drug tests under probation — often the single biggest factor in modification or early-termination requests.' },
+  { keywords: ['rest-monthly'], text: 'The restitution or cost amount you\'re currently required to pay per month, as set by the court — not what you can actually afford (that comes next).' },
+  { keywords: ['notice-filed-date'], text: 'The date you filed your Notice of Appeal — this is the trigger date for almost every deadline that follows in the appeal.' },
+  { keywords: ['record-due-date'], text: 'The deadline for the court reporter/clerk to prepare and file the trial record — if this date slips, it can stall your whole appeal.' },
+  { keywords: ['appellate-dca'], text: 'Which District Court of Appeal covers your case — this is fixed by the county where you were convicted, not something you choose.' },
+  { keywords: ['transcript-dates'], text: 'The specific hearing or trial dates you need transcribed for the record — be as precise as possible so the court reporter pulls the right ones.' },
+  { keywords: ['designation-filed'], text: 'Whether the formal request telling the clerk which parts of the trial record to send up on appeal has already been filed.' },
+  { keywords: ['extension-status'], text: 'Whether you\'ve asked for (or received) more time to file, and what the new deadline is, if any.' },
+  { keywords: ['brief-outline', 'brief-status'], text: 'A rough outline of the points you plan to argue, in the order you plan to argue them — this doesn\'t need polished legal language yet.' },
+  { keywords: ['mandate-concern'], text: 'Why letting the case proceed right now (before the appeal is decided) would cause harm that can\'t be undone later — that\'s the legal standard for a stay.' },
+  { keywords: ['preservation'], text: 'Whether your trial attorney objected to the issue at the time it happened. If an issue wasn\'t objected to below, it\'s much harder to win on appeal.' },
+  { keywords: ['dc-number'], text: 'Your Florida Department of Corrections inmate number, if you have one — used to look up your case while incarcerated.' },
+  { keywords: ['proceeding-date'], text: 'The date of the hearing or proceeding this document is being prepared for, if you know it.' },
+  { keywords: ['volunteer'], text: 'Volunteer work, community service hours, or civic involvement since your conviction — this is mitigation evidence for clemency or seal/expunge requests, not just a resume line.' },
+  { keywords: ['employment'], text: 'Your work history since the conviction — steady employment is one of the strongest signs a clemency or relief board looks for.' },
+  { keywords: ['awards'], text: 'Certificates, recognitions, or achievements since the conviction — these help show rehabilitation, even if they seem minor.' },
+];
+
+function getFieldHelpFallback(q) {
+  const hay = (q.id + ' ' + (q.label || '')).toLowerCase();
+  const match = FIELD_HELP_FALLBACKS.find(e => e.keywords.some(k => hay.includes(k)));
+  return match ? match.text : null;
 }
 
 function showMotionDetail(el) {
@@ -4727,8 +4776,9 @@ function renderQuestion(dir) {
 
   // Field-specific help, shown inline (no toggle needed — it's short and answers "what is this asking").
   let fieldHelpHtml = '';
-  if(q.help) {
-    fieldHelpHtml = '<div class="q-field-help">ⓘ '+esc(q.help)+'</div>';
+  const helpText = q.help || getFieldHelpFallback(q);
+  if(helpText) {
+    fieldHelpHtml = '<div class="q-field-help">ⓘ '+esc(helpText)+'</div>';
   }
   if (q.id === 'case-num') {
     fieldHelpHtml += '<div class="q-format-hint" id="q-format-hint"></div>';
