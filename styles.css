@@ -437,6 +437,53 @@ body::after {
 }
 .motion-tile.selected .tile-check { opacity: 1; transform: scale(1); }
 
+.tile-path-note {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.tile-path-note:empty { display: none; }
+.tile-stage {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  color: var(--tile-color, var(--gold));
+  margin-bottom: 3px;
+}
+.tile-blocked-note {
+  display: none;
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  background: rgba(248,113,113,0.1);
+  border: 1px solid rgba(248,113,113,0.3);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.tile-blocked-note .tile-unlock {
+  display: block;
+  margin-top: 4px;
+  color: var(--white);
+  font-weight: 600;
+}
+.motion-tile.tile-blocked {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.motion-tile.tile-blocked:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border);
+}
+.motion-tile.tile-blocked .tile-blocked-note {
+  display: block;
+}
+
 /* ── START BUTTON ── */
 .start-btn {
   width: 100%;

@@ -619,7 +619,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '5103772-sw-claim-reload-fix';
+const APP_BUILD_ID = '7234810-motion-tile-guidance';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -1688,6 +1688,10 @@ document.addEventListener('keydown', (event) => {
 
 // ── MOTION SELECTION ──
 function selectMotion(id, tile) {
+  if (tile.classList.contains('tile-blocked')) {
+    toast('Not available at your current case stage — see the note on the tile.');
+    return;
+  }
   document.querySelectorAll('.motion-tile').forEach(t=>t.classList.remove('selected'));
   tile.classList.add('selected');
   currentMotion = id;
@@ -1776,6 +1780,31 @@ function motionStageCaption(id) {
     "2254": "FEDERAL HABEAS / COLLATERAL REVIEW",
   };
   return stages[id] || "";
+}
+
+// The earliest case stage (per CASE_STATES) where this motion is an
+// available remedy rather than a blocked one.
+function motionUnlockStage(id) {
+  for (const key of STATE_ORDERS) {
+    const ctx = CASE_STATES[key];
+    if (ctx.remedies && ctx.remedies.includes(id)) return ctx.label;
+  }
+  return '';
+}
+
+// Surfaces the existing motionPathNote()/motionStageCaption() copy directly
+// on each motion tile so "what is this and when do I use it" is visible
+// before the user has to click in to find out.
+function renderMotionTileNotes() {
+  document.querySelectorAll('.motion-tile').forEach(tile => {
+    const id = tile.getAttribute('data-motion');
+    const noteEl = tile.querySelector('.tile-path-note');
+    if (!noteEl) return;
+    const stage = motionStageCaption(id);
+    const note = motionPathNote(id);
+    noteEl.innerHTML = (stage ? '<span class="tile-stage">' + esc(stage) + '</span>' : '') +
+      (note ? '<span class="tile-path-text">' + esc(note) + '</span>' : '');
+  });
 }
 
 // ── RENDER FUNCTIONS ──
@@ -3478,7 +3507,13 @@ function filterMotionsByState() {
 
   // No case data → show all remedies
   if (!caseSession && !currentMotion) {
-    tiles.forEach(tile => { tile.style.display = ''; tile.classList.remove('tile-blocked'); });
+    tiles.forEach(tile => {
+      tile.style.display = '';
+      tile.classList.remove('tile-blocked');
+      tile.removeAttribute('aria-disabled');
+      const blockedNote = tile.querySelector('.tile-blocked-note');
+      if (blockedNote) blockedNote.style.display = 'none';
+    });
     const existingMsg = grid.querySelector('.state-empty-msg');
     if (existingMsg) existingMsg.style.display = 'none';
     return;
@@ -3491,12 +3526,22 @@ function filterMotionsByState() {
 
   tiles.forEach(tile => {
     const mid = tile.getAttribute('data-motion');
+    const blockedNote = tile.querySelector('.tile-blocked-note');
     if (blockedIds.includes(mid)) {
       tile.classList.add('tile-blocked');
-      tile.style.display = 'none';
+      tile.style.display = '';
+      tile.setAttribute('aria-disabled', 'true');
+      if (blockedNote) {
+        const unlockStage = motionUnlockStage(mid);
+        blockedNote.innerHTML = '🔒 Not available yet — ' + esc(ctx.note) +
+          (unlockStage ? ' <span class="tile-unlock">Available at: ' + esc(unlockStage) + '</span>' : '');
+        blockedNote.style.display = '';
+      }
     } else {
       tile.classList.remove('tile-blocked');
       tile.style.display = '';
+      tile.removeAttribute('aria-disabled');
+      if (blockedNote) blockedNote.style.display = 'none';
       visibleCount++;
     }
   });
@@ -8288,6 +8333,7 @@ async function bootstrapApp() {
   if (versionBadge) versionBadge.textContent = 'Build ' + (window.APP_VERSION || 'unknown');
 
   // ── BOOT ──
+  renderMotionTileNotes();
   renderRights();
   renderAppeals();
   renderCourts();
