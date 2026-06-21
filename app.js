@@ -619,7 +619,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '7234810-motion-tile-guidance';
+const APP_BUILD_ID = '8451926-deadline-rule-basis';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -2384,18 +2384,33 @@ function calcDeadline() {
   if(!el||!el.value||!res) return;
   const start = new Date(el.value+'T12:00:00');
   const rules = {
-    appeal:{ kind:'days', amount:30, label:'Notice of Appeal deadline' },
-    '3850':{ kind:'years', amount:2, label:'Rule 3.850 deadline (2 years)' },
-    '3800':{ kind:'none', amount:0, label:'Rule 3.800(a) — no deadline' },
-    rehearing:{ kind:'days', amount:15, label:'Motion for Rehearing deadline' },
-    clarification:{ kind:'days', amount:15, label:'Motion for Clarification deadline' },
-    mandate:{ kind:'days', amount:30, label:'Mandate issuance (approx.)' },
-    discretionary:{ kind:'days', amount:30, label:'Discretionary Review deadline' }
+    appeal:{ kind:'days', amount:30, label:'Notice of Appeal deadline',
+      citation:'Fla. R. App. P. 9.110(b)',
+      why:'A direct appeal must be filed within 30 days of the rendition of the order or judgment being appealed, or the appellate court loses jurisdiction to hear it.' },
+    '3850':{ kind:'years', amount:2, label:'Rule 3.850 deadline (2 years)',
+      citation:'Fla. R. Crim. P. 3.850(b)',
+      why:'A postconviction motion must be filed within 2 years of the judgment and sentence becoming final (typically when the direct-appeal mandate issues, or 30 days after sentencing if no appeal was taken). Narrow exceptions exist for newly discovered evidence, retroactive changes in the law, and illegal sentences — see Rule 3.850(b)(1)-(3).' },
+    '3800':{ kind:'none', amount:0, label:'Rule 3.800(a) — no deadline',
+      citation:'Fla. R. Crim. P. 3.800(a)',
+      why:'A motion to correct an illegal sentence attacks the sentence itself (e.g., exceeding the statutory maximum), not the conviction, so the legislature placed no time limit on raising it.' },
+    rehearing:{ kind:'days', amount:15, label:'Motion for Rehearing deadline',
+      citation:'Fla. R. App. P. 9.330(a)',
+      why:'A motion for rehearing must be filed within 15 days of the appellate court\'s order or opinion to give the court a chance to correct a claimed error before the case becomes final.' },
+    clarification:{ kind:'days', amount:15, label:'Motion for Clarification deadline',
+      citation:'Fla. R. App. P. 9.330(a)',
+      why:'Motions for clarification share the same 15-day window and procedure as motions for rehearing under Rule 9.330 — both ask the court to revisit its opinion before mandate issues.' },
+    mandate:{ kind:'days', amount:30, label:'Mandate issuance (approx.)',
+      citation:'Fla. R. App. P. 9.340',
+      why:'The mandate (the order that finalizes the appellate decision and returns jurisdiction to the trial court) generally issues 15 days after the time for rehearing expires — roughly 30 days after the opinion, though the clerk controls the exact date.' },
+    discretionary:{ kind:'days', amount:30, label:'Discretionary Review deadline',
+      citation:'Fla. R. App. P. 9.120(b)',
+      why:'A notice to invoke the Florida Supreme Court\'s discretionary jurisdiction must be filed within 30 days of the district court of appeal\'s decision, the same 30-day window as a direct appeal.' }
   };
   const rule = rules[type];
   if(!rule) return;
   if(rule.kind === 'none') {
-    res.innerHTML = `<div class="calc-result highlight"><div class="label">${esc(rule.label)}</div><div class="value" style="color:var(--teal)">No time limit</div><div class="note">A Rule 3.800(a) motion to correct an illegal sentence can be filed at any time. There is no statutory deadline.</div></div>`;
+    res.innerHTML = `<div class="calc-result highlight"><div class="label">${esc(rule.label)}</div><div class="value" style="color:var(--teal)">No time limit</div><div class="note">A Rule 3.800(a) motion to correct an illegal sentence can be filed at any time. There is no statutory deadline.</div></div>
+    <div class="calc-result"><div class="label">Why this rule applies</div><div class="note"><strong>${esc(rule.citation)}.</strong> ${esc(rule.why)}</div></div>`;
     return;
   }
   const deadline = computeFloridaDeadline(start, rule);
@@ -2409,7 +2424,11 @@ function calcDeadline() {
     <div class="calc-result highlight">
       <div class="label">${esc(rule.label)}</div>
       <div class="value">${deadline.adjusted.toLocaleDateString('en-US',options)}</div>
-      <div class="note">${rule.kind === 'years' ? '2 calendar years' : `${rule.amount} calendar days`} under Florida Rule 2.514. ${shifted ? `Extended from ${deadline.original.toLocaleDateString('en-US',options)} because the last day fell on a weekend or legal holiday. ` : ''}Local clerk or chief-judge closure days can still move the deadline. ${deadline.adjusted<new Date()?'⚠ This deadline may have passed.':'This deadline is in the future.'}</div>
+      <div class="note">${rule.kind === 'years' ? '2 calendar years' : `${rule.amount} calendar days`} from the trigger date, computed under Fla. R. Gen. Prac. &amp; Jud. Admin. 2.514. ${shifted ? `Extended from ${deadline.original.toLocaleDateString('en-US',options)} because the last day fell on a weekend or legal holiday. ` : ''}Local clerk or chief-judge closure days can still move the deadline. ${deadline.adjusted<new Date()?'⚠ This deadline may have passed.':'This deadline is in the future.'}</div>
+    </div>
+    <div class="calc-result">
+      <div class="label">Why this rule applies</div>
+      <div class="note"><strong>${esc(rule.citation)}.</strong> ${esc(rule.why)}</div>
     </div>`;
 }
 
