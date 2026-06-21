@@ -1,11 +1,11 @@
-const CACHE = 'sc-motion-v18';
+const CACHE = 'sc-motion-v19';
 
 const ASSETS = [
   './',
   'index.html',
   'app-shell.html',
   'styles.css',
-  'app.js?v=6190482-fix-offline-shell-cache',
+  'app.js?v=3805217-deadline-why',
   'charges.js',
   'icon.svg',
   'motion-manifest.json',

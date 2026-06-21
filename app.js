@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '6190482-fix-offline-shell-cache';
+const APP_BUILD_ID = '3805217-deadline-why';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -3174,6 +3174,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. Crim. P. 3.191',
     states: ['FIRST_APPEARANCE', 'PRETRIAL'],
     icon: '⏱️',
+    why: 'Demanding speedy trial forces the state to try you within 60 days, but it also cuts off your own time to investigate and prepare a defense — most attorneys only recommend it in specific situations.',
     depends: ['arrest-date'],
     calc: function(a) {
       const d = parseDate(a['arrest-date']);
@@ -3188,6 +3189,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. Stat. § 903.046',
     states: ['ARREST', 'FIRST_APPEARANCE', 'PRETRIAL'],
     icon: '🔓',
+    why: 'Florida requires bail to be set at first appearance, generally within 24 hours of arrest — if that window passed without a bond being set, you may have grounds to push for an emergency hearing.',
     depends: ['arrest-date'],
     calc: function(a) {
       const d = parseDate(a['arrest-date']);
@@ -3203,6 +3205,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. App. P. 9.140(b)(3)',
     states: ['SENTENCED'],
     icon: '📝',
+    why: 'This 30-day deadline is jurisdictional, not just procedural — miss it and the appellate court has no power to hear your case at all, no matter how strong your arguments are.',
     depends: ['sentence-date'],
     calc: function(a) {
       const d = parseDate(a['sentence-date']);
@@ -3219,6 +3222,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. App. P. 9.110(d)',
     states: ['DIRECT_APPEAL'],
     icon: '📄',
+    why: 'The initial brief is where your actual legal arguments get made — missing this deadline (without an extension) risks the appeal being dismissed for failure to prosecute before a judge ever reaches the merits.',
     depends: ['appeal-filed-date'],
     calc: function(a) {
       const d = parseDate(a['appeal-filed-date']);
@@ -3233,6 +3237,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. App. P. 9.330',
     states: ['DIRECT_APPEAL'],
     icon: '🔄',
+    why: 'This is the last chance to get the same panel to reconsider before the opinion becomes final and the mandate issues — once mandate issues, the case returns to the trial court and this window closes for good.',
     depends: ['appeal-opinion-date'],
     calc: function(a) {
       const d = parseDate(a['appeal-opinion-date']);
@@ -3247,6 +3252,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. Crim. P. 3.850(b)',
     states: ['FINALIZED', 'POSTCONVICTION'],
     icon: '⚖️',
+    why: 'This is the core postconviction deadline. Miss it without a recognized exception — newly discovered evidence, an illegal sentence, or a retroactive change in the law — and you generally lose the ability to raise these claims at all, even if they\'re meritorious.',
     depends: ['conviction-date'],
     calc: function(a) {
       const d = parseDate(a['conviction-date']);
@@ -3265,6 +3271,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. Crim. P. 3.800(c)',
     states: ['SENTENCED'],
     icon: '📦',
+    why: 'Rule 3.800(c) lets the judge reduce a sentence purely as a matter of mercy — no legal error required — but the court loses jurisdiction to do this 60 days after sentencing, so this window is unforgiving once it closes.',
     depends: ['sentence-date'],
     calc: function(a) {
       const d = parseDate(a['sentence-date']);
@@ -3279,6 +3286,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. Stat. § 948.04',
     states: ['SENTENCED', 'FINALIZED', 'POSTCONVICTION'],
     icon: '🗓️',
+    why: 'Courts can end probation early once roughly half the term is served with good compliance — there\'s no automatic deadline here, but tracking this date helps you ask the court at the right time instead of too early or not at all.',
     depends: ['probation-term-months', 'sentence-date'],
     calc: function(a) {
       const term = parseInt(a['probation-term-months']);
@@ -3296,6 +3304,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. Stat. § 948.06',
     states: ['SENTENCED', 'FINALIZED', 'POSTCONVICTION'],
     icon: '🚨',
+    why: 'Florida requires a violation-of-probation hearing within a reasonable time after a violation is alleged — long unexplained delays in scheduling that hearing can sometimes be challenged as a due-process problem.',
     depends: ['violation-date'],
     calc: function(a) {
       const d = parseDate(a['violation-date']);
@@ -3311,6 +3320,7 @@ const DEADLINE_DEFS = {
     statute: '28 U.S.C. § 2244(d)(1)',
     states: ['FINALIZED', 'FEDERAL_HABEAS'],
     icon: '⚡',
+    why: 'This is the federal habeas clock — separate from, and stricter than, your state deadlines. Missing it usually closes the door to federal review entirely, unless you can show equitable tolling (diligence plus an extraordinary circumstance that prevented timely filing).',
     depends: ['conviction-date'],
     calc: function(a) {
       const d = parseDate(a['conviction-date']);
@@ -3327,6 +3337,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. Stat. § 943.0585',
     states: ['REENTRY'],
     icon: '🔒',
+    why: 'Florida requires this waiting period (or a qualifying dismissal/nolle prosequi) before FDLE will issue the certificate of eligibility you need before a court will even consider sealing or expunging the record.',
     depends: ['disposition-date'],
     calc: function(a) {
       const d = parseDate(a['disposition-date']);
@@ -3347,6 +3358,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. Const. Art. IV, § 8',
     states: ['FINALIZED', 'POSTCONVICTION', 'REENTRY'],
     icon: '🕊️',
+    why: 'Executive clemency can restore rights that even a successful expungement can\'t reach, but the Governor\'s clemency rules require this minimum waiting period from sentencing before an application will even be accepted for review.',
     depends: ['sentence-date'],
     calc: function(a) {
       const d = parseDate(a['sentence-date']);
@@ -3362,6 +3374,7 @@ const DEADLINE_DEFS = {
     statute: 'Fla. R. Crim. P. 3.800(a)',
     states: ['SENTENCED', 'DIRECT_APPEAL', 'FINALIZED', 'POSTCONVICTION'],
     icon: '📜',
+    why: 'A sentence above the statutory maximum is void on its face, so Rule 3.800(a) sets no time limit — illegality isn\'t something a filing deadline can cure, and this claim survives even years later.',
     depends: ['sentence-imposed', 'max-sentence'],
     calc: function(a) {
       const imposed = a['sentence-imposed'] || '';
@@ -3494,6 +3507,7 @@ function renderDeadlineCard(d) {
         '<div class="dl-card-statute">' + (d.statute || '') + '</div>' +
         '<div class="dl-card-note">' + d.note + '</div>' +
         (d.remedy ? '<div class="dl-card-remedy">→ ' + d.remedy + '</div>' : '') +
+        (d.why ? '<div class="dl-card-why">' + d.why + '</div>' : '') +
       '</div>' +
       (d.status !== 'unknown' && d.status !== 'safe'
         ? '<div class="dl-card-count" style="color:' + barColor + '">' +
