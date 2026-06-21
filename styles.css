@@ -484,6 +484,27 @@ body::after {
   display: block;
 }
 
+.tile-recommended-badge {
+  display: none;
+  position: absolute;
+  top: 12px; left: 12px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--tile-color, var(--gold));
+  border-radius: 5px;
+  padding: 3px 7px;
+}
+.motion-tile.tile-recommended {
+  border-color: var(--tile-color, var(--gold));
+  box-shadow: 0 0 0 1px var(--tile-color, var(--gold)), 0 8px 24px rgba(0,0,0,0.3);
+}
+.motion-tile.tile-recommended .tile-recommended-badge {
+  display: block;
+}
+
 /* ── START BUTTON ── */
 .start-btn {
   width: 100%;
@@ -591,6 +612,75 @@ body::after {
   background: linear-gradient(90deg, var(--gold), #ffd166);
   border-radius: 4px;
   transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* JOURNEY MAP — visualizes the whole flow.steps sequence ("gates") so the
+   user can see the entire path from Start to File, not just their current
+   stage within it. */
+.journey-map {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin: 14px 0 18px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.journey-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+  width: 64px;
+  text-align: center;
+}
+.journey-gate-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  border: 2px solid rgba(255,255,255,0.15);
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+  flex-shrink: 0;
+}
+.journey-gate-label {
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 64px;
+}
+.journey-gate-line {
+  flex: 1 1 16px;
+  height: 2px;
+  background: rgba(255,255,255,0.1);
+  margin-top: 10px;
+  min-width: 8px;
+}
+.journey-gate--done .journey-gate-dot {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--ink);
+}
+.journey-gate--done .journey-gate-label {
+  color: var(--gold);
+}
+.journey-gate--current .journey-gate-dot {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(255,209,102,0.2);
+}
+.journey-gate--current .journey-gate-label {
+  color: var(--white);
+  font-weight: 600;
 }
 
 /* FORM FIELDS */

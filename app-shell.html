@@ -232,6 +232,7 @@
       <div class="tile-desc">Challenge convictions due to ineffective counsel, newly discovered evidence, or constitutional violations.</div>
       <div class="tile-path-note"></div>
       <div class="tile-blocked-note"></div>
+      <div class="tile-recommended-badge"></div>
     </div>
     <div class="motion-tile" data-motion="3800" style="--tile-color:#60A5FA" onclick="selectMotion('3800',this)">
       <div class="tile-check">✓</div>
@@ -241,6 +242,7 @@
       <div class="tile-desc">Correct a sentence that exceeds the maximum, falls below the minimum, or was improperly structured.</div>
       <div class="tile-path-note"></div>
       <div class="tile-blocked-note"></div>
+      <div class="tile-recommended-badge"></div>
     </div>
     <div class="motion-tile" data-motion="expunge" style="--tile-color:#4ADE80" onclick="selectMotion('expunge',this)">
       <div class="tile-check">✓</div>
@@ -250,6 +252,7 @@
       <div class="tile-desc">Remove or seal criminal records from public access. Strict eligibility — one chance per lifetime.</div>
       <div class="tile-path-note"></div>
       <div class="tile-blocked-note"></div>
+      <div class="tile-recommended-badge"></div>
     </div>
     <div class="motion-tile" data-motion="terminate" style="--tile-color:#F9B24C" onclick="selectMotion('terminate',this)">
       <div class="tile-check">✓</div>
@@ -259,6 +262,7 @@
       <div class="tile-desc">Petition for early termination of probation after completing 50% of the term and all special conditions.</div>
       <div class="tile-path-note"></div>
       <div class="tile-blocked-note"></div>
+      <div class="tile-recommended-badge"></div>
     </div>
     <div class="motion-tile" data-motion="restitution" style="--tile-color:#A78BFA" onclick="selectMotion('restitution',this)">
       <div class="tile-check">✓</div>
@@ -268,6 +272,7 @@
       <div class="tile-desc">Reduce payments when inability to pay is documented. Bearden v. Georgia protection applies.</div>
       <div class="tile-path-note"></div>
       <div class="tile-blocked-note"></div>
+      <div class="tile-recommended-badge"></div>
     </div>
     <div class="motion-tile" data-motion="mitigation" style="--tile-color:#2DD4BF" onclick="selectMotion('mitigation',this)">
       <div class="tile-check">✓</div>
@@ -277,6 +282,7 @@
       <div class="tile-desc">Build a comprehensive mitigation package for sentencing hearings, parole hearings, or clemency applications.</div>
       <div class="tile-path-note"></div>
       <div class="tile-blocked-note"></div>
+      <div class="tile-recommended-badge"></div>
     </div>
   </div>
 
@@ -313,6 +319,8 @@
         </div>
         <div class="progress-track"><div class="progress-fill" id="q-progress-fill" style="width:0%"></div></div>
       </div>
+
+      <div class="journey-map" id="journey-map" style="display:none"></div>
 
       <div class="wizard-body">
         <div class="q-container" id="q-container">
@@ -956,6 +964,10 @@
   <div class="section-title">Legal Glossary</div>
   <div style="background:var(--teal-dim);border:1px solid rgba(45,212,191,0.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:var(--teal);line-height:1.7">
     Plain-English definitions of legal terms used throughout Florida post-conviction and appellate practice. Terms marked <strong>ESSENTIAL</strong> come up constantly in pro se filings and are worth learning first — the rest are useful background but won't block you if you skip them for now.
+  </div>
+  <div class="charge-plain-toggle" id="glossary-simple-toggle" onclick="toggleGlossarySimpleMode()" style="border-radius:8px;margin-bottom:14px">
+    <div class="toggle-indicator">✓</div>
+    <span>Simple mode — explains each term in plain, everyday words instead of legal phrasing</span>
   </div>
   <input class="glossary-search" placeholder="Search terms…" oninput="filterGlossary(this.value)" id="glossarySearch" style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--ink-mid);color:var(--white);font-size:14px;font-family:var(--font-body);outline:none;margin-bottom:16px">
   <div id="glossary-count" style="font-size:11px;color:var(--muted);margin-bottom:12px"></div>
