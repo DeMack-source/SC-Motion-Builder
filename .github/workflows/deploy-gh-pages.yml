@@ -1,0 +1,22 @@
+name: Deploy to gh-pages
+
+# GitHub Pages for this repo serves from the gh-pages branch, not main.
+# Merging into main alone does not make a change live. This workflow
+# removes that manual step by auto-syncing gh-pages to main on every push.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
