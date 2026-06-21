@@ -1,11 +1,11 @@
-const CACHE = 'sc-motion-v27';
+const CACHE = 'sc-motion-v28';
 
 const ASSETS = [
   './',
   'index.html',
   'app-shell.html',
   'styles.css',
-  'app.js?v=1957284-fix-casesummary-groups-crash',
+  'app.js?v=6285391-wizard-step-of-total',
   'charges.js',
   'icon.svg',
   'motion-manifest.json',
