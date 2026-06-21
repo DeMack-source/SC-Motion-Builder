@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '2274915-county-intel-explain';
+const APP_BUILD_ID = '6190482-fix-offline-shell-cache';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
