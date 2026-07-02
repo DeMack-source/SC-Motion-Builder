@@ -3060,10 +3060,20 @@ body.low-distraction #tabnav { display: none; }
   margin-top: 4px; line-height: 1.3;
 }
 .dl-card-why {
-  font-size: 9.5px; color: var(--muted);
-  margin-top: 4px; padding-top: 4px;
-  border-top: 1px solid var(--border);
-  line-height: 1.4;
+  font-size: 11px; color: rgba(249,250,251,0.82);
+  margin-top: 8px;
+  padding: 6px 8px;
+  border-left: 3px solid var(--gold);
+  background: rgba(249,178,76,0.06);
+  border-radius: 0 4px 4px 0;
+  line-height: 1.5;
+}
+.dl-card-why-label {
+  font-weight: 700;
+  color: var(--gold);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 .dl-card-count {
   font-size: 20px; font-weight: 900;

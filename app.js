@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '6019283-journey-map';
+const APP_BUILD_ID = '4817362-deadline-why-callout';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -3543,7 +3543,7 @@ function renderDeadlineCard(d) {
         '<div class="dl-card-statute">' + (d.statute || '') + '</div>' +
         '<div class="dl-card-note">' + d.note + '</div>' +
         (d.remedy ? '<div class="dl-card-remedy">→ ' + d.remedy + '</div>' : '') +
-        (d.why ? '<div class="dl-card-why">' + d.why + '</div>' : '') +
+        (d.why ? '<div class="dl-card-why"><span class="dl-card-why-label">What this means — </span>' + esc(d.why) + '</div>' : '') +
       '</div>' +
       (d.status !== 'unknown' && d.status !== 'safe'
         ? '<div class="dl-card-count" style="color:' + barColor + '">' +
