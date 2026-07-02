@@ -81,11 +81,20 @@
     <button class="pwa-banner-btn" id="pwa-install-btn" type="button">Add to Home Screen</button>
   </div>
 
+  <!-- ── RESUME SAVED DRAFT ── -->
+  <div class="resume-banner" id="resume-banner">
+    <p><strong>You have a saved draft.</strong> Pick up where you left off, or start a fresh motion.</p>
+    <div class="resume-banner-actions" style="display:flex;gap:8px;flex-shrink:0">
+      <button class="btn-tactical" type="button" onclick="resumeDraft()">↩ Resume Draft</button>
+      <button class="btn-tactical" type="button" style="background:transparent;border:1px solid rgba(249,178,76,0.35)" onclick="clearAutoDraft()">Start Fresh</button>
+    </div>
+  </div>
+
   <!-- ═══ CHARGE LEGAL INTELLIGENCE ENGINE ═══ -->
   <div class="charge-search-section">
     <div class="charge-search-wrap">
       <span class="charge-search-icon">🔍</span>
-      <input class="charge-search-bar" id="charge-search" type="search" placeholder="Search a charge — e.g. murder, 893.135, trafficking, fentanyl, armed robbery..." autocomplete="off" spellcheck="false" oninput="renderChargeSearchResults(this.value)">
+      <input class="charge-search-bar" id="charge-search" type="search" placeholder="Search a charge — e.g. murder, 893.135, trafficking, fentanyl, armed robbery..." autocomplete="off" spellcheck="false">
       <div class="charge-autocomplete" id="charge-ac"></div>
     </div>
     <div class="timeline-toggle-wrap">
@@ -115,20 +124,14 @@
       <div class="charge-timeline" id="ci-timeline"></div>
       <div class="charge-countdown-wrap" id="ci-countdown"></div>
       <div class="charge-section-label">Critical Motions</div>
-      <div class="cs-section-intro">Motions tied to where this case sits in the process right now — tap a motion chip to see what it does, or tap "Build" to start that motion pre-filled with what's already known about this charge.</div>
       <div class="charge-motion-chips" id="ci-motions"></div>
-      <div class="charge-motion-detail" id="ci-motions-detail"></div>
       <div class="charge-section-label">Strategic Analysis</div>
-      <div class="cs-section-intro">Defenses are facts that could negate an element of the charge; weaknesses are gaps in the state's evidence; attack vectors are specific procedural or evidentiary angles a defense attorney would target.</div>
       <div class="charge-strategic-grid" id="ci-strategic"></div>
       <div class="charge-section-label">Constitutional Issues</div>
-      <div class="cs-section-intro">Federal constitutional problems that, if provable, can get evidence or statements suppressed, or support a claim that counsel's performance was deficient.</div>
       <div class="charge-detail-list" id="ci-constitutional"></div>
       <div class="charge-section-label">Collateral Consequences</div>
-      <div class="cs-section-intro">Non-criminal consequences that follow a conviction even after the sentence is served — these matter when deciding whether to take a plea, not just at sentencing.</div>
       <div class="charge-collateral-grid" id="ci-collateral"></div>
       <div class="charge-section-label county-label">County Intelligence <span class="ci-county-name" id="ci-county-name"></span></div>
-      <div class="ci-intro">Local practice varies a lot by county — this is general background on how this county tends to handle bond, diversion, and sentencing, not a guarantee of how your case will go. Use it to set expectations and ask informed questions, not as legal advice.</div>
       <div id="ci-county"></div>
     </div>
   </div>
@@ -168,22 +171,19 @@
         <div class="intake-charge-badge" id="intake-charge-badge"></div>
         <div class="field-group">
           <label class="field-label">County of Court</label>
-          <input class="field-input" id="intake-county" placeholder="e.g. Broward, Miami-Dade, Duval" oninput="intakeDirty=true;revealIntakeProgressive(this)">
+          <input class="field-input" id="intake-county" placeholder="e.g. Broward, Miami-Dade, Duval" oninput="intakeDirty=true">
         </div>
-        <div id="intake-progressive" style="display:none">
-          <div class="field-group">
-            <label class="field-label">Case Number <span style="color:var(--muted);font-weight:400">(optional)</span></label>
-            <input class="field-input" id="intake-case-num" placeholder="e.g. 2019-CF-012345" oninput="intakeDirty=true;checkCaseNumberFormat(this)">
-            <div class="q-format-hint" id="intake-case-num-hint"></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Defendant Name <span style="color:var(--muted);font-weight:400">(optional)</span></label>
-            <input class="field-input" id="intake-def-name" placeholder="Full legal name" oninput="intakeDirty=true">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Date of Birth <span style="color:var(--muted);font-weight:400">(optional)</span></label>
-            <input class="field-input" id="intake-dob" type="date">
-          </div>
+        <div class="field-group">
+          <label class="field-label">Case Number <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input class="field-input" id="intake-case-num" placeholder="e.g. 2019-CF-012345" oninput="intakeDirty=true">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Defendant Name <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input class="field-input" id="intake-def-name" placeholder="Full legal name" oninput="intakeDirty=true">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Date of Birth <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+          <input class="field-input" id="intake-dob" type="date">
         </div>
       </div>
       <div class="intake-modal-footer">
@@ -230,9 +230,6 @@
       <div class="tile-code">Rule 3.850</div>
       <div class="tile-title">Postconviction Relief</div>
       <div class="tile-desc">Challenge convictions due to ineffective counsel, newly discovered evidence, or constitutional violations.</div>
-      <div class="tile-path-note"></div>
-      <div class="tile-blocked-note"></div>
-      <div class="tile-recommended-badge"></div>
     </div>
     <div class="motion-tile" data-motion="3800" style="--tile-color:#60A5FA" onclick="selectMotion('3800',this)">
       <div class="tile-check">✓</div>
@@ -240,9 +237,6 @@
       <div class="tile-code">Rule 3.800</div>
       <div class="tile-title">Illegal Sentence Correction</div>
       <div class="tile-desc">Correct a sentence that exceeds the maximum, falls below the minimum, or was improperly structured.</div>
-      <div class="tile-path-note"></div>
-      <div class="tile-blocked-note"></div>
-      <div class="tile-recommended-badge"></div>
     </div>
     <div class="motion-tile" data-motion="expunge" style="--tile-color:#4ADE80" onclick="selectMotion('expunge',this)">
       <div class="tile-check">✓</div>
@@ -250,9 +244,6 @@
       <div class="tile-code">F.S. 943.0585 / 943.059</div>
       <div class="tile-title">Seal / Expunge Record</div>
       <div class="tile-desc">Remove or seal criminal records from public access. Strict eligibility — one chance per lifetime.</div>
-      <div class="tile-path-note"></div>
-      <div class="tile-blocked-note"></div>
-      <div class="tile-recommended-badge"></div>
     </div>
     <div class="motion-tile" data-motion="terminate" style="--tile-color:#F9B24C" onclick="selectMotion('terminate',this)">
       <div class="tile-check">✓</div>
@@ -260,9 +251,6 @@
       <div class="tile-code">F.S. 948.04</div>
       <div class="tile-title">Early Termination</div>
       <div class="tile-desc">Petition for early termination of probation after completing 50% of the term and all special conditions.</div>
-      <div class="tile-path-note"></div>
-      <div class="tile-blocked-note"></div>
-      <div class="tile-recommended-badge"></div>
     </div>
     <div class="motion-tile" data-motion="restitution" style="--tile-color:#A78BFA" onclick="selectMotion('restitution',this)">
       <div class="tile-check">✓</div>
@@ -270,9 +258,6 @@
       <div class="tile-code">F.S. 775.089</div>
       <div class="tile-title">Restitution Modification</div>
       <div class="tile-desc">Reduce payments when inability to pay is documented. Bearden v. Georgia protection applies.</div>
-      <div class="tile-path-note"></div>
-      <div class="tile-blocked-note"></div>
-      <div class="tile-recommended-badge"></div>
     </div>
     <div class="motion-tile" data-motion="mitigation" style="--tile-color:#2DD4BF" onclick="selectMotion('mitigation',this)">
       <div class="tile-check">✓</div>
@@ -280,9 +265,6 @@
       <div class="tile-code">F.R.Crim.P. 3.800(c)</div>
       <div class="tile-title">Mitigation Packet</div>
       <div class="tile-desc">Build a comprehensive mitigation package for sentencing hearings, parole hearings, or clemency applications.</div>
-      <div class="tile-path-note"></div>
-      <div class="tile-blocked-note"></div>
-      <div class="tile-recommended-badge"></div>
     </div>
   </div>
 
@@ -319,8 +301,6 @@
         </div>
         <div class="progress-track"><div class="progress-fill" id="q-progress-fill" style="width:0%"></div></div>
       </div>
-
-      <div class="journey-map" id="journey-map" style="display:none"></div>
 
       <div class="wizard-body">
         <div class="q-container" id="q-container">
@@ -409,14 +389,13 @@
       <span class="cmd-card-toggle" id="intel-h">▼</span>
     </div>
     <div class="cmd-card-body" id="intel-body">
-      <div class="intel-explain">This score isn't a prediction of how your case will turn out — it's a count of the sentencing exposure, procedural, and strategic-motion flags this tool detected in your answers. Higher score = more issues worth raising with the court or an attorney, not worse odds. Tap <strong>⚖️ WHY THIS MATTERS</strong> on any item below for the rule and case law behind it.</div>
       <div class="intel-risk-bar"><div class="intel-risk-fill" id="intel-risk-fill" style="width:0%"></div></div>
       <div class="intel-risk-label" id="intel-risk-label"></div>
       <div class="intel-row" id="intel-row">
-        <div class="intel-card"><div class="intel-card-title">⚔️ Strategic Motions <span class="intel-card-count" id="intel-motion-count">0</span></div><div class="intel-card-sub-label">Additional motions your facts may support filing.</div><div class="intel-card-list" id="intel-motions"></div></div>
-        <div class="intel-card"><div class="intel-card-title">⏰ Filing Deadlines <span class="intel-card-count" id="intel-deadline-count">0</span></div><div class="intel-card-sub-label">Time-sensitive windows detected from your case dates.</div><div class="intel-card-list" id="intel-deadlines"></div></div>
-        <div class="intel-card"><div class="intel-card-title">⚠️ Sentencing Exposure <span class="intel-card-count" id="intel-sentencing-count">0</span></div><div class="intel-card-sub-label">Mandatory minimums and enhancements that may apply.</div><div class="intel-card-list" id="intel-sentencing"></div></div>
-        <div class="intel-card"><div class="intel-card-title">🚧 Procedural Obstacles <span class="intel-card-count" id="intel-obstacle-count">0</span></div><div class="intel-card-sub-label">Rules that could get this filing rejected or delayed.</div><div class="intel-card-list" id="intel-obstacles"></div></div>
+        <div class="intel-card"><div class="intel-card-title">⚔️ Strategic Motions <span class="intel-card-count" id="intel-motion-count">0</span></div><div class="intel-card-list" id="intel-motions"></div></div>
+        <div class="intel-card"><div class="intel-card-title">⏰ Filing Deadlines <span class="intel-card-count" id="intel-deadline-count">0</span></div><div class="intel-card-list" id="intel-deadlines"></div></div>
+        <div class="intel-card"><div class="intel-card-title">⚠️ Sentencing Exposure <span class="intel-card-count" id="intel-sentencing-count">0</span></div><div class="intel-card-list" id="intel-sentencing"></div></div>
+        <div class="intel-card"><div class="intel-card-title">🚧 Procedural Obstacles <span class="intel-card-count" id="intel-obstacle-count">0</span></div><div class="intel-card-list" id="intel-obstacles"></div></div>
       </div>
     </div>
   </div>
@@ -778,7 +757,7 @@
   </div>
   <div class="section-title" style="margin-top:20px">Appellate Court Reference</div>
   <div class="draft-card">
-    <p style="font-size:11px;color:var(--muted);margin-bottom:14px">Each Florida county is assigned to exactly one District Court of Appeal (1st-6th DCA) based on where the trial court is located — that assignment is fixed, not a choice. A Notice of Appeal is still filed with the <strong>trial court clerk</strong> (see Clerk Directory above), who forwards it to the matching DCA; the addresses below are for sending the brief and other filings directly to the appellate court once the appeal is docketed. The Florida Supreme Court is not a routine next stop after a DCA loss — it only hears further review in narrow, mostly discretionary circumstances (e.g. a certified conflict between DCAs or a certified question of great public importance).</p>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:14px">Use this reference for appellate filing and service addresses.</p>
     <div id="courts-list"></div>
   </div>
 </div>
@@ -947,9 +926,6 @@
       <p><strong>Rule 3.850 (2 years):</strong> Two years from the date the judgment becomes final (after mandate issues on direct appeal). If the final day lands on a weekend or legal holiday, the deadline rolls to the next business day. Exceptions for newly discovered evidence, retroactive law changes, and unconstitutional sentences. Fla. R. Crim. P. 3.850(b); Fla. R. Gen. Prac. &amp; Jud. Admin. 2.514.</p>
       <p><strong>Rule 3.800(a):</strong> No deadline — an illegal sentence can be corrected at any time. Fla. R. Crim. P. 3.800(a).</p>
       <p><strong>Rehearing (15 days):</strong> 15 days from the date of the appellate opinion, with weekends and legal holidays handled under Rule 2.514. Fla. R. App. P. 9.330(a); Fla. R. Gen. Prac. &amp; Jud. Admin. 2.514.</p>
-      <p><strong>Clarification (15 days):</strong> Same 15-day window and procedure as a motion for rehearing — both ask the appellate court to revisit its opinion before mandate issues. Fla. R. App. P. 9.330(a); Fla. R. Gen. Prac. &amp; Jud. Admin. 2.514.</p>
-      <p><strong>Mandate (~30 days):</strong> The mandate finalizes the appellate decision and returns jurisdiction to the trial court. It generally issues 15 days after the rehearing deadline expires — roughly 30 days after the opinion — though the clerk controls the exact date. Fla. R. App. P. 9.340.</p>
-      <p><strong>Discretionary Review (30 days):</strong> A notice to invoke the Florida Supreme Court's discretionary jurisdiction must be filed within 30 days of the district court of appeal's decision — the same 30-day window as a direct appeal. Fla. R. App. P. 9.120(b); Fla. R. Gen. Prac. &amp; Jud. Admin. 2.514.</p>
     </div>
   </div>
 </div>
@@ -963,11 +939,7 @@
 <div class="tab-panel" id="tab-glossary">
   <div class="section-title">Legal Glossary</div>
   <div style="background:var(--teal-dim);border:1px solid rgba(45,212,191,0.25);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:var(--teal);line-height:1.7">
-    Plain-English definitions of legal terms used throughout Florida post-conviction and appellate practice. Terms marked <strong>ESSENTIAL</strong> come up constantly in pro se filings and are worth learning first — the rest are useful background but won't block you if you skip them for now.
-  </div>
-  <div class="charge-plain-toggle" id="glossary-simple-toggle" onclick="toggleGlossarySimpleMode()" style="border-radius:8px;margin-bottom:14px">
-    <div class="toggle-indicator">✓</div>
-    <span>Simple mode — explains each term in plain, everyday words instead of legal phrasing</span>
+    Plain-English definitions of legal terms used throughout Florida post-conviction and appellate practice.
   </div>
   <input class="glossary-search" placeholder="Search terms…" oninput="filterGlossary(this.value)" id="glossarySearch" style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--ink-mid);color:var(--white);font-size:14px;font-family:var(--font-body);outline:none;margin-bottom:16px">
   <div id="glossary-count" style="font-size:11px;color:var(--muted);margin-bottom:12px"></div>
