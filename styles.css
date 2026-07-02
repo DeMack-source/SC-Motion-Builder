@@ -1538,6 +1538,47 @@ body::after {
   cursor: pointer;
 }
 .btn-start-new:hover { color:var(--white); }
+/* Completion summary — key facts, field count, next steps */
+#completion-summary { max-width: 480px; margin: 0 auto 24px; text-align: left; }
+.cs-keyfacts {
+  font-size: 11px; color: var(--muted);
+  background: var(--ink-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  line-height: 1.8;
+}
+.cs-keyfacts strong { color: var(--white); }
+.cs-count {
+  font-size: 11px; color: var(--muted);
+  margin-bottom: 14px;
+}
+.cs-incomplete { color: var(--gold); }
+.cs-next {
+  background: var(--ink-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 14px;
+  text-align: left;
+}
+.cs-next-label {
+  font-size: 10px; font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.cs-next ul {
+  margin: 0; padding: 0 0 0 16px;
+  list-style: disc;
+}
+.cs-next li {
+  font-size: 11px; color: rgba(249,250,251,0.82);
+  line-height: 1.5; margin-bottom: 5px;
+}
+.cs-next li:last-child { margin-bottom: 0; }
 
 /* ── NEW STYLES ── */
 
@@ -3060,10 +3101,20 @@ body.low-distraction #tabnav { display: none; }
   margin-top: 4px; line-height: 1.3;
 }
 .dl-card-why {
-  font-size: 9.5px; color: var(--muted);
-  margin-top: 4px; padding-top: 4px;
-  border-top: 1px solid var(--border);
-  line-height: 1.4;
+  font-size: 11px; color: rgba(249,250,251,0.82);
+  margin-top: 8px;
+  padding: 6px 8px;
+  border-left: 3px solid var(--gold);
+  background: rgba(249,178,76,0.06);
+  border-radius: 0 4px 4px 0;
+  line-height: 1.5;
+}
+.dl-card-why-label {
+  font-weight: 700;
+  color: var(--gold);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 .dl-card-count {
   font-size: 20px; font-weight: 900;

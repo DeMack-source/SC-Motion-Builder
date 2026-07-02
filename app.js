@@ -653,7 +653,7 @@ const FLOWS = {
   }
 };
 
-const APP_BUILD_ID = '6019283-journey-map';
+const APP_BUILD_ID = '3058294-completion-summary';
 window.APP_VERSION = window.APP_VERSION || APP_BUILD_ID;
 document.documentElement.dataset.appVersion = window.APP_VERSION;
 
@@ -3543,7 +3543,7 @@ function renderDeadlineCard(d) {
         '<div class="dl-card-statute">' + (d.statute || '') + '</div>' +
         '<div class="dl-card-note">' + d.note + '</div>' +
         (d.remedy ? '<div class="dl-card-remedy">→ ' + d.remedy + '</div>' : '') +
-        (d.why ? '<div class="dl-card-why">' + d.why + '</div>' : '') +
+        (d.why ? '<div class="dl-card-why"><span class="dl-card-why-label">What this means — </span>' + esc(d.why) + '</div>' : '') +
       '</div>' +
       (d.status !== 'unknown' && d.status !== 'safe'
         ? '<div class="dl-card-count" style="color:' + barColor + '">' +
@@ -5660,6 +5660,79 @@ function toggleDistraction() {
 }
 
 // ── SAVE FINAL DRAFT ──
+// Motion-specific next steps shown on the completion screen — written for
+// someone (or their family) who may not know the legal system at all.
+const COMPLETION_NEXT_STEPS = {
+  '3850': [
+    'Take this draft to your law library or public defender — they can review the grounds and help you file it correctly.',
+    'File in the trial court that entered your conviction. Keep a copy of everything you submit.',
+    'The state has 60 days to respond after filing. Track that window.'
+  ],
+  '3800': [
+    'File in the sentencing court (the trial court that imposed your sentence).',
+    'Attach the sentencing transcript or judgment page showing the sentence you are challenging.',
+    'A 3.800(a) claim has no deadline — but file as soon as possible; the sooner the illegal sentence is flagged, the sooner it can be corrected.'
+  ],
+  'expunge': [
+    'Obtain a Certificate of Eligibility from FDLE first — the court will not process the petition without it.',
+    'File the petition in the court of the original charge, not where you currently live.',
+    'You only get one expungement in a lifetime. Double-check eligibility before filing.'
+  ],
+  'terminate': [
+    'File the petition in the court that imposed your probation — not your supervising officer\'s office.',
+    'Attach proof of payment compliance, completed conditions, and your employment or housing status.',
+    'Give your probation officer advance notice — their position often influences the judge\'s decision.'
+  ],
+  'restitution': [
+    'Attach documentation of the change in financial circumstances (job loss, medical bills, disability).',
+    'File in the sentencing court. The state and any victim have the right to respond.',
+    'Under Bearden v. Georgia, inability to pay is a defense — but only if you can show the failure wasn\'t willful.'
+  ],
+  'mitigation': [
+    'A mitigation packet is most effective when submitted before the sentencing hearing — time it accordingly.',
+    'Include third-party letters (family, employer, clergy) alongside the personal narrative.',
+    'If this is for a parole hearing, contact the parole board office to confirm submission format and deadlines.'
+  ]
+};
+
+function renderCompletionSummary() {
+  const titleEl = document.getElementById('completion-title');
+  const summaryEl = document.getElementById('completion-summary');
+  if (!summaryEl) return;
+  const flow = currentMotion ? FLOWS[currentMotion] : null;
+  if (!flow) { summaryEl.innerHTML = '<p style="font-size:12px;color:var(--muted)">Your draft has been saved to this device. Review it in the Preview tab.</p>'; return; }
+
+  if (titleEl) titleEl.textContent = flow.title + ' — Draft Saved';
+
+  const name    = answers['def-name']  || answers['defendant-name'] || '';
+  const caseNum = answers['case-num']  || '';
+  const county  = answers['county']    || '';
+
+  const allQs   = questions.length;
+  const filled  = questions.filter(q => q.required && answers[q.id] && answers[q.id] !== '').length;
+  const reqTotal = questions.filter(q => q.required).length;
+
+  const keyFacts = [name && ('<strong>Name:</strong> ' + esc(name)),
+                    caseNum && ('<strong>Case #:</strong> ' + esc(caseNum)),
+                    county && ('<strong>County:</strong> ' + esc(county))]
+    .filter(Boolean).join(' &nbsp;·&nbsp; ');
+
+  const nextSteps = COMPLETION_NEXT_STEPS[currentMotion] || [
+    'Review the generated document in the Preview tab.',
+    'Take it to your law library, public defender, or legal aid office before filing.',
+    'Keep a copy of everything you submit to the court.'
+  ];
+
+  summaryEl.innerHTML =
+    (keyFacts ? '<div class="cs-keyfacts">' + keyFacts + '</div>' : '') +
+    '<div class="cs-count">' + filled + ' of ' + reqTotal + ' required fields completed' +
+      (filled < reqTotal ? ' — <span class="cs-incomplete">some fields still need answers</span>' : ' ✓') +
+    '</div>' +
+    '<div class="cs-next"><div class="cs-next-label">What to do next</div><ul>' +
+      nextSteps.map(s => '<li>' + s + '</li>').join('') +
+    '</ul></div>';
+}
+
 function saveDraft() {
   if(!validateCurrent()) return;
   saveCurrentAnswer();
@@ -5690,6 +5763,7 @@ function saveDraft() {
   document.getElementById('live-preview').style.display = 'none';
   document.getElementById('completion').classList.add('show');
   document.getElementById('completion').scrollIntoView({behavior:'smooth',block:'start'});
+  renderCompletionSummary();
   renderPreview(drafts[0]);
   toast('Draft saved!');
 }
