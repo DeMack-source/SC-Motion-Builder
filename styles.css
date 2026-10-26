@@ -286,6 +286,24 @@ body::after {
 .notice-banner p { font-size: 12px; color: rgba(248,113,113,0.9); line-height: 1.6; }
 .notice-banner .notice-meta { display: block; margin-top: 6px; font-size: 11px; color: rgba(248,113,113,0.65); }
 
+/* ── SITE CREDIT ── */
+.site-credit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: -6px 2px 18px;
+  font-size: 11px;
+  letter-spacing: 0.35px;
+  color: var(--muted);
+}
+.site-credit strong {
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
 /* ── PWA INSTALL BANNER ── */
 .pwa-banner {
   display: flex;
