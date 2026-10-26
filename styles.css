@@ -303,6 +303,15 @@ body::after {
   letter-spacing: 0.7px;
   text-transform: uppercase;
 }
+.site-credit a {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+.site-credit a:hover,
+.site-credit a:focus-visible {
+  border-bottom-color: rgba(249,178,76,0.55);
+}
 
 /* ── PWA INSTALL BANNER ── */
 .pwa-banner {
