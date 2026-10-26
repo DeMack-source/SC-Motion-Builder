@@ -1,4 +1,4 @@
-const CACHE = 'sc-motion-v38';
+const CACHE = 'sc-motion-v39';
 
 const ASSETS = [
   './',
